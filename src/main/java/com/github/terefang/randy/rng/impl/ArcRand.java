@@ -9,7 +9,7 @@ public class ArcRand {
 
     public static ArcRand from(long _seed)
     {
-        return from((int)((_seed>>>32) | ~(_seed)));
+        return from((int)((_seed>>>32) ^ ~(_seed)));
     }
 
     public static ArcRand from(int _seed)
@@ -38,12 +38,12 @@ public class ArcRand {
 
     public static ArcRand from(byte[] _text)
     {
-        return from((int) (UUID.nameUUIDFromBytes(_text).getMostSignificantBits() & 0x7fffffff));
+        return from(UUID.nameUUIDFromBytes(_text).getMostSignificantBits());
     }
 
     public static ArcRand from(String _text)
     {
-        return from((int) (UUID.nameUUIDFromBytes(_text.getBytes(StandardCharsets.UTF_8)).getMostSignificantBits() & 0x7fffffff));
+        return from(UUID.nameUUIDFromBytes(_text.getBytes(StandardCharsets.UTF_8)).getMostSignificantBits());
     }
 
     public int next()
