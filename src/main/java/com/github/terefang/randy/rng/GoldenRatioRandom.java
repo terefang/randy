@@ -30,7 +30,7 @@ public class GoldenRatioRandom implements IRandom
     public byte nextByte()
     {
         this.offset++;
-        if((this.offset % 4) == 0)
+        if((this.offset % 8) == 0)
         {
             final long fa = this.stateA;
             final long fb = this.stateB;

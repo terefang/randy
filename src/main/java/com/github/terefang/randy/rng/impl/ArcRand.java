@@ -183,4 +183,8 @@ public class ArcRand {
         }
         System.out.println();
     }
+
+    public int[] getContext() {
+        return _ctx;
+    }
 }
