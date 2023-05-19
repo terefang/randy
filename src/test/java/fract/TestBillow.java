@@ -50,10 +50,7 @@ public class TestBillow {
                 RandyUtil.solidNoise(_seed, NoiseUtil.LINEAR),
                 RandyUtil.valueNoise(_seed, NoiseUtil.QUINTIC),
                 RandyUtil.valueNoise(_seed, NoiseUtil.HERMITE),
-                RandyUtil.valueNoise(_seed, NoiseUtil.LINEAR),
-                RandyUtil.pyramidNoise(_seed, NoiseUtil.QUINTIC),
-                RandyUtil.pyramidNoise(_seed, NoiseUtil.HERMITE),
-                RandyUtil.pyramidNoise(_seed, NoiseUtil.LINEAR)
+                RandyUtil.valueNoise(_seed, NoiseUtil.LINEAR)
         );
         List<INoise> _types = new Vector<>();
         _types.addAll(_stypes);

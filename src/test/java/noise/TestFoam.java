@@ -43,10 +43,7 @@ public class TestFoam {
                 RandyUtil.solidNoise(_seed, NoiseUtil.LINEAR),
                 RandyUtil.valueNoise(_seed, NoiseUtil.QUINTIC),
                 RandyUtil.valueNoise(_seed, NoiseUtil.HERMITE),
-                RandyUtil.valueNoise(_seed, NoiseUtil.LINEAR),
-                RandyUtil.pyramidNoise(_seed, NoiseUtil.QUINTIC),
-                RandyUtil.pyramidNoise(_seed, NoiseUtil.HERMITE),
-                RandyUtil.pyramidNoise(_seed, NoiseUtil.LINEAR)
+                RandyUtil.valueNoise(_seed, NoiseUtil.LINEAR)
         ).forEach((_t) -> { _types.add(RandyUtil.foamNoise(_t,-2L^_seed, NoiseUtil.BASE_SHARPNESS)); });
         for(INoise _rng : _types)
         {

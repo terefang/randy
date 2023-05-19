@@ -94,13 +94,6 @@ public class RandyUtil {
         _rng.setSeed(_seed);
         return _rng;
     }
-    public static INoise pyramidNoise(long _seed, int _i)
-    {
-        PyramidNoise _rng = new PyramidNoise();
-        _rng.setSeed(_seed);
-        _rng.setInterpolation(_i);
-        return _rng;
-    }
 
     public static INoise honeyNoise(long _seed, int _i)
     {
