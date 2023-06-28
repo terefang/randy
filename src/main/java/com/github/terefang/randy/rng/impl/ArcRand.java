@@ -9,53 +9,118 @@ public class ArcRand {
 
     public static ArcRand from(long _seed)
     {
-        return from((int)((_seed>>>32) ^ ~(_seed)));
+        ArcRand _rand = new ArcRand();
+        _rand.init();
+        _rand.bitfeed(_seed);
+        return _rand;
     }
 
     public static ArcRand from(int _seed)
     {
         ArcRand _rand = new ArcRand();
-        _rand._ctx = new int[256];
-        for(int _i = 0 ; _i<256; _i++)
-        {
-            _rand._ctx[_i] = _i;
-        }
-
-        while((_seed & 0x7fffffff)>0)
-        {
-            int _j = _seed;
-            for(int _i = 0 ; _i<256; _i++)
-            {
-                _j = _j + _rand._ctx[_i & 0xff];
-                int _t = _rand._ctx[_j & 0xff];
-                _rand._ctx[_j & 0xff] = _rand._ctx[_i & 0xff];
-                _rand._ctx[_i & 0xff] = _t;
-            }
-            _seed>>>=4;
-        }
+        _rand.init();
+        _rand.bitfeed(_seed);
         return _rand;
     }
 
-    public static ArcRand from(byte[] _text)
+    public static ArcRand from(byte[] _seed)
     {
-        return from(UUID.nameUUIDFromBytes(_text).getMostSignificantBits());
+        ArcRand _rand = new ArcRand();
+        _rand.init();
+        _rand.bitfeed(_seed);
+        return _rand;
     }
 
     public static ArcRand from(String _text)
     {
-        return from(UUID.nameUUIDFromBytes(_text.getBytes(StandardCharsets.UTF_8)).getMostSignificantBits());
+        UUID _uuid = UUID.nameUUIDFromBytes(_text.getBytes(StandardCharsets.UTF_8));
+        ArcRand _rand = new ArcRand();
+        _rand.init();
+        _rand.bitfeed(_uuid.getLeastSignificantBits(), _uuid.getMostSignificantBits());
+        return _rand;
+    }
+
+    public void bitfeed(int... _seeds)
+    {
+        for(int _seed : _seeds)
+        {
+            while((_seed & 0x7fffffff)>0)
+            {
+                this._a += (_seed & 0xf);
+                for(int _i = 0 ; _i<256; _i++)
+                {
+                    this.next();
+                }
+                _seed>>>=4;
+                this._b += (_seed & 0xf);
+                for(int _i = 0 ; _i<256; _i++)
+                {
+                    this.next();
+                }
+                _seed>>>=4;
+            }
+        }
+    }
+
+    public void bitfeed(long... _seeds)
+    {
+        for(long _seed : _seeds)
+        {
+            while((_seed & (0x7fffffffffffffffL))>0)
+            {
+                this._a += (_seed & 0xf);
+                for(int _i = 0 ; _i<256; _i++)
+                {
+                    this.next();
+                }
+                _seed>>>=4;
+                this._b += (_seed & 0xf);
+                for(int _i = 0 ; _i<256; _i++)
+                {
+                    this.next();
+                }
+                _seed>>>=4;
+            }
+        }
+    }
+
+    public void bitfeed(byte[] _seeds)
+    {
+        for(byte _seed : _seeds)
+        {
+            this._a += (_seed & 0xf);
+            for(int _i = 0 ; _i<256; _i++)
+            {
+                this.next();
+            }
+            _seed>>>=4;
+            this._b += (_seed & 0xf);
+            for(int _i = 0 ; _i<256; _i++)
+            {
+                this.next();
+            }
+        }
+    }
+
+    public void init()
+    {
+        this._ctx = new int[256];
+        for(int _i = 0 ; _i<256; _i++)
+        {
+            this._ctx[_i] = _i;
+        }
     }
 
     public int next()
     {
-        this._a++;
-        this._b+=this._ctx[this._a & 0xff];
+        this._a = (this._a+1) & 0xff;
+        this._b= (this._b+this._ctx[this._a]) & 0xff;
 
-        int _t = this._ctx[this._b & 0xff];
-        this._ctx[this._b & 0xff] = this._ctx[this._a & 0xff];
-        this._ctx[this._a & 0xff] = _t;
+        int _t = this._ctx[this._b];
+        this._ctx[this._b] = this._ctx[this._a];
+        this._ctx[this._a] = _t;
 
-        int _ret = this._ctx[(this._ctx[this._b & 0xff] + this._ctx[this._a & 0xff]) & 0xff];
+        int _ret = this._ctx[(this._ctx[this._b] + this._ctx[this._a]) & 0xff];
         return _ret;
     }
 
