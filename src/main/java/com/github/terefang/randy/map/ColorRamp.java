@@ -76,27 +76,21 @@ public interface ColorRamp {
         return r;
     }
 
-    public static ColorRamp getBase(Color _base1, Color _base2)
+    public static ColorRamp getBase(Color _base1, Color _base2, double _steps)
     {
         ColorRampStaticImpl r = new ColorRampStaticImpl();
         r.seaHardRamp = true;
         r.landHardRamp = true;
-        r.SEA_COLOR = new Color[] {
-                _base1,
-                ColorUtil.colorLerp(Color.BLACK, _base1,.7),
-                ColorUtil.colorLerp(Color.BLACK, _base1,.5),
-                ColorUtil.colorLerp(Color.BLACK, _base1,.3),
-                ColorUtil.colorLerp(Color.BLACK, _base1, .1),
-                Color.BLACK,
-        };
-        r.LAND_COLOR = new Color[] {
-                _base2,
-                ColorUtil.colorLerp(_base2,Color.WHITE,.8),
-                ColorUtil.colorLerp(_base2,Color.WHITE,.6),
-                ColorUtil.colorLerp(_base2,Color.WHITE,.4),
-                ColorUtil.colorLerp(_base2,Color.WHITE, .2),
-                Color.WHITE,
-        };
+        r.SEA_COLOR = new Color[(int) (_steps)];
+        r.SEA_COLOR[0] = _base1;
+        r.SEA_COLOR[(int) _steps-1] = _base2;
+        for(double _i = 1; _i<_steps-1; _i++)
+            r.SEA_COLOR[(int) _i] = ColorUtil.colorLerp(_base1, _base2,_i/_steps);
+        r.LAND_COLOR = new Color[(int) (_steps)];
+        r.LAND_COLOR[0] = _base2;
+        r.LAND_COLOR[(int) _steps-1] = Color.WHITE;
+        for(double _i = 1; _i<_steps-1; _i++)
+            r.LAND_COLOR[(int) _i] = ColorUtil.colorLerp(_base2,Color.WHITE,Math.sqrt(_i/_steps));
         return r;
     }
 

@@ -6,6 +6,21 @@ import com.github.terefang.randy.noise.NoiseUtil;
 public class BicubicWobbleNoise extends NoiseUtil implements INoise
 {
     @Override
+    public String name()
+    {
+        switch (this.getInterpolation())
+        {
+            case QUINTIC:
+                return super.name()+"Quintic";
+            case HERMITE:
+                return super.name()+"Hermite";
+            case LINEAR:
+            default:
+                return super.name()+"Linear";
+        }
+    }
+
+    @Override
     public double _noise1(long seed, double x, int interpolation) {
         return bicubicWobble(interpolation, makeSeedInt(seed), x, this.getMutation());
     }
@@ -69,28 +84,134 @@ public class BicubicWobbleNoise extends NoiseUtil implements INoise
     // ----------------------------------------------------------------------------
 
     // 1d
-    public static double bicubicWobble(int interpolation, int seed, double x) {
-        return bicubicWobble(seed, x);
+    public static double bicubicWobble(int interpolation, int seed, double x)
+    {
+        int x0 = fastFloor(x);
+        int x1 = x0 + 1;
+
+        double xs;
+        switch (interpolation) {
+            default:
+            case LINEAR:
+                xs = x - x0;
+                break;
+            case HERMITE:
+                xs = hermiteInterpolator(x - x0);
+                break;
+            case QUINTIC:
+                xs = quinticInterpolator(x - x0);
+                break;
+        }
+        return lerp(bicubicWobble(seed, x0),bicubicWobble(seed, x1),xs);
     }
 
     public static double bicubicWobble(int interpolation, int seed, double x, double y) {
-        return bicubicWobble(seed, x);
+        int x0 = fastFloor(x);
+        int y0 = fastFloor(y);
+        int x1 = x0 + 1;
+        int y1 = y0 + 1;
+
+        double xs, ys;
+        switch (interpolation) {
+            default:
+            case LINEAR:
+                xs = x - x0;
+                ys = y - y0;
+                break;
+            case HERMITE:
+                xs = hermiteInterpolator(x - x0);
+                ys = hermiteInterpolator(y - y0);
+                break;
+            case QUINTIC:
+                xs = quinticInterpolator(x - x0);
+                ys = quinticInterpolator(y - y0);
+                break;
+        }
+
+        double _h00 = bicubicWobble(seed, x0)+bicubicWobble(seed+0x12345678, y0);
+        double _h01 = bicubicWobble(seed, x1)+bicubicWobble(seed+0x12345678, y0);
+
+        double _h10 = bicubicWobble(seed, x0)+bicubicWobble(seed+0x12345678, y1);
+        double _h11 = bicubicWobble(seed, x1)+bicubicWobble(seed+0x12345678, y1);
+
+        double _dx00 = lerp(_h00, _h01, xs);
+        double _dx01 = lerp(_h10, _h11, xs);
+        return lerp(_dx00, _dx01, ys)/2.;
     }
 
     public static double bicubicWobble(int interpolation, int seed, double x, double y, double z) {
-        return bicubicWobble(seed, x);
+        int x0 = fastFloor(x);
+        int y0 = fastFloor(y);
+        int z0 = fastFloor(z);
+        int x1 = x0 + 1;
+        int y1 = y0 + 1;
+        int z1 = z0 + 1;
+
+        double xs, ys, zs;
+        switch (interpolation) {
+            default:
+            case LINEAR:
+                xs = x - x0;
+                ys = y - y0;
+                zs = z - z0;
+                break;
+            case HERMITE:
+                xs = hermiteInterpolator(x - x0);
+                ys = hermiteInterpolator(y - y0);
+                zs = hermiteInterpolator(z - z0);
+                break;
+            case QUINTIC:
+                xs = quinticInterpolator(x - x0);
+                ys = quinticInterpolator(y - y0);
+                zs = quinticInterpolator(z - z0);
+                break;
+        }
+
+        double _h000 = bicubicWobble(seed, x0)+bicubicWobble(seed+0x12345678, y0)+bicubicWobble(seed+0x23456781, z0);
+        double _h001 = bicubicWobble(seed, x1)+bicubicWobble(seed+0x12345678, y0)+bicubicWobble(seed+0x23456781, z0);
+
+        double _h010 = bicubicWobble(seed, x0)+bicubicWobble(seed+0x12345678, y1)+bicubicWobble(seed+0x23456781, z0);
+        double _h011 = bicubicWobble(seed, x1)+bicubicWobble(seed+0x12345678, y1)+bicubicWobble(seed+0x23456781, z0);
+
+        double _h100 = bicubicWobble(seed, x0)+bicubicWobble(seed+0x12345678, y0)+bicubicWobble(seed+0x23456781, z1);
+        double _h101 = bicubicWobble(seed, x1)+bicubicWobble(seed+0x12345678, y0)+bicubicWobble(seed+0x23456781, z1);
+
+        double _h110 = bicubicWobble(seed, x0)+bicubicWobble(seed+0x12345678, y1)+bicubicWobble(seed+0x23456781, z1);
+        double _h111 = bicubicWobble(seed, x1)+bicubicWobble(seed+0x12345678, y1)+bicubicWobble(seed+0x23456781, z1);
+
+        double _dx00 = lerp(_h000, _h001, xs);
+        double _dx01 = lerp(_h010, _h011, xs);
+        double _dx10 = lerp(_h100, _h101, xs);
+        double _dx11 = lerp(_h110, _h111, xs);
+        double2 _dy = lerp(_dx00, _dx10, _dx01, _dx11, ys);
+        return lerp(_dy,zs)/3.;
     }
 
     public static double bicubicWobble(int interpolation, int seed, double x, double y, double z, double u) {
-        return bicubicWobble(seed, x);
+        double _wx = bicubicWobble(seed, x);
+        double _wy = bicubicWobble(seed+0x12345678, y);
+        double _wz = bicubicWobble(seed+0x23456781, z);
+        double _wu = bicubicWobble(seed+0x34567812, u);
+        return (_wx+_wy+_wz+_wu)/4.;
     }
 
     public static double bicubicWobble(int interpolation, int seed, double x, double y, double z, double u, double v) {
-        return bicubicWobble(seed, x);
+        double _wx = bicubicWobble(seed, x);
+        double _wy = bicubicWobble(seed+0x12345678, y);
+        double _wz = bicubicWobble(seed+0x23456781, z);
+        double _wu = bicubicWobble(seed+0x34567812, u);
+        double _wv = bicubicWobble(seed+0x45678123, v);
+        return (_wx+_wy+_wz+_wu+_wv)/5.;
     }
 
     public static double bicubicWobble(int interpolation, int seed, double x, double y, double z, double u, double v, double w) {
-        return bicubicWobble(seed, x);
+        double _wx = bicubicWobble(seed, x);
+        double _wy = bicubicWobble(seed+0x12345678, y);
+        double _wz = bicubicWobble(seed+0x23456781, z);
+        double _wu = bicubicWobble(seed+0x34567812, u);
+        double _wv = bicubicWobble(seed+0x45678123, v);
+        double _ww = bicubicWobble(seed+0x56781234, w);
+        return (_wx+_wy+_wz+_wu+_wv+_ww)/6.;
     }
 
     public static double bicubicWobble(int seed, double t) {

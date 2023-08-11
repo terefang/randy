@@ -5,6 +5,10 @@ import java.util.UUID;
 
 public interface IRandom
 {
+    default public String name() {
+        return this.getClass().getSimpleName();
+    }
+
     public void setSeed(long s);
     default public void setSeed(String _text) {
         setSeed(UUID.nameUUIDFromBytes(_text.getBytes(StandardCharsets.UTF_8)).getMostSignificantBits());

@@ -1,4 +1,4 @@
-package util;
+package com.github.terefang.randy.utils;
 
 import lombok.Data;
 

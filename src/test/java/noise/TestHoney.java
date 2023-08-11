@@ -15,7 +15,7 @@ public class TestHoney {
                 RandyUtil.honeyNoise(0x1ee7b33f, NoiseUtil.QUINTIC)))
         {
             TestUtil.testAll(_rng);
-            TestUtil.test2d(_rng);
+            TestUtil.test2d(_rng,"honeyNoise");
         }
     }
 }

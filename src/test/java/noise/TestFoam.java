@@ -44,11 +44,11 @@ public class TestFoam {
                 RandyUtil.valueNoise(_seed, NoiseUtil.QUINTIC),
                 RandyUtil.valueNoise(_seed, NoiseUtil.HERMITE),
                 RandyUtil.valueNoise(_seed, NoiseUtil.LINEAR)
-        ).forEach((_t) -> { _types.add(RandyUtil.foamNoise(_t,-2L^_seed, NoiseUtil.BASE_SHARPNESS)); });
+        ).forEach((_t) -> { _types.add(RandyUtil.foamNoise(_t,_seed, NoiseUtil.BASE_SHARPNESS)); });
         for(INoise _rng : _types)
         {
             TestUtil.testAll(_rng);
-            TestUtil.test2d(_rng);
+            TestUtil.test2d(_rng,"foamNoise");
         }
     }
 }

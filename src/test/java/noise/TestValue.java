@@ -1,6 +1,7 @@
 package noise;
 
 import com.github.terefang.randy.RandyUtil;
+import com.github.terefang.randy.nfield.NoiseField;
 import com.github.terefang.randy.noise.INoise;
 import com.github.terefang.randy.noise.NoiseUtil;
 import util.TestUtil;
@@ -14,7 +15,9 @@ public class TestValue {
             RandyUtil.valueNoise(0x1ee7b33f, NoiseUtil.QUINTIC)))
         {
             TestUtil.testAll(_rng);
-            TestUtil.test2d(_rng);
+            TestUtil.test2d(_rng,"valueNoise");
         }
     }
+
+
 }

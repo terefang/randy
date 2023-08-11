@@ -1,9 +1,21 @@
 package com.github.terefang.randy.noise;
 
+import com.github.terefang.randy.transf.ITransform;
+
 public abstract class AbstractNoise implements INoise
 {
     long _seed = 0x1ee7b33f;
     int interpolation = NoiseUtil.LINEAR;
+
+    ITransform transform;
+
+    public ITransform getTransform() {
+        return transform;
+    }
+
+    public void setTransform(ITransform transform) {
+        this.transform = transform;
+    }
 
     @Override
     public void setInterpolation(int _i) {

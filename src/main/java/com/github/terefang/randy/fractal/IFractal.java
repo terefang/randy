@@ -62,4 +62,31 @@ public interface IFractal
         return _fractal6(getNoise(), getOffset(), getH(),getOctaves(), getFrequency(), getLacunarity(),getGain(), isVseed(), x,y,z,u,v,w);
     }
 
+    default public double fractal1n(double x)
+    {
+        return .5+(.5*fractal1(x));
+    }
+    default public double fractal2n(double x, double y)
+    {
+        return .5+(.5*fractal2(x,y));
+    }
+    default public double fractal3n(double x, double y, double z)
+    {
+        return .5+(.5*fractal3(x,y,z));
+    }
+    default public double fractal4n(double x, double y, double z, double u)
+    {
+        return .5+(.5*fractal4(x,y,z,u));
+    }
+
+    default public double fractal5n(double x, double y, double z, double u, double v)
+    {
+        return .5+(.5*fractal5(x,y,z,u,v));
+    }
+
+    default public double fractal6n(double x, double y, double z, double u, double v, double w)
+    {
+        return .5+(.5*fractal6(x,y,z,u,v,w));
+    }
+
 }

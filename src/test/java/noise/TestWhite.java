@@ -10,6 +10,6 @@ public class TestWhite {
 
         INoise _rng = RandyUtil.whiteNoise(0x1ee7b33f);
         TestUtil.testAll(_rng);
-        TestUtil.test2d(_rng);
+        TestUtil.test2d(_rng,"whiteNoise");
     }
 }

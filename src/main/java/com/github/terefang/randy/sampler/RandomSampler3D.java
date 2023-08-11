@@ -16,8 +16,7 @@ public class RandomSampler3D implements Sampler<double[]>
     }
 
     int dimensions = 3;
-    double[] start;
-    double[] end;
+    double[] size;
 
     int num;
 
@@ -51,49 +50,57 @@ public class RandomSampler3D implements Sampler<double[]>
         this.w = w;
     }
 
-    public double[] getStart() {
-        return start;
+    public double[] getSize() {
+        return size;
     }
 
-    public void setStart(double... start) {
-        this.start = start;
+    public void setSize(double... s) {
+        this.size = s;
     }
 
-    public double[] getEnd() {
-        return end;
+    private List<double[]> _preseed;
+
+    public void preseed(double[] _p)
+    {
+        this._preseed.add(_p);
     }
 
-    public void setEnd(double... end) {
-        this.end = end;
-    }
+    private double _slot;
+    private int[][][] _x;
 
+    public void init() {
+        this._slot = this.w/Math.sqrt(this.dimensions);
+        this._x = new int[(int)(Math.floor((this.size[0])/_slot)+1)][(int)(Math.floor((this.size[1])/_slot)+1)][(int)(Math.floor((this.size[2])/_slot)+1)];
+        this._preseed = new Vector<>();
+    }
     @Override
     public List<double[]> samples()
     {
         List<double[]> _ret = new Vector<>();
         double[] _point = new double[this.dimensions];
         int[] _ps = new int[this.dimensions];
-        double _slot = this.w/Math.sqrt(this.dimensions);
 
-        int[] _d = new int[this.dimensions];
-        for(int _i=0; _i<this.dimensions; _i++)
+        if(this._preseed.size()>0)
         {
-            _point[_i] = this.start[_i]+((this.end[_i]-this.start[_i])/2.);
-            _ps[_i] = (int)((_point[_i]-this.start[_i])/_slot);
+            for(double[] _p : this._preseed)
+            {
+                for(int _i=0; _i<this.dimensions; _i++)
+                {
+                    _ps[_i] = (int)((_p[_i])/_slot);
+                }
+                _ret.add(_p);
+                _x[_ps[0]][_ps[1]][_ps[2]]=_ret.size();
+            }
         }
-        _ret.add(_point);
-
-        int[][][] _x = new int[(int)(Math.floor((this.end[0]-this.start[0])/_slot)+1)][(int)(Math.floor((this.end[1]-this.start[1])/_slot)+1)][(int)(Math.floor((this.end[2]-this.start[2])/_slot)+1)];
-        _x[_ps[0]][_ps[1]][_ps[2]]=1;
 
         int _bb = 0;
-        while(_ret.size()<this.num)
+        while((_ret.size()-_preseed.size())<this.num)
         {
             _point = new double[this.dimensions];
             for(int _i=0; _i<this.dimensions; _i++)
             {
-                _point[_i] = this.start[_i]+(_rng.nextDouble()*(this.end[_i]-this.start[_i]));
-                _ps[_i] = (int)Math.floor((_point[_i]-this.start[_i])/_slot);
+                _point[_i] = (_rng.nextDouble()*(this.size[_i]));
+                _ps[_i] = (int)Math.floor(_point[_i]/_slot);
             }
 
             if(_x[_ps[0]][_ps[1]][_ps[2]]==0)
@@ -130,6 +137,10 @@ public class RandomSampler3D implements Sampler<double[]>
             if(_bb++ > this.b) break;
         }
 
+        if(this._preseed.size()>0)
+        {
+            return _ret.subList(this._preseed.size(), _ret.size());
+        }
         return _ret;
     }
 }

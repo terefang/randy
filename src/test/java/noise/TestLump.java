@@ -13,7 +13,7 @@ public class TestLump {
         for(INoise _rng : Arrays.asList(RandyUtil.lumpNoise(0x1ee7b33f, NoiseUtil.BASE_HARSHNESS)))
         {
             TestUtil.testAll(_rng);
-            TestUtil.test2d(_rng);
+            TestUtil.test2d(_rng,"lumpNoise");
         }
     }
 }

@@ -25,68 +25,68 @@ public class FoamNoise  extends NoiseUtil implements INoise
 
     @Override
     public double _noise1(long seed, double x, int interpolation) {
-        return singleFoam(this.getType(),this.getSharpness(),false, makeSeedInt(this.getSeed()),x,this.getMutation());
+        return singleFoam(this.getType(),this.getSharpness(),true,false, makeSeedInt(this.getSeed()),x,this.getMutation());
     }
 
     @Override
     public double _noise2(long seed, double x, double y, int interpolation) {
-        return singleFoam(this.getType(),this.getSharpness(),false, makeSeedInt(this.getSeed()),x,y,this.getMutation());
+        return singleFoam(this.getType(),this.getSharpness(),true,false, makeSeedInt(this.getSeed()),x,y,this.getMutation());
     }
 
     @Override
     public double _noise3(long seed, double x, double y, double z, int interpolation) {
-        return singleFoam(this.getType(),this.getSharpness(),false, makeSeedInt(this.getSeed()),x,y,z,this.getMutation());
+        return singleFoam(this.getType(),this.getSharpness(),true,false, makeSeedInt(this.getSeed()),x,y,z,this.getMutation());
     }
 
     @Override
     public double _noise4(long seed, double x, double y, double z, double u, int interpolation) {
-        return singleFoam(this.getType(),this.getSharpness(),false, makeSeedInt(this.getSeed()),x,y,z,u,this.getMutation());
+        return singleFoam(this.getType(),this.getSharpness(),true,false, makeSeedInt(this.getSeed()),x,y,z,u,this.getMutation());
     }
 
     @Override
     public double _noise5(long seed, double x, double y, double z, double u, double v, int interpolation) {
-        return singleFoam(this.getType(),this.getSharpness(),false, makeSeedInt(this.getSeed()),x,y,z,u,v,this.getMutation());
+        return singleFoam(this.getType(),this.getSharpness(),true,false, makeSeedInt(this.getSeed()),x,y,z,u,v,this.getMutation());
     }
 
     @Override
     public double _noise6(long seed, double x, double y, double z, double u, double v, double w, int interpolation) {
-        return singleFoam(this.getType(),this.getSharpness(),false, makeSeedInt(this.getSeed()),x,y,z,u,v,w,this.getMutation());
+        return singleFoam(this.getType(),this.getSharpness(),true,false, makeSeedInt(this.getSeed()),x,y,z,u,v,w,this.getMutation());
     }
 
     @Override
     public double _noise1n(long seed, double x, int interpolation) {
-        return singleFoam(this.getType(),this.getSharpness(),true, makeSeedInt(this.getSeed()),x,this.getMutation());
+        return singleFoam(this.getType(),this.getSharpness(),true,true, makeSeedInt(this.getSeed()),x,this.getMutation());
     }
 
     @Override
     public double _noise2n(long seed, double x, double y, int interpolation) {
-        return singleFoam(this.getType(),this.getSharpness(),true, makeSeedInt(this.getSeed()),x,y,this.getMutation());
+        return singleFoam(this.getType(),this.getSharpness(),true,true, makeSeedInt(this.getSeed()),x,y,this.getMutation());
     }
 
     @Override
     public double _noise3n(long seed, double x, double y, double z, int interpolation) {
-        return singleFoam(this.getType(),this.getSharpness(),true, makeSeedInt(this.getSeed()),x,y,z,this.getMutation());
+        return singleFoam(this.getType(),this.getSharpness(),true,true, makeSeedInt(this.getSeed()),x,y,z,this.getMutation());
     }
 
     @Override
     public double _noise4n(long seed, double x, double y, double z, double u, int interpolation) {
-        return singleFoam(this.getType(),this.getSharpness(),true, makeSeedInt(this.getSeed()),x,y,z,u,this.getMutation());
+        return singleFoam(this.getType(),this.getSharpness(),true,true, makeSeedInt(this.getSeed()),x,y,z,u,this.getMutation());
     }
 
     @Override
     public double _noise5n(long seed, double x, double y, double z, double u, double v, int interpolation) {
-        return singleFoam(this.getType(),this.getSharpness(),true, makeSeedInt(this.getSeed()),x,y,z,u,v,this.getMutation());
+        return singleFoam(this.getType(),this.getSharpness(),true,true, makeSeedInt(this.getSeed()),x,y,z,u,v,this.getMutation());
     }
 
     @Override
     public double _noise6n(long seed, double x, double y, double z, double u, double v, double w, int interpolation) {
-        return singleFoam(this.getType(),this.getSharpness(),true, makeSeedInt(this.getSeed()),x,y,z,u,v,w,this.getMutation());
+        return singleFoam(this.getType(),this.getSharpness(),true,true, makeSeedInt(this.getSeed()),x,y,z,u,v,w,this.getMutation());
     }
 
 
     // ----------------------------------------------------------------------------
 
-    public static final double singleFoam(INoise _type, double foamSharpness, boolean _normalizeNoise, int seed, double x, double y) {
+    public static final double singleFoam(INoise _type, double foamSharpness, boolean _normalizeNoise, boolean _normalize, int seed, double x, double y) {
         final double p0 = x;
         final double p1 = x * -0.5f + y * 0.8660254037844386f;
         final double p2 = x * -0.5f + y * -0.8660254037844387f;
@@ -113,11 +113,11 @@ public class FoamNoise  extends NoiseUtil implements INoise
         final double diff = 0.5f - result;
         final int sign = Float.floatToRawIntBits((float) diff) >> 31, one = sign | 1;
         double _v = (((result + sign)) / (Float.MIN_VALUE - sign + (result + sharp * diff) * one) - sign - sign) - 1f;
-        if(_normalizeNoise) _v = (_v*.5)+.5;
+        if(_normalize) _v = (_v*.5)+.5;
         return _v;
     }
 
-    public static final double singleFoam(INoise _type, double foamSharpness, boolean _normalizeNoise, int seed, double x, double y, double z){
+    public static final double singleFoam(INoise _type, double foamSharpness, boolean _normalizeNoise, boolean _normalize, int seed, double x, double y, double z){
         final double p0 = x;
         final double p1 = x * -0.3333333333333333f + y * 0.9428090415820634f;
         final double p2 = x * -0.3333333333333333f + y * -0.4714045207910317f + z * 0.816496580927726f;
@@ -155,11 +155,11 @@ public class FoamNoise  extends NoiseUtil implements INoise
         final double diff = 0.5f - result;
         final int sign = Float.floatToRawIntBits((float) diff) >> 31, one = sign | 1;
         double _v = (((result + sign)) / (Float.MIN_VALUE - sign + (result + sharp * diff) * one) - sign - sign) - 1f;
-        if(_normalizeNoise) _v = (_v*.5)+.5;
+        if(_normalize) _v = (_v*.5)+.5;
         return _v;
     }
 
-    public static final double singleFoam(INoise _type, double foamSharpness, boolean _normalizeNoise, int seed, double x, double y, double z, double w)
+    public static final double singleFoam(INoise _type, double foamSharpness, boolean _normalizeNoise, boolean _normalize, int seed, double x, double y, double z, double w)
     {
         final double p0 = x;
         final double p1 = x * -0.25f + y *  0.9682458365518543f;
@@ -211,11 +211,11 @@ public class FoamNoise  extends NoiseUtil implements INoise
         final double diff = 0.5f - result;
         final int sign = Float.floatToRawIntBits((float) diff) >> 31, one = sign | 1;
         double _v = (((result + sign)) / (Float.MIN_VALUE - sign + (result + sharp * diff) * one) - sign - sign) - 1f;
-        if(_normalizeNoise) _v = (_v*.5)+.5;
+        if(_normalize) _v = (_v*.5)+.5;
         return _v;
     }
 
-    public static final double singleFoam(INoise _type, double foamSharpness, boolean _normalizeNoise, int seed, double x, double y, double z, double w, double u) {
+    public static final double singleFoam(INoise _type, double foamSharpness, boolean _normalizeNoise, boolean _normalize, int seed, double x, double y, double z, double w, double u) {
         final double p0 = x *  0.8157559148337911f + y *  0.5797766823136037f;
         final double p1 = x * -0.7314923478726791f + y *  0.6832997137249108f;
         final double p2 = x * -0.0208603044412437f + y * -0.3155296974329846f + z * 0.9486832980505138f;
@@ -281,11 +281,11 @@ public class FoamNoise  extends NoiseUtil implements INoise
         final double diff = 0.5f - result;
         final int sign = Float.floatToRawIntBits((float) diff) >> 31, one = sign | 1;
         double _v = (((result + sign)) / (Float.MIN_VALUE - sign + (result + sharp * diff) * one) - sign - sign) - 1f;
-        if(_normalizeNoise) _v = (_v*.5)+.5;
+        if(_normalize) _v = (_v*.5)+.5;
         return _v;
     }
 
-    public static final double singleFoam(INoise _type, double foamSharpness, boolean _normalizeNoise, int seed, double x, double y, double z, double w, double u, double v) {
+    public static final double singleFoam(INoise _type, double foamSharpness, boolean _normalizeNoise, boolean _normalize, int seed, double x, double y, double z, double w, double u, double v) {
         final double p0 = x;
         final double p1 = x * -0.16666666666666666f + y *  0.98601329718326940f;
         final double p2 = x * -0.16666666666666666f + y * -0.19720265943665383f + z *  0.96609178307929590f;
@@ -367,11 +367,11 @@ public class FoamNoise  extends NoiseUtil implements INoise
         final double diff = 0.5f - result;
         final int sign = Float.floatToRawIntBits((float) diff) >> 31, one = sign | 1;
         double _v = (((result + sign)) / (Float.MIN_VALUE - sign + (result + sharp * diff) * one) - sign - sign) - 1f;
-        if(_normalizeNoise) _v = (_v*.5)+.5;
+        if(_normalize) _v = (_v*.5)+.5;
         return _v;
     }
 
-    public static final double singleFoam(INoise _type, double foamSharpness, boolean _normalizeNoise, int seed, double x, double y, double z, double w, double u, double v, double m) {
+    public static final double singleFoam(INoise _type, double foamSharpness, boolean _normalizeNoise, boolean _normalize, int seed, double x, double y, double z, double w, double u, double v, double m) {
         final double p0 = x;
         final double p1 = x * -0.14285714285714285f + y * +0.9897433186107870f;
         final double p2 = x * -0.14285714285714285f + y * -0.1649572197684645f + z * +0.97590007294853320f;
@@ -473,7 +473,7 @@ public class FoamNoise  extends NoiseUtil implements INoise
         final double diff = 0.5f - result;
         final int sign = Float.floatToRawIntBits((float) diff) >> 31, one = sign | 1;
         double _v = (((result + sign)) / (Float.MIN_VALUE - sign + (result + sharp * diff) * one) - sign - sign) - 1f;
-        if(_normalizeNoise) _v = (_v*.5)+.5;
+        if(_normalize) _v = (_v*.5)+.5;
         return _v;
     }
 

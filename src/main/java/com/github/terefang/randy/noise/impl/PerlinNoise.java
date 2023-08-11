@@ -7,6 +7,7 @@ import javax.swing.text.DefaultTextUI;
 
 public class PerlinNoise extends NoiseUtil implements INoise
 {
+
     @Override
     public String name()
     {
@@ -461,4 +462,6 @@ public class PerlinNoise extends NoiseUtil implements INoise
         if(normalize) _v = (_v*.5)+.5;
         return _v;
     }
+
+
 }

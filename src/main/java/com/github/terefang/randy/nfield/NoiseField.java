@@ -516,6 +516,11 @@ public class NoiseField
         }
     }
 
+    public void filterKernel(int size, double[] kernel)
+    {
+        filterKernel(size, kernel, kernel[size*size]);
+    }
+
     public void filterKernel(int size, double[] kernel, double scale)
     {
         double tV[]=new double[fH*fW];
@@ -576,21 +581,35 @@ public class NoiseField
                 1.0,2.0,3.0,2.0,1.0 };
 
         for(int j=0; j<samples ; j++)
-            this.filterKernel(3, kernelPF, 81.0);
+            this.filterKernel(5, kernelPF, 81.0);
     }
 
     public void gaussFilter(int _size, int samples)
     {
+        gaussFilter(_size, 1.8, samples);
+    }
+    public void gaussFilter(int _size, double sigma, int samples)
+    {
+        _size = _size|1;
+        final double kernelPF[]= gaussKernel(_size, sigma);
+        // sum is for normalization
+        double sum = kernelPF[_size*_size];
+
+        for(int j=0; j<samples ; j++)
+            this.filterKernel(_size, kernelPF, sum);
+    }
+
+    public double[] gaussKernel(int _size, double sigma)
+    {
         // initialising standard deviation to 1.0
-        double sigma = 1.8;
         double r, s = 2.0 * sigma * sigma;
 
         // sum is for normalization
         double sum = 0.0;
 
         _size = _size|1;
-        final int _rsize = (_size >> 1);
-        final double kernelPF[]= new double[_size*_size];
+        int _rsize = (_size >> 1);
+        double kernelPF[]= new double[_size*_size+1];
 
         // generating 5x5 kernel
         for (int x = -_rsize; x <= _rsize; x++) {
@@ -601,8 +620,8 @@ public class NoiseField
             }
         }
 
-        for(int j=0; j<samples ; j++)
-            this.filterKernel(_size, kernelPF, sum);
+        kernelPF[_size*_size] = sum;
+        return kernelPF;
     }
 
     public void coneFilter(int samples)
@@ -615,7 +634,7 @@ public class NoiseField
                 0.0,0.0,1.0,0.0,0.0 };
 
         for(int j=0; j<samples ; j++)
-            this.filterKernel(3, kernelCF, 25.0);
+            this.filterKernel(5, kernelCF, 25.0);
     }
 
     public void mathExponent(double sealevel, double land_exp, double sea_exp)
@@ -745,6 +764,39 @@ public class NoiseField
             this.vF[i]=_min+(this.vF[i]-_amin)*_vdist;
         }
     }
+
+    public void normalize(double _min, double _max, int _x1, int _x2, int _y1, int _y2)
+    {
+        double _amax,_amin,_adist,_vdist;
+        double _distance=_max-_min;
+        _amax=_amin=this.getPoint(_x1,_y1);
+
+        for(int _x=_x1; _x<=_x2 ; _x++)
+        {
+            for(int _y=_y1; _y<=_y2 ; _y++) {
+                double _p = this.getPoint(_x,_y);
+                if (_p > _amax) _amax = _p;
+                if (_p < _amin) _amin = _p;
+            }
+        }
+
+        _adist=_amax-_amin;
+        if(_adist==0.0)
+        {
+            _amin-=1.0;
+            _adist=2.0;
+        }
+        _vdist=_distance/_adist;
+
+        for(int _x=_x1; _x<=_x2 ; _x++)
+        {
+            for(int _y=_y1; _y<=_y2 ; _y++) {
+                double _p = this.getPoint(_x,_y);
+                this.setPoint(_x,_y,_min+(_p-_amin)*_vdist);
+            }
+        }
+    }
+
 
     public void setProjection(int p, double p_left, double p_right, double p_top, double p_bottom)
     {

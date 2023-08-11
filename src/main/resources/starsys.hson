@@ -1,0 +1,984 @@
+{
+    quantify: {
+        spectra: {
+            O:1
+            B:2
+            A:3
+            F:4
+            G:5
+            K:6
+            M:6
+            R:7
+            N:7
+            S:7
+            C:1
+        }
+        size: {
+            "c":1
+            "I":1
+            "I-II":1
+            "sg":2
+            "II":2
+            "II-III":2
+            "g":3
+            "III":3
+            "III-IV":3
+            "IV":4
+            "IV-V":5
+            "V":5
+            "V-VI":5
+            "VI":6
+            "d":6
+            "VII":7
+        }
+        rsize: [ "_", "I", "II", "III", "IV", "V", "VI", "VII" ]
+    }
+
+    "stellar_types": [ "C", "O", "B", "A", "F", "G", "K", "M", "R", "N", "S" ],
+
+    "stellar_type": {
+        "C": {
+            "temperature_base"      : 50
+            "temperature_variation" : 1
+            "mass_base"             : 200
+            "mass_variation"        : 10
+            "I": {
+                "mass_adjustment"               : 1.4
+                "surface_distance_adjustment"   : 20
+                "orbitals"                      : 20
+                "planet_chance"                 : 2
+            }
+            "II": {
+                "mass_adjustment"              : 1.2
+                "surface_distance_adjustment"  : 10
+                "orbitals"                     : 20
+                "planet_chance"                : 2
+            }
+            "III": {
+                "mass_adjustment"              : 1.1
+                "surface_distance_adjustment"  : 5
+                "orbitals"                     : 20
+                "planet_chance"                : 2
+            }
+            "IV": {
+                "mass_adjustment"              : 1
+                "surface_distance_adjustment"  : 2
+                "orbitals"                     : 20
+                "planet_chance"                : 2
+            }
+            "V": {
+                "mass_adjustment"              : 1
+                "surface_distance_adjustment"  : 1
+                "orbitals"                     : 20
+                "planet_chance"                : 2
+            }
+            "VI": {
+                "mass_adjustment"              : 1
+                "surface_distance_adjustment"  : 1
+                "orbitals"                     : 15
+                "planet_chance"                : 2
+            }
+            "VII": {
+                "mass_adjustment"              : 1
+                "surface_distance_adjustment"  : 1
+                "orbitals"                     : 7
+                "planet_chance"                : 2
+            }
+        }
+        "O": {
+            "temperature_base"      : 40
+            "temperature_variation" : 2.7
+            "mass_base"             : 100
+            "mass_variation"        : 8.3
+            "I": {
+                "mass_adjustment"              : 1.4
+                "surface_distance_adjustment"  : 20
+                "orbitals"                     : 20
+                "planet_chance"                : 5
+            }
+            "II": {
+                "mass_adjustment"              : 1.2
+                "surface_distance_adjustment"  : 5
+                "orbitals"                     : 20
+                "planet_chance"                : 5
+            }
+            "III": {
+                "mass_adjustment"              : 1
+                "surface_distance_adjustment"  : 2
+                "orbitals"                     : 20
+                "planet_chance"                : 5
+            }
+            "IV": {
+                "mass_adjustment"              : 1
+                "surface_distance_adjustment"  : 1
+                "orbitals"                     : 20
+                "planet_chance"                : 5
+            }
+            "V": {
+                "mass_adjustment"              : 1
+                "surface_distance_adjustment"  : 1
+                "orbitals"                     : 20
+                "planet_chance"                : 5
+            }
+            "VI": {
+                "mass_adjustment"              : 1
+                "surface_distance_adjustment"  : 1
+                "orbitals"                     : 15
+                "planet_chance"                : 5
+            }
+            "VII": {
+                "mass_adjustment"              : 1
+                "surface_distance_adjustment"  : 1
+                "orbitals"                     : 7
+                "planet_chance"                : 5
+            }
+        }
+        "B": {
+            "temperature_base"      : 13
+            "temperature_variation" : 1.022222222222
+            "mass_base"             : 17
+            "mass_variation"        : 1.38
+            "I": {
+                "mass_adjustment"              : 4.5
+                "surface_distance_adjustment"  : 20
+                "orbitals"                     : 20
+                "planet_chance"                : 5
+            }
+            "II": {
+                "mass_adjustment"              : 3.5
+                "surface_distance_adjustment"  : 10
+                "orbitals"                     : 20
+                "planet_chance"                : 5
+            }
+            "III": {
+                "mass_adjustment"              : 3
+                "surface_distance_adjustment"  : 1.5
+                "orbitals"                     : 20
+                "planet_chance"                : 5
+            }
+            "IV": {
+                "mass_adjustment"              : 2
+                "surface_distance_adjustment"  : 1
+                "orbitals"                     : 20
+                "planet_chance"                : 5
+            }
+            "V": {
+                "mass_adjustment"              : 1
+                "surface_distance_adjustment"  : 1
+                "orbitals"                     : 20
+                "planet_chance"                : 5
+            }
+            "VI": {
+                "mass_adjustment"              : 0.5
+                "surface_distance_adjustment"  : 1
+                "orbitals"                     : 15
+                "planet_chance"                : 5
+            }
+            "VII": {
+                "mass_adjustment"              : 0.2
+                "surface_distance_adjustment"  : 1
+                "orbitals"                     : 7
+                "planet_chance"                : 5
+            }
+        }
+        "A": {
+            "temperature_base"      : 2.77777777
+            "temperature_variation" : 0.12777777
+            "mass_base"             : 3.2
+            "mass_variation"        : 0.16666666
+            "I": {
+                "mass_adjustment"              : 8
+                "surface_distance_adjustment"  : 60
+                "orbitals"                     : 20
+                "planet_chance"                : 7
+            }
+            "II": {
+                "mass_adjustment"              : 4
+                "surface_distance_adjustment"  : 10
+                "orbitals"                     : 20
+                "planet_chance"                : 7
+            }
+            "III": {
+                "mass_adjustment"              : 2.5
+                "surface_distance_adjustment"  : 2.5
+                "orbitals"                     : 20
+                "planet_chance"                : 7
+            }
+            "IV": {
+                "mass_adjustment"              : 1.5
+                "surface_distance_adjustment"  : 1
+                "orbitals"                     : 20
+                "planet_chance"                : 7
+            }
+            "V": {
+                "mass_adjustment"              : 1
+                "surface_distance_adjustment"  : 1
+                "orbitals"                     : 20
+                "planet_chance"                : 7
+            }
+            "VI": {
+                "mass_adjustment"              : 0.5
+                "surface_distance_adjustment"  : 1
+                "orbitals"                     : 15
+                "planet_chance"                : 7
+            }
+            "VII": {
+                "mass_adjustment"              : 0.25
+                "surface_distance_adjustment"  : 1
+                "orbitals"                     : 7
+                "planet_chance"                : 7
+            }
+        }
+        "F": {
+            "temperature_base"      : 1.5
+            "temperature_variation" : 0.035
+            "mass_base"             : 1.54
+            "mass_variation"        : 0.052
+            "I": {
+                "mass_adjustment"              : 11.75
+                "surface_distance_adjustment"  : 80
+                "orbitals"                     : 20
+                "planet_chance"                : 5
+            }
+            "II": {
+                "mass_adjustment"              : 6.25
+                "surface_distance_adjustment"  : 20
+                "orbitals"                     : 20
+                "planet_chance"                : 5
+            }
+            "III": {
+                "mass_adjustment"              : 2
+                "surface_distance_adjustment"  : 5
+                "orbitals"                     : 20
+                "planet_chance"                : 5
+            }
+            "IV": {
+                "mass_adjustment"              : 1.5
+                "surface_distance_adjustment"  : 2
+                "orbitals"                     : 20
+                "planet_chance"                : 9
+            }
+            "V": {
+                "mass_adjustment"              : 1
+                "surface_distance_adjustment"  : 1
+                "orbitals"                     : 20
+                "planet_chance"                : 83
+            }
+            "VI": {
+                "mass_adjustment"              : 0.5
+                "surface_distance_adjustment"  : 1
+                "orbitals"                     : 15
+                "planet_chance"                : 83
+            }
+            "VII": {
+                "mass_adjustment"              : 0.25
+                "surface_distance_adjustment"  : 1
+                "orbitals"                     : 7
+                "planet_chance"                : 5
+            }
+        }
+        "G": {
+            "temperature_base"      : 1.15
+            "temperature_variation" : 0.055
+            "mass_base"             : 1.02
+            "mass_variation"        : 0.027
+            "I": {
+                "mass_adjustment"              : 13.55
+                "surface_distance_adjustment"  : 140
+                "orbitals"                     : 20
+                "planet_chance"                : 9
+            }
+            "II": {
+                "mass_adjustment"              : 6.8
+                "surface_distance_adjustment"  : 20
+                "orbitals"                     : 20
+                "planet_chance"                : 9
+            }
+            "III": {
+                "mass_adjustment"              : 2.4
+                "surface_distance_adjustment"  : 10
+                "orbitals"                     : 20
+                "planet_chance"                : 9
+            }
+            "IV": {
+                "mass_adjustment"              : 2
+                "surface_distance_adjustment"  : 3
+                "orbitals"                     : 20
+                "planet_chance"                : 16
+            }
+            "V": {
+                "mass_adjustment"              : 1
+                "surface_distance_adjustment"  : 1
+                "orbitals"                     : 20
+                "planet_chance"                : 98
+            }
+            "VI": {
+                "mass_adjustment"              : 0.5
+                "surface_distance_adjustment"  : 0.2
+                "orbitals"                     : 15
+                "planet_chance"                : 98
+            }
+            "VII": {
+                "mass_adjustment"              : 0.25
+                "surface_distance_adjustment"  : 0.05
+                "orbitals"                     : 7
+                "planet_chance"                : 20
+            }
+        }
+        "K": {
+            "temperature_base"      : 0.6
+            "temperature_variation" : 0.0323
+            "mass_base"             : 0.75
+            "mass_variation"        : 0.037
+            "I": {
+                "mass_adjustment"              : 24.77
+                "surface_distance_adjustment"  : 300
+                "orbitals"                     : 20
+                "planet_chance"                : 50
+            }
+            "II": {
+                "mass_adjustment"              : 10.6
+                "surface_distance_adjustment"  : 20
+                "orbitals"                     : 20
+                "planet_chance"                : 98
+            }
+            "III": {
+                "mass_adjustment"              : 5.3
+                "surface_distance_adjustment"  : 12
+                "orbitals"                     : 20
+                "planet_chance"                : 98
+            }
+            "IV": {
+                "mass_adjustment"              : 3
+                "surface_distance_adjustment"  : 5
+                "orbitals"                     : 20
+                "planet_chance"                : 98
+            }
+            "V": {
+                "mass_adjustment"              : 1
+                "surface_distance_adjustment"  : 1
+                "orbitals"                     : 20
+                "planet_chance"                : 98
+            }
+            "VI": {
+                "mass_adjustment"              : 0.5
+                "surface_distance_adjustment"  : 0.8
+                "orbitals"                     : 15
+                "planet_chance"                : 98
+            }
+            "VII": {
+                "mass_adjustment"              : 0.25
+                "surface_distance_adjustment"  : 0.5
+                "orbitals"                     : 7
+                "planet_chance"                : 20
+            }
+        }
+        "M": {
+            "temperature_base"      : 0.277
+            "temperature_variation" : 0.00888
+            "mass_base"             : 0.38
+            "mass_variation"        : 0.03
+            "I": {
+                "mass_adjustment"              : 105.25
+                "surface_distance_adjustment"  : 700
+                "orbitals"                     : 20
+                "planet_chance"                : 98
+            }
+            "II": {
+                "mass_adjustment"              : 42.15
+                "surface_distance_adjustment"  : 110
+                "orbitals"                     : 20
+                "planet_chance"                : 98
+            }
+            "III": {
+                "mass_adjustment"              : 21.05
+                "surface_distance_adjustment"  : 50
+                "orbitals"                     : 20
+                "planet_chance"                : 98
+            }
+            "IV": {
+                "mass_adjustment"              : 8.52
+                "surface_distance_adjustment"  : 15
+                "orbitals"                     : 20
+                "planet_chance"                : 98
+            }
+            "V": {
+                "mass_adjustment"              : 1
+                "surface_distance_adjustment"  : 2
+                "orbitals"                     : 20
+                "planet_chance"                : 98
+            }
+            "VI": {
+                "mass_adjustment"              : 0.5
+                "surface_distance_adjustment"  : 1
+                "orbitals"                     : 15
+                "planet_chance"                : 98
+            }
+            "VII": {
+                "mass_adjustment"              : 0.25
+                "surface_distance_adjustment"  : 1
+                "orbitals"                     : 7
+                "planet_chance"                : 15
+            }
+        }
+        "R": {
+            "temperature_base"      : 0.18
+            "temperature_variation" : 0.008
+            "mass_base"             : 0.30
+            "mass_variation"        : 0.025
+            "I": {
+                "mass_adjustment"              : 105.25
+                "surface_distance_adjustment"  : 900
+                "orbitals"                     : 20
+                "planet_chance"                : 50
+            }
+            "II": {
+                "mass_adjustment"              : 42.15
+                "surface_distance_adjustment"  : 140
+                "orbitals"                     : 20
+                "planet_chance"                : 75
+            }
+            "III": {
+                "mass_adjustment"              : 21.05
+                "surface_distance_adjustment"  : 60
+                "orbitals"                     : 20
+                "planet_chance"                : 98
+            }
+            "IV": {
+                "mass_adjustment"              : 8.52
+                "surface_distance_adjustment"  : 20
+                "orbitals"                     : 20
+                "planet_chance"                : 98
+            }
+            "V": {
+                "mass_adjustment"              : 1
+                "surface_distance_adjustment"  : 5
+                "orbitals"                     : 20
+                "planet_chance"                : 98
+            }
+            "VI": {
+                "mass_adjustment"              : 0.5
+                "surface_distance_adjustment"  : 2
+                "orbitals"                     : 15
+                "planet_chance"                : 98
+            }
+            "VII": {
+                "mass_adjustment"              : 0.25
+                "surface_distance_adjustment"  : 1
+                "orbitals"                     : 7
+                "planet_chance"                : 5
+            }
+        }
+        "N": {
+            "temperature_base"      : 0.1
+            "temperature_variation" : 0.005
+            "mass_base"             : 0.20
+            "mass_variation"        : 0.02
+            "I": {
+                "mass_adjustment"              : 105.25
+                "surface_distance_adjustment"  : 900
+                "orbitals"                     : 20
+                "planet_chance"                : 25
+            }
+            "II": {
+                "mass_adjustment"              : 42.15
+                "surface_distance_adjustment"  : 140
+                "orbitals"                     : 20
+                "planet_chance"                : 36
+            }
+            "III": {
+                "mass_adjustment"              : 21.05
+                "surface_distance_adjustment"  : 60
+                "orbitals"                     : 20
+                "planet_chance"                : 50
+            }
+            "IV": {
+                "mass_adjustment"              : 8.52
+                "surface_distance_adjustment"  : 20
+                "orbitals"                     : 20
+                "planet_chance"                : 98
+            }
+            "V": {
+                "mass_adjustment"              : 1
+                "surface_distance_adjustment"  : 5
+                "orbitals"                     : 20
+                "planet_chance"                : 98
+            }
+            "VI": {
+                "mass_adjustment"              : 0.5
+                "surface_distance_adjustment"  : 2
+                "orbitals"                     : 15
+                "planet_chance"                : 98
+            }
+            "VII": {
+                "mass_adjustment"              : 0.25
+                "surface_distance_adjustment"  : 1
+                "orbitals"                     : 7
+                "planet_chance"                : 4
+            }
+        }
+        "S": {
+            "temperature_base"      : 0.05
+            "temperature_variation" : 0.0005
+            "mass_base"             : 0.10
+            "mass_variation"        : 0.015
+            "I": {
+                "mass_adjustment"              : 105.25
+                "surface_distance_adjustment"  : 900
+                "orbitals"                     : 20
+                "planet_chance"                : 12
+            }
+            "II": {
+                "mass_adjustment"              : 42.15
+                "surface_distance_adjustment"  : 140
+                "orbitals"                     : 20
+                "planet_chance"                : 18
+            }
+            "III": {
+                "mass_adjustment"              : 21.05
+                "surface_distance_adjustment"  : 60
+                "orbitals"                     : 20
+                "planet_chance"                : 25
+            }
+            "IV": {
+                "mass_adjustment"              : 8.52
+                "surface_distance_adjustment"  : 20
+                "orbitals"                     : 20
+                "planet_chance"                : 50
+            }
+            "V": {
+                "mass_adjustment"              : 1
+                "surface_distance_adjustment"  : 5
+                "orbitals"                     : 20
+                "planet_chance"                : 98
+            }
+            "VI": {
+                "mass_adjustment"              : 0.5
+                "surface_distance_adjustment"  : 2
+                "orbitals"                     : 15
+                "planet_chance"                : 66
+            }
+            "VII": {
+                "mass_adjustment"              : 0.25
+                "surface_distance_adjustment"  : 1
+                "orbitals"                     : 7
+                "planet_chance"                : 3
+            }
+        }
+    }
+
+    "star_table": {
+        "default": "*base-classes"
+
+        "*base-classes": {
+            "*unusual" : 1
+            "*giant-classes" : 4
+            "*subgiant-classes" : 9
+            "*standard-classes" : 79
+            "*dwarf-classes": 7
+        }
+
+        "*unusual": {
+            "*phenomena":5
+            "*ultra-rare":1
+        }
+
+        "*phenomena": {
+            "!":1
+        }
+        "*ultra-rare": {
+            "!":1
+        }
+
+        "!": {
+            "spectra": "!"
+            "sizes": [ "X" ]
+            "special": [
+                "NS", # neutron star
+                "PU", # pulsar (rot. ns)
+                "WD", # white dwarf
+                "GD", # grey dwarf
+                "BD", # black dwarf
+                "XS", # x-ray star (i-iii w/ bh)
+                "XB", # x-ray burster (i-iv w/ pu)
+                "LO", # lost planetary object
+                "SS", # ss-cygni catastrophic variable star
+                "NV", # nova shell
+                "PN", # planetary nebula
+                "SN", # small nebula
+                "LN", # large nebula (mutara)
+                "HN", # huge nebula (badlands)
+                "TT", # t-tauri protostar (nebula?)
+                "BH", # black hole
+                "LH", # large black hole
+                "WH", # wormhole (stable?)
+                "DS", # dyson sphere
+                "NN", # neutron star w/ supernova shall
+                "??" # special object
+            ]
+        }
+
+        "*giant-classes": {
+            "*super-giants":3
+            "Fg":4
+            "Gg":5
+            "Kg":48
+            "Mg":37
+            "Og":3
+        }
+        "Fg": {
+            "spectra": "F"
+            "sizes": [ "II", "III" ]
+        }
+        "Gg": {
+            "spectra": "G"
+            "sizes": [ "II", "III" ]
+        }
+        "Kg": {
+            "spectra": "K"
+            "sizes": [ "II", "III" ]
+        }
+        "Mg": {
+            "spectra": "M"
+            "sizes": [ "II", "III" ]
+        }
+        "Og": {
+            "spectra": "O"
+            "sizes": [ "III", "IV", "V" ]
+        }
+
+        "*super-giants": {
+            "Bxg":1
+            "Axg":1
+            "Fxg":2
+            "Gxg":2
+            "Kxg":2
+            "Mxg":2
+        }
+        "Bxg": {
+            "spectra": "B"
+            "sizes": [ "I" ]
+        }
+        "Axg": {
+            "spectra": "A"
+            "sizes": [ "I" ]
+        }
+        "Fxg": {
+            "spectra": "F"
+            "sizes": [ "I" ]
+        }
+        "Gxg": {
+            "spectra": "G"
+            "sizes": [ "I" ]
+        }
+        "Kxg": {
+            "spectra": "K"
+            "sizes": [ "I" ]
+        }
+        "Mxg": {
+            "spectra": "M"
+            "sizes": [ "I" ]
+        }
+
+        "*subgiant-classes": {
+            "Bsg": 1
+            "Asg": 2
+        }
+        "Bsg": {
+            "spectra": "B"
+            "sizes": [ "III", "IV", "V" ]
+        }
+        "Asg": {
+            "spectra": "A"
+            "sizes": [ "III", "IV", "V" ]
+        }
+
+        "*standard-classes": {
+            "F":1
+            "G":2
+            "K":3
+            "M":8
+            "R":3
+            "N":1
+            "S":1
+        }
+        "F": {
+            "spectra": "F"
+            "sizes": [ "IV", "V" ]
+        }
+        "G": {
+            "spectra": "G"
+            "sizes": [ "IV", "V" ]
+        }
+        "K": {
+            "spectra": "K"
+            "sizes": [ "V" ]
+        }
+        "M": {
+            "spectra": "M"
+            "sizes": [ "V" ]
+        }
+        "R": {
+            "spectra": "R"
+            "sizes": [ "VI", "V" ]
+        }
+        "N": {
+            "spectra": "N"
+            "sizes": [ "VI", "V" ]
+        }
+        "S": {
+            "spectra": "S"
+            "sizes": [ "VI", "V" ]
+        }
+
+        "*dwarf-classes": {
+            "Bd":2
+            "Ad":2
+            "Fd":2
+            "Gd":2
+            "Kd":2
+            "Md":2
+        }
+        "Bd": {
+            "spectra": "B"
+            "sizes": [ "VI", "VI", "VI", "VI", "VII" ]
+        }
+        "Ad": {
+            "spectra": "A"
+            "sizes": [ "VI", "VI", "VI", "VI", "VII" ]
+        }
+        "Fd": {
+            "spectra": "F"
+            "sizes": [ "VI", "VI", "VI", "VI", "VII" ]
+        }
+        "Gd": {
+            "spectra": "G"
+            "sizes": [ "VI", "VI", "VI", "VI", "VII" ]
+        }
+        "Kd": {
+            "spectra": "K"
+            "sizes": [ "VI", "VI", "VI", "VI", "VII" ]
+        }
+        "Md": {
+            "spectra": "M"
+            "sizes": [ "VI", "VI", "VI", "VI", "VII" ]
+        }
+
+        "*companion-i": {
+            "*base-classes":1
+            "*subgiant-classes":3
+            "*standard-classes":6
+            "*dwarf-classes":10
+        }
+
+        "*companion-ii": {
+            "*subgiant-classes":4
+            "*standard-classes":6
+            "*dwarf-classes":10
+        }
+
+        "*companion-iii": {
+            "*standard-classes":2
+            "*dwarf-classes":2
+        }
+
+        "*companion-iv": {
+            "*standard-classes":2
+            "*dwarf-classes":2
+        }
+
+        "*companion-v": {
+            "*standard-classes":1
+            "*dwarf-classes":10
+        }
+
+        "*companion-vi": {
+            "*dwarf-classes":2
+        }
+
+        "*companion-vii": {
+            "*dwarf-classes":2
+        }
+    }
+
+    "planet_table":{
+        "zones": [ "*inner-zone", "*bio-zone", "*outer-zone" ]
+        "gaia-zones": [ "*gaia-inner-zone", "*gaia-bio-zone", "*gaia-outer-zone" ]
+        "*inner-zone":{
+            "R":26
+            "A":33
+            "H":37
+        }
+        "*gaia-inner-zone":{
+            "R":26
+            "T":33
+        }
+        "*bio-zone":{
+            "H":1
+            "L":1
+            "T":1
+            "E":8
+            "A":1
+        }
+        "*gaia-bio-zone":{
+            "R":1
+            "T":3
+            "E":8
+        }
+        "*outer-zone":{
+            "T":1
+            "A":3
+            "L":5
+            "G":1
+            "R":2
+        }
+        "*gaia-outer-zone":{
+            "L":5
+            "G":1
+            "H":2
+            "R":1
+        }
+        "R":{
+            "rotational_multiplier"      : 0.19
+            "diameter_base"              : 100
+            "diameter_variation"         : 75
+            "diameter_multiplier"        : 10
+            "density_base"               : 4.75
+            "density_variation"          : 3.75
+            "max_axial_tilt"             : 30
+            "max_num_moons"              : 2
+            "max_combined_mass_of_moons" : 0.003
+            "description"                : Rockball
+        }
+        "A":{
+            "rotational_multiplier"      : 1
+            "diameter_base"              : 1
+            "diameter_variation"         : 0
+            "diameter_multiplier"        : 1
+            "density_base"               : 5.55
+            "density_variation"          : 3.75
+            "max_axial_tilt"             : 1
+            "max_num_moons"              : 0
+            "max_combined_mass_of_moons" : 0.000
+            "description"                : Asteroid_Belt
+        }
+        "H":{
+            "rotational_multiplier"      : 0.66
+            "diameter_base"              : 30
+            "diameter_variation"         : 20
+            "diameter_multiplier"        : 20000
+            "density_base"               : 1.55
+            "density_variation"          : 0.75
+            "max_axial_tilt"             : 50
+            "max_num_moons"              : 20
+            "max_combined_mass_of_moons" : 0.033
+            "description"                : Huge_Gas_Giant
+        }
+        "L":{
+            "rotational_multiplier"      : 0.66
+            "diameter_base"              : 20
+            "diameter_variation"         : 10
+            "diameter_multiplier"        : 10000
+            "density_base"               : 1.55
+            "density_variation"          : 0.75
+            "max_axial_tilt"             : 72
+            "max_num_moons"              : 10
+            "max_combined_mass_of_moons" : 0.333
+            "description"                : Large_Gas_Giant
+        }
+        "G":{
+            "rotational_multiplier"      : 0.66
+            "diameter_base"              : 6
+            "diameter_variation"         : 4
+            "diameter_multiplier"        : 10000
+            "density_base"               : 1.55
+            "density_variation"          : 0.75
+            "max_axial_tilt"             : 90
+            "max_num_moons"              : 6
+            "max_combined_mass_of_moons" : 3.333
+            "description"                : Gas_Giant
+        }
+        "T":{
+            "rotational_multiplier"      : 0.33
+            "diameter_base"              : 120
+            "diameter_variation"         : 60
+            "diameter_multiplier"        : 100
+            "density_base"               : 4.55
+            "density_variation"          : 3.25
+            "max_axial_tilt"             : 64
+            "max_num_moons"              : 4
+            "max_combined_mass_of_moons" : 3.333
+            "description"                : Terrestrial
+        }
+        "E":{
+            "rotational_multiplier"      : 0.33
+            "diameter_base"              : 13
+            "diameter_variation"         : 3
+            "diameter_multiplier"        : 1000
+            "density_base"               : 5.55
+            "density_variation"          : 1.75
+            "max_axial_tilt"             : 50
+            "max_num_moons"              : 4
+            "max_combined_mass_of_moons" : 33.333
+            "description"                : Earth-like
+        }
+    }
+    "atmos_table": {
+        "*early": {
+            "Hydrogen":1
+            "Methane":2
+            "Methane+Ammonia":5
+        }
+        "*lifeless": {
+            "Nitrogen+Carbon-Dioxyde":7
+            "Fluorine-Compounds":9
+            "Chlorine-Compounds":11
+            "Sulfide-Compounds":13
+        }
+        "*life": {
+            "Nitrogen+Oxygen":3
+            "Fluorine-Compounds":1
+            "Chlorine-Compounds":1
+        }
+        "*late":{
+            "Nitrogen+Carbon-Dioxyde":3
+            "Nitrogen+Fluorine":1
+            "Nitrogen+Chlorine":1
+        }
+        "*R":{
+            "*early":2
+            "*lifeless":4
+            "*late":9
+            "None":5
+        }
+        "*T":{
+            "*early":2
+            "*lifeless":11
+            "*late":6
+            "None":1
+        }
+        "*E":{
+            "*early":2
+            "*life":13
+            "*late":4
+            "None":1
+        }
+    }
+}
+/*
+O-Type Stars: O-type stars are extremely hot and massive stars. They are among the most luminous and brightest stars in the universe. O-type stars emit a significant amount of ultraviolet radiation and have prominent spectral lines of ionized helium and other heavy elements.
+
+B-Type Stars: B-type stars are also hot and massive, though slightly cooler than O-type stars. They emit a high amount of ultraviolet radiation and have prominent spectral lines of neutral helium. B-type stars are known for their blue-white color and are typically brighter than the Sun.
+
+A-Type Stars: A-type stars are relatively hot and bright. They emit a significant amount of visible light and have strong spectral lines of ionized metals, such as hydrogen, helium, and calcium. A-type stars are typically white or bluish-white in color and have a shorter lifespan compared to cooler stars.
+
+F-Type Stars: F-type stars are hotter than the Sun but cooler than A-type stars. They emit a moderate amount of visible light and have prominent spectral lines of ionized metals. F-type stars are typically yellow-white in color and have a longer lifespan than A-type stars.
+
+G-Type Stars: G-type stars, like our Sun, are yellow stars that emit a moderate amount of visible light. They have prominent spectral lines of neutral metals like iron and calcium. G-type stars are often referred to as "yellow dwarfs" and are considered to be relatively stable and long-lived.
+
+K-Type Stars: K-type stars are cooler and less massive than G-type stars. They emit a smaller amount of visible light and have prominent spectral lines of neutral metals like sodium and potassium. K-type stars are typically orange in color and have longer lifespans than G-type stars.
+
+M-Type Stars: M-type stars are the coolest and least massive stars. They emit very little visible light and have strong spectral lines of neutral metals like titanium and iron. M-type stars are often referred to as "red dwarfs" and are the most common type of star in the universe.
+
+R-Type Stars: R-type stars are a type of variable star known as a "carbon star." They have a unique spectral signature characterized by strong molecular bands of carbon compounds. R-type stars are typically red in color and are known for their irregular brightness variations.
+*/

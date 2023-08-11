@@ -13,7 +13,7 @@ public class TestSimplex {
         for(INoise _rng : Arrays.asList(RandyUtil.simplexNoise(0x1ee7b33f)))
         {
             TestUtil.testAll(_rng);
-            TestUtil.test2d(_rng);
+            TestUtil.test2d(_rng,"simplexNoise");
         }
     }
 }

@@ -7,7 +7,17 @@ public class ArcRand {
     int[] _ctx;
     int _a, _b;
 
-    public static ArcRand from(long _seed)
+    boolean vmpcMode=true;
+
+    public boolean isVmpcMode() {
+        return vmpcMode;
+    }
+
+    public void setVmpcMode(boolean vmpcMode) {
+        this.vmpcMode = vmpcMode;
+    }
+
+    public static ArcRand from(long... _seed)
     {
         ArcRand _rand = new ArcRand();
         _rand.init();
@@ -15,7 +25,7 @@ public class ArcRand {
         return _rand;
     }
 
-    public static ArcRand from(int _seed)
+    public static ArcRand from(int... _seed)
     {
         ArcRand _rand = new ArcRand();
         _rand.init();
@@ -42,64 +52,37 @@ public class ArcRand {
 
     public void bitfeed(int... _seeds)
     {
-        for(int _seed : _seeds)
+        byte[] _buf = new byte[_seeds.length*4];
+        for(int _i = 0; _i<_seeds.length; _i++)
         {
-            while((_seed & 0x7fffffff)>0)
-            {
-                this._a += (_seed & 0xf);
-                for(int _i = 0 ; _i<256; _i++)
-                {
-                    this.next();
-                }
-                _seed>>>=4;
-                this._b += (_seed & 0xf);
-                for(int _i = 0 ; _i<256; _i++)
-                {
-                    this.next();
-                }
-                _seed>>>=4;
-            }
+            _buf[(_i*4)] = (byte) ((_seeds[_i]>>>24) & 0xff);
+            _buf[(_i*4)+1] = (byte) ((_seeds[_i]>>>16) & 0xff);
+            _buf[(_i*4)+2] = (byte) ((_seeds[_i]>>>8) & 0xff);
+            _buf[(_i*4)+3] = (byte) ((_seeds[_i]) & 0xff);
         }
+        this.ksa(_buf);
     }
 
     public void bitfeed(long... _seeds)
     {
-        for(long _seed : _seeds)
+        byte[] _buf = new byte[_seeds.length*8];
+        for(int _i = 0; _i<_seeds.length; _i++)
         {
-            while((_seed & (0x7fffffffffffffffL))>0)
-            {
-                this._a += (_seed & 0xf);
-                for(int _i = 0 ; _i<256; _i++)
-                {
-                    this.next();
-                }
-                _seed>>>=4;
-                this._b += (_seed & 0xf);
-                for(int _i = 0 ; _i<256; _i++)
-                {
-                    this.next();
-                }
-                _seed>>>=4;
-            }
+            _buf[(_i*8)] = (byte) ((_seeds[_i]>>>56) & 0xff);
+            _buf[(_i*8)+1] = (byte) ((_seeds[_i]>>>48) & 0xff);
+            _buf[(_i*8)+2] = (byte) ((_seeds[_i]>>>40) & 0xff);
+            _buf[(_i*8)+3] = (byte) ((_seeds[_i]>>>32) & 0xff);
+            _buf[(_i*8)+4] = (byte) ((_seeds[_i]>>>24) & 0xff);
+            _buf[(_i*8)+5] = (byte) ((_seeds[_i]>>>16) & 0xff);
+            _buf[(_i*8)+6] = (byte) ((_seeds[_i]>>>8) & 0xff);
+            _buf[(_i*8)+7] = (byte) ((_seeds[_i]) & 0xff);
         }
+        this.ksa(_buf);
     }
 
     public void bitfeed(byte[] _seeds)
     {
-        for(byte _seed : _seeds)
-        {
-            this._a += (_seed & 0xf);
-            for(int _i = 0 ; _i<256; _i++)
-            {
-                this.next();
-            }
-            _seed>>>=4;
-            this._b += (_seed & 0xf);
-            for(int _i = 0 ; _i<256; _i++)
-            {
-                this.next();
-            }
-        }
+        this.ksa(_seeds);
     }
 
     public void init()
@@ -111,17 +94,85 @@ public class ArcRand {
         }
     }
 
+    public void ksa(byte[] key)
+    {
+        if(this.vmpcMode)
+        {
+            this._a = 0;
+            for(int _i=0 ; _i<768; _i++)
+            {
+                this._a = this._ctx[(this._a + this._ctx[_i & 0xff]+ key[_i % key.length]) & 0xff];
+                int _t = this._ctx[_i & 0xff];
+                this._ctx[_i & 0xff] = this._ctx[this._a & 0xff];
+                this._ctx[this._a & 0xff] = _t;
+            }
+            this._b = 0;
+        }
+        else
+        {
+            int _j = 0;
+            for(int _i=0 ; _i<256; _i++)
+            {
+                _j = (_j + this._ctx[_i] + key[_i % key.length]) & 0xff;
+                int _t = this._ctx[_i];
+                this._ctx[_i] = this._ctx[_j];
+                this._ctx[_j] = _t;
+            }
+        }
+    }
+
+    public void ksax(byte[] key)
+    {
+        if(this.vmpcMode)
+        {
+            this._a = 0;
+            for(int _i=0 ; _i<768; _i++)
+            {
+                this._a = this._ctx[(this._a + this._ctx[_i & 0xff]+ key[_i % key.length]) & 0xff];
+                int _t = this._ctx[_i & 0xff];
+                this._ctx[_i & 0xff] = this._ctx[this._a & 0xff];
+                this._ctx[this._a & 0xff] = _t;
+            }
+            this._b = 0;
+        }
+        else
+        {
+            int _j = 0;
+            for(int _i=0 ; _i<4096; _i++)
+            {
+                _j = (_j + this._ctx[_i & 0xff] + key[_i % key.length]) & 0xff;
+                int _t = this._ctx[_i & 0xff];
+                this._ctx[_i & 0xff] = this._ctx[_j];
+                this._ctx[_j] = _t;
+            }
+        }
+    }
+
     public int next()
     {
-        this._a = (this._a+1) & 0xff;
-        this._b= (this._b+this._ctx[this._a]) & 0xff;
+        if(this.vmpcMode)
+        {
+            this._a = this._ctx[(this._a + this._ctx[this._b & 0xff]) & 0xff];
+            int _ret = this._ctx[(this._ctx[this._ctx[this._a & 0xff] & 0xff]+1) & 0xff];
+            int _t = this._ctx[this._b & 0xff];
+            this._ctx[this._b & 0xff] = this._ctx[this._a & 0xff];
+            this._ctx[this._a & 0xff] = _t;
 
-        int _t = this._ctx[this._b];
-        this._ctx[this._b] = this._ctx[this._a];
-        this._ctx[this._a] = _t;
+            this._b = (this._b+1) & 0xff;
+            return _ret;
+        }
+        else
+        {
+            this._a = (this._a+1) & 0xff;
+            this._b= (this._b+this._ctx[this._a]) & 0xff;
 
-        int _ret = this._ctx[(this._ctx[this._b] + this._ctx[this._a]) & 0xff];
-        return _ret;
+            int _t = this._ctx[this._b];
+            this._ctx[this._b] = this._ctx[this._a];
+            this._ctx[this._a] = _t;
+
+            int _ret = this._ctx[(this._ctx[this._b] + this._ctx[this._a]) & 0xff];
+            return _ret;
+        }
     }
 
     public int next16()

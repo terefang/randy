@@ -2,19 +2,17 @@ package fract;
 
 import com.github.terefang.randy.RandyUtil;
 import com.github.terefang.randy.fractal.IFractal;
-import com.github.terefang.randy.fractal.MusgraveHeteroTerrainFractal;
 import com.github.terefang.randy.nfield.NoiseField;
 import com.github.terefang.randy.nfield.NoiseFieldUtil;
 import com.github.terefang.randy.noise.INoise;
 import com.github.terefang.randy.noise.NoiseUtil;
 import lombok.SneakyThrows;
-import util.BmpFont;
+import com.github.terefang.randy.utils.BmpFont;
+import util.TestUtil;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -32,32 +30,7 @@ public class TestBillow {
     public static void main(String[] args) {
         ExecutorService _EX = Executors.newFixedThreadPool(8);
         long _seed = NoiseUtil.BASE_SEED1;
-        List<INoise> _stypes = Arrays.asList(
-                RandyUtil.perlinNoise(_seed, NoiseUtil.QUINTIC),
-                RandyUtil.perlinNoise(_seed, NoiseUtil.HERMITE),
-                RandyUtil.perlinNoise(_seed, NoiseUtil.LINEAR),
-                RandyUtil.simplexNoise(_seed),
-                RandyUtil.cellMergeNoise(_seed, NoiseUtil.EUCLIDEAN, NoiseUtil.BASE_SHARPNESS*.8),
-                RandyUtil.cellMergeNoise(_seed, NoiseUtil.MANHATTAN, NoiseUtil.BASE_SHARPNESS*.8),
-                RandyUtil.cellMergeNoise(_seed, NoiseUtil.NATURAL, NoiseUtil.BASE_SHARPNESS*.8),
-                RandyUtil.cubicNoise(_seed, NoiseUtil.BASE_HARSHNESS),
-                RandyUtil.lumpNoise(_seed, NoiseUtil.BASE_HARSHNESS),
-                RandyUtil.honeyNoise(_seed, NoiseUtil.QUINTIC),
-                RandyUtil.honeyNoise(_seed, NoiseUtil.HERMITE),
-                RandyUtil.honeyNoise(_seed, NoiseUtil.LINEAR),
-                RandyUtil.solidNoise(_seed, NoiseUtil.QUINTIC),
-                RandyUtil.solidNoise(_seed, NoiseUtil.HERMITE),
-                RandyUtil.solidNoise(_seed, NoiseUtil.LINEAR),
-                RandyUtil.valueNoise(_seed, NoiseUtil.QUINTIC),
-                RandyUtil.valueNoise(_seed, NoiseUtil.HERMITE),
-                RandyUtil.valueNoise(_seed, NoiseUtil.LINEAR)
-        );
-        List<INoise> _types = new Vector<>();
-        _types.addAll(_stypes);
-        _stypes.forEach((_t) -> { _types.add(RandyUtil.foamNoise(_t,-2L^_seed, NoiseUtil.BASE_SHARPNESS)); });
-        //_stypes.forEach((_t) -> { _types.add(RandyUtil.blurNoise(_t, -2L^_seed, NoiseUtil.LINEAR, 1.8)); });
-        //_stypes.forEach((_t) -> { _types.add(RandyUtil.blurNoise(_t, -2L^_seed, NoiseUtil.HERMITE, 1.8)); });
-        //_stypes.forEach((_t) -> { _types.add(RandyUtil.blurNoise(_t, -2L^_seed, NoiseUtil.QUINTIC, 1.8)); });
+        List<INoise> _types = TestUtil.setupNoises(_seed);
         for(final float _h : _H)
         {
             for(final float _freq : _FREQ)

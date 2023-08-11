@@ -4,7 +4,128 @@ import java.awt.*;
 
 public abstract class NoiseUtil extends AbstractNoise
 {
-    public int makeSeedInt(long s) {
+    // ----------------------------------------------------------------------------
+
+    public static double[] singleGradientPerturb2(int interpolation, int seed, double perturbAmp, double frequency, double[] v2)
+    {
+        double xf = v2[0] * frequency;
+        double yf = v2[1] * frequency;
+
+        int x0 = fastFloor(xf);
+        int y0 = fastFloor(yf);
+        int x1 = x0 + 1;
+        int y1 = y0 + 1;
+
+        double xs, ys;
+        switch (interpolation) {
+            default:
+            case LINEAR:
+                xs = xf - x0;
+                ys = yf - y0;
+                break;
+            case HERMITE:
+                xs = hermiteInterpolator(xf - x0);
+                ys = hermiteInterpolator(yf - y0);
+                break;
+            case QUINTIC:
+                xs = quinticInterpolator(xf - x0);
+                ys = quinticInterpolator(yf - y0);
+                break;
+        }
+
+        double2 vec0 = CELL_2D[hash256(x0, y0, seed)];
+        double2 vec1 = CELL_2D[hash256(x1, y0, seed)];
+
+        double lx0x = lerp(vec0.x, vec1.x, xs);
+        double ly0x = lerp(vec0.y, vec1.y, xs);
+
+        vec0 = CELL_2D[hash256(x0, y1, seed)];
+        vec1 = CELL_2D[hash256(x1, y1, seed)];
+
+        double lx1x = lerp(vec0.x, vec1.x, xs);
+        double ly1x = lerp(vec0.y, vec1.y, xs);
+
+        v2[0] += lerp(lx0x, lx1x, ys) * perturbAmp;
+        v2[1] += lerp(ly0x, ly1x, ys) * perturbAmp;
+
+        return v2;
+    }
+
+    public static double[] singleGradientPerturb3(int interpolation, int seed, double perturbAmp, double frequency, double[] v3)
+    {
+        double xf = v3[0] * frequency;
+        double yf = v3[1] * frequency;
+        double zf = v3[2] * frequency;
+
+        int x0 = fastFloor(xf);
+        int y0 = fastFloor(yf);
+        int z0 = fastFloor(zf);
+        int x1 = x0 + 1;
+        int y1 = y0 + 1;
+        int z1 = z0 + 1;
+
+        double xs, ys, zs;
+        switch (interpolation) {
+            default:
+            case LINEAR:
+                xs = xf - x0;
+                ys = yf - y0;
+                zs = zf - z0;
+                break;
+            case HERMITE:
+                xs = hermiteInterpolator(xf - x0);
+                ys = hermiteInterpolator(yf - y0);
+                zs = hermiteInterpolator(zf - z0);
+                break;
+            case QUINTIC:
+                xs = quinticInterpolator(xf - x0);
+                ys = quinticInterpolator(yf - y0);
+                zs = quinticInterpolator(zf - z0);
+                break;
+        }
+
+        double3 vec0 = CELL_3D[hash256(x0, y0, z0, seed)];
+        double3 vec1 = CELL_3D[hash256(x1, y0, z0, seed)];
+
+        double lx0x = lerp(vec0.x, vec1.x, xs);
+        double ly0x = lerp(vec0.y, vec1.y, xs);
+        double lz0x = lerp(vec0.z, vec1.z, xs);
+
+        vec0 = CELL_3D[hash256(x0, y1, z0, seed)];
+        vec1 = CELL_3D[hash256(x1, y1, z0, seed)];
+
+        double lx1x = lerp(vec0.x, vec1.x, xs);
+        double ly1x = lerp(vec0.y, vec1.y, xs);
+        double lz1x = lerp(vec0.z, vec1.z, xs);
+
+        double lx0y = lerp(lx0x, lx1x, ys);
+        double ly0y = lerp(ly0x, ly1x, ys);
+        double lz0y = lerp(lz0x, lz1x, ys);
+
+        vec0 = CELL_3D[hash256(x0, y0, z1, seed)];
+        vec1 = CELL_3D[hash256(x1, y0, z1, seed)];
+
+        lx0x = lerp(vec0.x, vec1.x, xs);
+        ly0x = lerp(vec0.y, vec1.y, xs);
+        lz0x = lerp(vec0.z, vec1.z, xs);
+
+        vec0 = CELL_3D[hash256(x0, y1, z1, seed)];
+        vec1 = CELL_3D[hash256(x1, y1, z1, seed)];
+
+        lx1x = lerp(vec0.x, vec1.x, xs);
+        ly1x = lerp(vec0.y, vec1.y, xs);
+        lz1x = lerp(vec0.z, vec1.z, xs);
+
+        v3[0] += lerp(lx0y, lerp(lx0x, lx1x, ys), zs) * perturbAmp;
+        v3[1] += lerp(ly0y, lerp(ly0x, ly1x, ys), zs) * perturbAmp;
+        v3[2] += lerp(lz0y, lerp(lz0x, lz1x, ys), zs) * perturbAmp;
+
+        return v3;
+    }
+
+    // ----------------------------------------------------------------------------
+
+    public static int makeSeedInt(long s) {
         return (int) ((s & 0xffffffffL) ^ ((s>>>32) & 0xffffffffL));
     }
     // ----------------------------------------------------------------------------
@@ -176,7 +297,7 @@ public abstract class NoiseUtil extends AbstractNoise
     public static final int DISTANCE_2_DIV = 7;
 
 
-    protected static int fastFloor(double f) {
+    public static int fastFloor(double f) {
         return (f >= 0 ? (int) f : (int) f - 1);
     }
 
@@ -364,6 +485,33 @@ public abstract class NoiseUtil extends AbstractNoise
             this.x = x;
             this.y = y;
         }
+
+        public final double2 comp(int a,int b)
+        {
+            double _ret1,_ret2,_ret3;
+            switch (a)
+            {
+                case 1:_ret1 = this.y;
+                    break;
+                case 0:
+                default: _ret1 = this.x;
+                    break;
+            }
+            switch (b)
+            {
+                case 1:_ret2 = this.y;
+                    break;
+                case 0:
+                default: _ret2 = this.x;
+                    break;
+            }
+            return new double2(_ret1,_ret2);
+        }
+
+        public final double2 normal(double a,double b)
+        {
+            return new double2(this.x*a+b, this.y*a+b);
+        }
     }
 
     /**
@@ -377,6 +525,290 @@ public abstract class NoiseUtil extends AbstractNoise
             this.x = x;
             this.y = y;
             this.z = z;
+        }
+
+        public final double3 normal(double a,double b)
+        {
+            return new double3(this.x*a+b, this.y*a+b, this.z*a+b);
+        }
+
+        public final double3 comp(int a,int b,int c)
+        {
+            double _ret1,_ret2,_ret3;
+            switch (a)
+            {
+                case 2:_ret1 = this.z;
+                    break;
+                case 1:_ret1 = this.y;
+                    break;
+                case 0:
+                default: _ret1 = this.x;
+                    break;
+            }
+            switch (b)
+            {
+                case 2:_ret2 = this.z;
+                    break;
+                case 1:_ret2 = this.y;
+                    break;
+                case 0:
+                default: _ret2 = this.x;
+                    break;
+            }
+            switch (c)
+            {
+                case 2:_ret3 = this.z;
+                    break;
+                case 1:_ret3 = this.y;
+                    break;
+                case 0:
+                default: _ret3 = this.x;
+                    break;
+            }
+            return new double3(_ret1,_ret2,_ret3);
+        }
+
+        public final double2 comp(int a,int b)
+        {
+            double _ret1,_ret2,_ret3;
+            switch (a)
+            {
+                case 2:_ret1 = this.z;
+                    break;
+                case 1:_ret1 = this.y;
+                    break;
+                case 0:
+                default: _ret1 = this.x;
+                    break;
+            }
+            switch (b)
+            {
+                case 2:_ret2 = this.z;
+                    break;
+                case 1:_ret2 = this.y;
+                    break;
+                case 0:
+                default: _ret2 = this.x;
+                    break;
+            }
+            return new double2(_ret1,_ret2);
+        }
+    }
+
+    public static final class int4 {
+        public final int x, y, z, w;
+
+        public int4(int x, int y, int z, int w) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.w = w;
+        }
+
+        public final int4 comp(int a, int b, int c, int d) {
+            int _ret1, _ret2, _ret3, _ret4;
+            switch (a) {
+                case 3:
+                    _ret1 = this.w;
+                    break;
+                case 2:
+                    _ret1 = this.z;
+                    break;
+                case 1:
+                    _ret1 = this.y;
+                    break;
+                case 0:
+                default:
+                    _ret1 = this.x;
+                    break;
+            }
+            switch (b) {
+                case 3:
+                    _ret2 = this.w;
+                    break;
+                case 2:
+                    _ret2 = this.z;
+                    break;
+                case 1:
+                    _ret2 = this.y;
+                    break;
+                case 0:
+                default:
+                    _ret2 = this.x;
+                    break;
+            }
+            switch (c) {
+                case 3:
+                    _ret3 = this.w;
+                    break;
+                case 2:
+                    _ret3 = this.z;
+                    break;
+                case 1:
+                    _ret3 = this.y;
+                    break;
+                case 0:
+                default:
+                    _ret3 = this.x;
+                    break;
+            }
+            switch (d) {
+                case 3:
+                    _ret4 = this.w;
+                    break;
+                case 2:
+                    _ret4 = this.z;
+                    break;
+                case 1:
+                    _ret4 = this.y;
+                    break;
+                case 0:
+                default:
+                    _ret4 = this.x;
+                    break;
+            }
+            return new int4(_ret1, _ret2, _ret3, _ret4);
+        }
+    }
+        public static final class double4 {
+            public final double x, y, z, w;
+
+            public final double4 normal(double a,double b)
+            {
+                return new double4(this.x*a+b, this.y*a+b, this.z*a+b, this.w*a+b);
+            }
+
+            public double4(double x, double y, double z, double w) {
+                this.x = x;
+                this.y = y;
+                this.z = z;
+                this.w = w;
+            }
+
+            public final double4 comp(int a, int b, int c, int d)
+            {
+                double _ret1,_ret2,_ret3,_ret4;
+                switch (a)
+                {
+                    case 3:_ret1 = this.w;
+                        break;
+                    case 2:_ret1 = this.z;
+                        break;
+                    case 1:_ret1 = this.y;
+                        break;
+                    case 0:
+                    default: _ret1 = this.x;
+                        break;
+                }
+                switch (b)
+                {
+                    case 3:_ret2 = this.w;
+                        break;
+                    case 2:_ret2 = this.z;
+                        break;
+                    case 1:_ret2 = this.y;
+                        break;
+                    case 0:
+                    default: _ret2 = this.x;
+                        break;
+                }
+                switch (c)
+                {
+                    case 3:_ret3 = this.w;
+                        break;
+                    case 2:_ret3 = this.z;
+                        break;
+                    case 1:_ret3 = this.y;
+                        break;
+                    case 0:
+                    default: _ret3 = this.x;
+                        break;
+                }
+                switch (d)
+                {
+                    case 3:_ret4 = this.w;
+                        break;
+                    case 2:_ret4 = this.z;
+                        break;
+                    case 1:_ret4 = this.y;
+                        break;
+                    case 0:
+                    default: _ret4 = this.x;
+                        break;
+                }
+                return new double4(_ret1,_ret2,_ret3,_ret4);
+            }
+
+        public final double3 comp(int a,int b,int c)
+        {
+            double _ret1,_ret2,_ret3;
+            switch (a)
+            {
+                case 3:_ret1 = this.w;
+                    break;
+                case 2:_ret1 = this.z;
+                    break;
+                case 1:_ret1 = this.y;
+                    break;
+                case 0:
+                default: _ret1 = this.x;
+                    break;
+            }
+            switch (b)
+            {
+                case 3:_ret2 = this.w;
+                    break;
+                case 2:_ret2 = this.z;
+                    break;
+                case 1:_ret2 = this.y;
+                    break;
+                case 0:
+                default: _ret2 = this.x;
+                    break;
+            }
+            switch (c)
+            {
+                case 3:_ret3 = this.w;
+                    break;
+                case 2:_ret3 = this.z;
+                    break;
+                case 1:_ret3 = this.y;
+                    break;
+                case 0:
+                default: _ret3 = this.x;
+                    break;
+            }
+            return new double3(_ret1,_ret2,_ret3);
+        }
+
+        public final double2 comp(int a,int b)
+        {
+            double _ret1,_ret2,_ret3;
+            switch (a)
+            {
+                case 3:_ret1 = this.w;
+                    break;
+                case 2:_ret1 = this.z;
+                    break;
+                case 1:_ret1 = this.y;
+                    break;
+                case 0:
+                default: _ret1 = this.x;
+                    break;
+            }
+            switch (b)
+            {
+                case 3:_ret2 = this.w;
+                    break;
+                case 2:_ret2 = this.z;
+                    break;
+                case 1:_ret2 = this.y;
+                    break;
+                case 0:
+                default: _ret2 = this.x;
+                    break;
+            }
+            return new double2(_ret1,_ret2);
         }
     }
 
@@ -1806,12 +2238,12 @@ public abstract class NoiseUtil extends AbstractNoise
     public static int BASE_SEED3 = 0xd1ceB33f;
     public static int BASE_OCTAVES = 8;
     public static double BASE_MUTATION = 0f;
-    public static double BASE_SHARPNESS = 1f;
-    public static double BASE_FREQUENCY = 0.03125f;
-    public static double BASE_LACUNARITY = 2f;
+    public static double BASE_SHARPNESS = .987654321;
+    public static double BASE_FREQUENCY = 1.3125;
+    public static double BASE_LACUNARITY = 1./1.987654321;
     public static double BASE_HARSHNESS = (double) HARSH;
-    public static double BASE_H = 1.9f;
-    public static double BASE_GAIN = 0.5f;
+    public static double BASE_H = 1.987654321;
+    public static double BASE_GAIN = 0.54321;
     public static double BASE_OFFSET = 0f;
     public static boolean BASE_SEED_VARIATION = false;
 
@@ -1876,4 +2308,113 @@ public abstract class NoiseUtil extends AbstractNoise
 
         return checkInteger(_str.toString());
     }
+
+    public static final double dot(double2 a,double2 b)
+    {
+        return a.x*b.x + a.y*b.y;
+    }
+
+    public static final double dot(double ax,double ay,double bx,double by)
+    {
+        return ax*bx + ay*by;
+    }
+
+    public static final double dot(double3 a,double3 b)
+    {
+        return a.x*b.x + a.y*b.y + a.z*b.z;
+    }
+
+    public static final double dot(double ax,double ay,double az,double bx,double by,double bz)
+    {
+        return ax*bx + ay*by + az*bz;
+    }
+
+    public static final double dot(double4 a,double4 b)
+    {
+        return a.x*b.x + a.y*b.y + a.z*b.z + a.w*b.w;
+    }
+
+    public static final double dot(double ax,double ay,double az,double aw,double bx,double by,double bz,double bw)
+    {
+        return ax*bx + ay*by + az*bz + aw*bw;
+    }
+
+    public static final double3 cross(double3 a, double3 b)
+    {
+        return new double3(
+                a.y * b.z - a.z * b.y,
+                a.z * b.x - a.x * b.z,
+                a.x * b.y - a.y * b.x
+        );
+    }
+
+    public static final double3 cross(double ax,double ay,double az,double bx,double by,double bz)
+    {
+        return new double3(
+                ay * bz - az * by,
+                az * bx - ax * bz,
+                ax * by - ay * bx
+        );
+    }
+
+    public static final double3 lerp(double ax,double ay,double az,double bx,double by,double bz, double w)
+    {
+        return new double3(
+                lerp(ax, bx, w),
+                lerp(ay, by, w),
+                lerp(az, bz, w)
+        );
+    }
+
+    public static final double4 lerp(double ax,double ay,double az,double aw,double bx,double by,double bz,double bw, double w)
+    {
+        return new double4(
+                lerp(ax, bx, w),
+                lerp(ay, by, w),
+                lerp(az, bz, w),
+                lerp(aw, bw, w)
+        );
+    }
+
+    public static final double2 lerp(double ax,double ay,double bx,double by, double w)
+    {
+        return new double2(
+                lerp(ax, bx, w),
+                lerp(ay, by, w)
+        );
+    }
+
+    public static final double4 lerp(double4 a,double4 b, double w)
+    {
+        return new double4(
+                lerp(a.x, b.x, w),
+                lerp(a.y, b.y, w),
+                lerp(a.z, b.z, w),
+                lerp(a.w, b.w, w)
+        );
+    }
+
+    public static final double3 lerp(double3 a,double3 b, double w)
+    {
+        return new double3(
+                lerp(a.x, b.x, w),
+                lerp(a.y, b.y, w),
+                lerp(a.z, b.z, w)
+        );
+    }
+
+    public static final double2 lerp(double2 a,double2 b, double w)
+    {
+        return new double2(
+                lerp(a.x, b.x, w),
+                lerp(a.y, b.y, w)
+        );
+    }
+
+    public static final double lerp(double2 a, double w)
+    {
+        return lerp(a.x, a.y, w);
+    }
+
+
 }

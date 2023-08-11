@@ -52,7 +52,7 @@ public class TestCellular {
         ))
         {
             TestUtil.testAll(_rng);
-            TestUtil.test2d(_rng);
+            TestUtil.test2d(_rng,"cellularNoise");
         }
     }
 }
