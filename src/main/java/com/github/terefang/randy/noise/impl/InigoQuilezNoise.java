@@ -25,7 +25,7 @@ public class InigoQuilezNoise extends NoiseUtil implements INoise
         {
             for(int _i = 0; _i<6; _i++)
             {
-                this._loot[_j][_i]=_x%10.0;
+                this._loot[_j][_i]=(_x%10.0)/10.;
                 _x+=Math.PI;
             }
         }
@@ -59,11 +59,13 @@ public class InigoQuilezNoise extends NoiseUtil implements INoise
 
     @Override
     public double _noise1(long seed, double x, int interpolation) {
-        double qx = this.mDomain().noise2(x,this.getMutation());
+        double qx = this.mDomain().noise2(x+this._loot[0][0],this.getMutation());
 
         double rx = this.mDomain().noise2(x+(this.getHarshness()*qx)+this._loot[6][0],this.getMutation());
 
-        return SimplexNoise.singleSimplex(false, makeSeedInt(seed), x+this.getHarshness()*rx,this.getMutation());
+        return SimplexNoise.singleSimplex(false, makeSeedInt(seed),
+                x+this.getHarshness()*rx,
+                this.getMutation());
     }
 
     @Override
@@ -279,33 +281,5 @@ public class InigoQuilezNoise extends NoiseUtil implements INoise
                         this.getMutation());
     }
 
-    static double[][] _LOOT = {
-            { 5.2300, 8.3716, 1.5132, 4.6548, 7.7964, 0.9380, },
-            { 4.0796, 7.2211, 0.3627, 3.5043, 6.6459, 9.7875, },
-            { 2.9291, 6.0707, 9.2123, 2.3539, 5.4955, 8.6371, },
-            { 1.7787, 4.9203, 8.0619, 1.2034, 4.3450, 7.4866, },
-            { 0.6282, 3.7698, 6.9114, 0.0530, 3.1946, 6.3362, },
-            { 9.4778, 2.6194, 5.7610, 8.9026, 2.0442, 5.1857, },
-            { 8.3273, 1.4689, 4.6105, 7.7521, 0.8937, 4.0353, },
-            { 7.1769, 0.3185, 3.4601, 6.6017, 9.7433, 2.8849, },
-            { 6.0264, 9.1680, 2.3096, 5.4512, 8.5928, 1.7344, },
-            { 4.8760, 8.0176, 1.1592, 4.3008, 7.4424, 0.5840, },
-            { 3.7256, 6.8672, 0.0087, 3.1503, 6.2919, 9.4335, },
-            { 2.5751, 5.7167, 8.8583, 1.9999, 5.1415, 8.2831, },
-    };
 
-    public static void main(String[] args) {
-        // calculating LOOT array
-        double _x = 5.23;
-        for(int _j = 0; _j<12; _j++)
-        {
-            System.out.print("{ ");
-            for(int _i = 0; _i<6; _i++)
-            {
-                System.out.printf("%.4f, ", _x%10.0);
-                _x+=Math.PI;
-            }
-            System.out.println("},");
-        }
-    }
 }

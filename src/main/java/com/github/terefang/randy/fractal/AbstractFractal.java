@@ -1,16 +1,17 @@
 package com.github.terefang.randy.fractal;
 
 import com.github.terefang.randy.noise.INoise;
+import com.github.terefang.randy.noise.NoiseUtil;
 
 public class AbstractFractal
 {
     double offset;
-    double H;
-    int octaves;
-    double frequency;
-    double lacunarity;
-    double gain;
-    boolean vseed;
+    double H = NoiseUtil.BASE_H;
+    int octaves = NoiseUtil.BASE_OCTAVES;
+    double frequency = NoiseUtil.BASE_FREQUENCY;
+    double lacunarity = NoiseUtil.BASE_LACUNARITY;
+    double gain = NoiseUtil.BASE_GAIN;
+    boolean vseed = true;
 
     public double getOffset() {
         return offset;

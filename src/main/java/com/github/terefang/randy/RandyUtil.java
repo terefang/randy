@@ -177,6 +177,56 @@ public class RandyUtil {
         return _rng;
     }
 
+    public static BrownianMotionFractal bmFractal(INoise _type, double _freq, double _H, double _lacu)
+    {
+        BrownianMotionFractal _rng = new BrownianMotionFractal();
+        _rng.setNoise(_type);
+        _rng.setFrequency(_freq);
+        _rng.setH(_H);
+        _rng.setLacunarity(_lacu);
+        return _rng;
+    }
+
+    public static DistortFractal distortFractal(INoise _type, double _freq, double _H, double _lacu)
+    {
+        DistortFractal _rng = new DistortFractal();
+        _rng.setNoise(_type);
+        _rng.setFrequency(_freq);
+        _rng.setH(_H);
+        _rng.setLacunarity(_lacu);
+        return _rng;
+    }
+
+    public static MultiFractal multiFractal(INoise _type, double _freq, double _H, double _lacu)
+    {
+        MultiFractal _rng = new MultiFractal();
+        _rng.setNoise(_type);
+        _rng.setFrequency(_freq);
+        _rng.setH(_H);
+        _rng.setLacunarity(_lacu);
+        return _rng;
+    }
+
+    public static RidgedMultiFractal ridgedMultiFractal(INoise _type, double _freq, double _H, double _lacu)
+    {
+        RidgedMultiFractal _rng = new RidgedMultiFractal();
+        _rng.setNoise(_type);
+        _rng.setFrequency(_freq);
+        _rng.setH(_H);
+        _rng.setLacunarity(_lacu);
+        return _rng;
+    }
+
+    public static MusgraveFractal musgraveFractal(INoise _type, double _freq, double _H, double _lacu)
+    {
+        MusgraveFractal _rng = new MusgraveFractal();
+        _rng.setNoise(_type);
+        _rng.setFrequency(_freq);
+        _rng.setH(_H);
+        _rng.setLacunarity(_lacu);
+        return _rng;
+    }
+
     public static MusgraveHeteroTerrainFractal musgraveHeteroTerrainFractal(INoise _type, double _freq, double _H, double _lacu)
     {
         MusgraveHeteroTerrainFractal _rng = new MusgraveHeteroTerrainFractal();

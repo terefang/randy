@@ -416,8 +416,6 @@ public class TestUtil {
         List<INoise> _types = new Vector<>();
         _types.addAll(setupBaseNoises(_seed));
         setupBaseNoises(_seed).forEach((_t) -> { _types.add(RandyUtil.foamNoise(_t,-2L^_seed, NoiseUtil.BASE_SHARPNESS)); });
-        new Vector<INoise>(_types).forEach((_t) -> { _types.add(RandyUtil.dwxNoise(_seed, NoiseUtil.BASE_HARSHNESS, _t)); });
-        _types.add(RandyUtil.dwxNoise(_seed, NoiseUtil.BASE_HARSHNESS));
         return _types;
     }
     public static List<INoise> setupBaseNoises(long _seed)
@@ -427,6 +425,7 @@ public class TestUtil {
                 RandyUtil.perlinNoise(_seed, NoiseUtil.HERMITE),
                 RandyUtil.perlinNoise(_seed, NoiseUtil.LINEAR),
                 RandyUtil.simplexNoise(_seed),
+
                 RandyUtil.cellMergeNoise(_seed, NoiseUtil.EUCLIDEAN, NoiseUtil.BASE_SHARPNESS*.8),
                 RandyUtil.cellMergeNoise(_seed, NoiseUtil.MANHATTAN, NoiseUtil.BASE_SHARPNESS*.8),
                 RandyUtil.cellMergeNoise(_seed, NoiseUtil.NATURAL, NoiseUtil.BASE_SHARPNESS*.8),
@@ -471,7 +470,15 @@ public class TestUtil {
                 RandyUtil.solidNoise(_seed, NoiseUtil.LINEAR),
                 RandyUtil.valueNoise(_seed, NoiseUtil.QUINTIC),
                 RandyUtil.valueNoise(_seed, NoiseUtil.HERMITE),
-                RandyUtil.valueNoise(_seed, NoiseUtil.LINEAR)
+                RandyUtil.valueNoise(_seed, NoiseUtil.LINEAR),
+
+                RandyUtil.dwxNoise(_seed, NoiseUtil.BASE_HARSHNESS, RandyUtil.cubicNoise(_seed, NoiseUtil.BASE_HARSHNESS)),
+                RandyUtil.dwxNoise(_seed, NoiseUtil.BASE_HARSHNESS, RandyUtil.lumpNoise(_seed, NoiseUtil.BASE_HARSHNESS)),
+                RandyUtil.dwxNoise(_seed, NoiseUtil.BASE_HARSHNESS, RandyUtil.honeyNoise(_seed, NoiseUtil.HERMITE)),
+                RandyUtil.dwxNoise(_seed, NoiseUtil.BASE_HARSHNESS, RandyUtil.solidNoise(_seed, NoiseUtil.HERMITE)),
+                RandyUtil.dwxNoise(_seed, NoiseUtil.BASE_HARSHNESS, RandyUtil.valueNoise(_seed, NoiseUtil.HERMITE)),
+                RandyUtil.dwxNoise(_seed, NoiseUtil.BASE_HARSHNESS, RandyUtil.perlinNoise(_seed, NoiseUtil.HERMITE)),
+                RandyUtil.dwxNoise(_seed, NoiseUtil.BASE_HARSHNESS, RandyUtil.simplexNoise(_seed))
         );
     }
 }
