@@ -13,6 +13,8 @@ public class PerlinNoise extends NoiseUtil implements INoise
     {
         switch (this.getInterpolation())
         {
+            case COSINE:
+                return super.name()+"Cosine";
             case QUINTIC:
                 return super.name()+"Quintic";
             case HERMITE:
@@ -108,6 +110,10 @@ public class PerlinNoise extends NoiseUtil implements INoise
                 xs = quinticInterpolator(x - x0);
                 ys = quinticInterpolator(y - y0);
                 break;
+            case COSINE:
+                xs = cosineInterpolator(x - x0);
+                ys = cosineInterpolator(y - y0);
+                break;
         }
 
         double xd0 = x - x0;
@@ -149,6 +155,11 @@ public class PerlinNoise extends NoiseUtil implements INoise
                 xs = quinticInterpolator(x - x0);
                 ys = quinticInterpolator(y - y0);
                 zs = quinticInterpolator(z - z0);
+                break;
+            case COSINE:
+                xs = cosineInterpolator(x - x0);
+                ys = cosineInterpolator(y - y0);
+                zs = cosineInterpolator(z - z0);
                 break;
         }
 
@@ -203,6 +214,12 @@ public class PerlinNoise extends NoiseUtil implements INoise
                 ys = quinticInterpolator(y - y0);
                 zs = quinticInterpolator(z - z0);
                 ws = quinticInterpolator(w - w0);
+                break;
+            case COSINE:
+                xs = cosineInterpolator(x - x0);
+                ys = cosineInterpolator(y - y0);
+                zs = cosineInterpolator(z - z0);
+                ws = cosineInterpolator(w - w0);
                 break;
         }
 
@@ -272,6 +289,13 @@ public class PerlinNoise extends NoiseUtil implements INoise
                 zs = quinticInterpolator(z - z0);
                 ws = quinticInterpolator(w - w0);
                 us = quinticInterpolator(u - u0);
+                break;
+            case COSINE:
+                xs = cosineInterpolator(x - x0);
+                ys = cosineInterpolator(y - y0);
+                zs = cosineInterpolator(z - z0);
+                ws = cosineInterpolator(w - w0);
+                us = cosineInterpolator(u - u0);
                 break;
         }
 
@@ -366,6 +390,14 @@ public class PerlinNoise extends NoiseUtil implements INoise
                 ws = quinticInterpolator(w - w0);
                 us = quinticInterpolator(u - u0);
                 vs = quinticInterpolator(v - v0);
+                break;
+            case COSINE:
+                xs = cosineInterpolator(x - x0);
+                ys = cosineInterpolator(y - y0);
+                zs = cosineInterpolator(z - z0);
+                ws = cosineInterpolator(w - w0);
+                us = cosineInterpolator(u - u0);
+                vs = cosineInterpolator(v - v0);
                 break;
         }
 

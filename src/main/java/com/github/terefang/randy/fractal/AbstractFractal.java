@@ -3,7 +3,7 @@ package com.github.terefang.randy.fractal;
 import com.github.terefang.randy.noise.INoise;
 import com.github.terefang.randy.noise.NoiseUtil;
 
-public class AbstractFractal
+public class AbstractFractal implements IFractal
 {
     double offset;
     double H = NoiseUtil.BASE_H;
@@ -12,6 +12,16 @@ public class AbstractFractal
     double lacunarity = NoiseUtil.BASE_LACUNARITY;
     double gain = NoiseUtil.BASE_GAIN;
     boolean vseed = true;
+
+    boolean fractalSpiral = false;
+
+    public boolean isFractalSpiral() {
+        return fractalSpiral;
+    }
+
+    public void setFractalSpiral(boolean fractalSpiral) {
+        this.fractalSpiral = fractalSpiral;
+    }
 
     public double getOffset() {
         return offset;
@@ -78,4 +88,16 @@ public class AbstractFractal
     public void setNoise(INoise noise) {
         this.noise = noise;
     }
+
+    protected static double rotateX2D(double x, double y){ return x * +0.6088885514347261f + y * -0.7943553508622062f; }
+    protected static double rotateY2D(double x, double y){ return x * +0.7943553508622062f + y * +0.6088885514347261f; }
+
+
+    @Override public double _fractal1(INoise _noise, double offset, double H, int octaves, double frequency, double lacunarity, double gain, boolean _vseed, double x) { return 0; }
+    @Override public double _fractal2(INoise _noise, double offset, double H, int octaves, double frequency, double lacunarity, double gain, boolean _vseed, double x, double y) { return 0; }
+    @Override public double _fractal3(INoise _noise, double offset, double H, int octaves, double frequency, double lacunarity, double gain, boolean _vseed, double x, double y, double z) { return 0; }
+    @Override public double _fractal4(INoise _noise, double offset, double H, int octaves, double frequency, double lacunarity, double gain, boolean _vseed, double x, double y, double z, double u) { return 0; }
+    @Override public double _fractal5(INoise _noise, double offset, double H, int octaves, double frequency, double lacunarity, double gain, boolean _vseed, double x, double y, double z, double u, double v) { return 0; }
+    @Override public double _fractal6(INoise _noise, double offset, double H, int octaves, double frequency, double lacunarity, double gain, boolean _vseed, double x, double y, double z, double u, double v, double w) { return 0; }
+
 }

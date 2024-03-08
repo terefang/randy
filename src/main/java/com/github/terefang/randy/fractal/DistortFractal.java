@@ -9,7 +9,7 @@ public class DistortFractal extends AbstractFractal implements IFractal
     @Override
     public double _fractal1(INoise _noise, double offset, double H, int octaves, double frequency, double lacunarity, double gain, boolean _vseed, double x) {
         x *= frequency;
-
+        double y = 0;
         double sum = 0;
         double amp = 1f;
         double max = 1f;
@@ -18,7 +18,14 @@ public class DistortFractal extends AbstractFractal implements IFractal
         for (int i = 0; i < octaves; i++) {
             sum += _noise.noise1((_vseed ? i : 0), x+_dx) * amp;
             sum -= _noise.noise1(0x123-(_vseed ? i : 0), x+_dx) * amp;
+            if(fractalSpiral)
+            {
+                final double x2 = rotateX2D(x, y);
+                final double y2 = rotateY2D(x, y);
+                x = x2; y = y2;
+            }
             x *= lacunarity;
+            y *= lacunarity;
             amp *= gain;
             max += amp;
         }
@@ -39,6 +46,12 @@ public class DistortFractal extends AbstractFractal implements IFractal
         for (int i = 0; i < octaves; i++) {
             sum += _noise.noise2((_vseed ? i : 0), x+_dx, y-_dy) * amp;
             sum -= _noise.noise2(0x123-(_vseed ? i : 0), x+_dx, y-_dy) * amp;
+            if(fractalSpiral)
+            {
+                final double x2 = rotateX2D(x, y);
+                final double y2 = rotateY2D(x, y);
+                x = x2; y = y2;
+            }
             x *= lacunarity;
             y *= lacunarity;
             amp *= gain;
@@ -63,6 +76,12 @@ public class DistortFractal extends AbstractFractal implements IFractal
         for (int i = 0; i < octaves; i++) {
             sum += _noise.noise3((_vseed ? i : 0), x+_dx, y-_dy, z+_dz) * amp;
             sum -= _noise.noise3(0x123-(_vseed ? i : 0), x+_dx, y-_dy, z+_dz) * amp;
+            if(fractalSpiral)
+            {
+                final double x2 = rotateX2D(x, y);
+                final double y2 = rotateY2D(x, y);
+                x = x2; y = y2;
+            }
             x *= lacunarity;
             y *= lacunarity;
             z *= lacunarity;
@@ -90,6 +109,12 @@ public class DistortFractal extends AbstractFractal implements IFractal
         for (int i = 0; i < octaves; i++) {
             sum += _noise.noise4((_vseed ? i : 0), x+_dx, y-_dy, z+_dz, u+_du) * amp;
             sum -= _noise.noise4(0x123-(_vseed ? i : 0), x+_dx, y-_dy, z+_dz, u+_du) * amp;
+            if(fractalSpiral)
+            {
+                final double x2 = rotateX2D(x, y);
+                final double y2 = rotateY2D(x, y);
+                x = x2; y = y2;
+            }
             x *= lacunarity;
             y *= lacunarity;
             z *= lacunarity;
@@ -120,6 +145,12 @@ public class DistortFractal extends AbstractFractal implements IFractal
         for (int i = 0; i < octaves; i++) {
             sum += _noise.noise6((_vseed ? i : 0), x+_dx, y-_dy, z+_dz, u+_du, v-_dv) * amp;
             sum -= _noise.noise6(0x123-(_vseed ? i : 0), x+_dx, y-_dy, z+_dz, u+_du, v-_dv) * amp;
+            if(fractalSpiral)
+            {
+                final double x2 = rotateX2D(x, y);
+                final double y2 = rotateY2D(x, y);
+                x = x2; y = y2;
+            }
             x *= lacunarity;
             y *= lacunarity;
             z *= lacunarity;
@@ -154,6 +185,12 @@ public class DistortFractal extends AbstractFractal implements IFractal
         for (int i = 0; i < octaves; i++) {
             sum += _noise.noise6((_vseed ? i : 0), x+_dx, y-_dy, z+_dz, w-_dw, u+_du, v-_dv) * amp;
             sum -= _noise.noise6(0x123-(_vseed ? i : 0), x+_dx, y-_dy, z+_dz, w-_dw, u+_du, v-_dv) * amp;
+            if(fractalSpiral)
+            {
+                final double x2 = rotateX2D(x, y);
+                final double y2 = rotateY2D(x, y);
+                x = x2; y = y2;
+            }
             x *= lacunarity;
             y *= lacunarity;
             z *= lacunarity;

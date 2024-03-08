@@ -45,6 +45,27 @@ public class RandyUtil {
         return _rng;
     }
 
+    public static IRandom ace320Rng(long _seed)
+    {
+        Ace320Random _rng = new Ace320Random();
+        _rng.setSeed(_seed);
+        return _rng;
+    }
+
+    public static IRandom xmx256Rng(long _seed)
+    {
+        XMX256Random _rng = new XMX256Random();
+        _rng.setSeed(_seed);
+        return _rng;
+    }
+
+    public static IRandom district64Rng(long _seed)
+    {
+        Distinct64Random _rng = new Distinct64Random();
+        _rng.setSeed(_seed);
+        return _rng;
+    }
+
     public static INoise perlinNoise(long _seed, int _i)
     {
         PerlinNoise _rng = new PerlinNoise();
@@ -247,6 +268,19 @@ public class RandyUtil {
         _rng.setVseed(_vseed);
         return _rng;
     }
+
+    public static IFractal samplerFractal(INoise _type, int _octaves, double _frequency, double _gain, boolean _vseed, boolean _spiral)
+    {
+        SamplerFractal _rng = new SamplerFractal();
+        _rng.setNoise(_type);
+        _rng.setFrequency(_frequency);
+        _rng.setOctaves(_octaves);
+        _rng.setGain(_gain);
+        _rng.setVseed(_vseed);
+        _rng.setFractalSpiral(_spiral);
+        return _rng;
+    }
+
 
     public static double vanDerCorput(final int base, final int index)
     {
@@ -468,4 +502,5 @@ public class RandyUtil {
         _ret = Math.sqrt(_ret);
         return _ret;
     }
+
 }

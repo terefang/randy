@@ -11,6 +11,8 @@ public class SolidNoise extends NoiseUtil implements INoise
     {
         switch (this.getInterpolation())
         {
+            case COSINE:
+                return super.name()+"Cosine";
             case QUINTIC:
                 return super.name()+"Quintic";
             case HERMITE:
@@ -104,6 +106,9 @@ public class SolidNoise extends NoiseUtil implements INoise
             case QUINTIC:
                 xs = quinticInterpolator(x - x0);
                 break;
+            case COSINE:
+                xs = cosineInterpolator(x - x0);
+                break;
         }
 
         double xd0 = x - x0;
@@ -166,6 +171,10 @@ public class SolidNoise extends NoiseUtil implements INoise
                 xs = quinticInterpolator(x - x0);
                 ys = quinticInterpolator(y - y0);
                 break;
+            case COSINE:
+                xs = cosineInterpolator(x - x0);
+                ys = cosineInterpolator(y - y0);
+                break;
         }
 
         double xd0 = x - x0;
@@ -221,6 +230,11 @@ public class SolidNoise extends NoiseUtil implements INoise
                 ys = quinticInterpolator(y - y0);
                 zs = quinticInterpolator(z - z0);
                 break;
+            case COSINE:
+                xs = cosineInterpolator(x - x0);
+                ys = cosineInterpolator(y - y0);
+                zs = cosineInterpolator(z - z0);
+                break;
         }
 
         final double xd0 = x - x0;
@@ -270,6 +284,9 @@ public class SolidNoise extends NoiseUtil implements INoise
             case QUINTIC:
                 us = quinticInterpolator(us);
                 break;
+            case COSINE:
+                us = cosineInterpolator(us);
+                break;
         }
 
         double ud0 = u - u0;
@@ -293,6 +310,9 @@ public class SolidNoise extends NoiseUtil implements INoise
             case QUINTIC:
                 vs = quinticInterpolator(vs);
                 break;
+            case COSINE:
+                vs = cosineInterpolator(vs);
+                break;
         }
 
         double vd0 = v - v0;
@@ -315,6 +335,9 @@ public class SolidNoise extends NoiseUtil implements INoise
                 break;
             case QUINTIC:
                 ws = quinticInterpolator(ws);
+                break;
+            case COSINE:
+                ws = cosineInterpolator(ws);
                 break;
         }
 

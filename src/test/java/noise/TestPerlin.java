@@ -12,7 +12,8 @@ public class TestPerlin {
     {
         for(INoise _rng : Arrays.asList(RandyUtil.perlinNoise(0x1ee7b33f, NoiseUtil.LINEAR),
                 RandyUtil.perlinNoise(0x1ee7b33f, NoiseUtil.QUINTIC),
-                RandyUtil.perlinNoise(0x1ee7b33f, NoiseUtil.HERMITE)))
+                RandyUtil.perlinNoise(0x1ee7b33f, NoiseUtil.HERMITE),
+                RandyUtil.perlinNoise(0x1ee7b33f, NoiseUtil.COSINE)))
         {
             TestUtil.testAll(_rng);
             TestUtil.test2d(_rng,"perlinNoise");

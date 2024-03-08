@@ -10,6 +10,10 @@ import java.util.Vector;
 
 public class NoiseField
 {
+    public interface NoiseFieldProcess
+    {
+        public void process(NoiseField _nf);
+    }
     /* FIELD_PROJECTION */
     public static final int FP_NONE = 0; // direct mapping in XYZ
     public static final int FP_SINCOS = 1;
@@ -440,28 +444,7 @@ public class NoiseField
 
     public void morphologicalErodeT(int samples)
     {
-        double tV[]=new double[fH*fW];
-        for(int j=0; j<samples ; j++)
-        {
-            for(int y=0; y<fH ; y++)
-                for(int x=0; x<fW ; x++)
-                {
-                    tV[fW*y+x]=getPointT(x,y);
-                    tV[fW*y+x]=getPointT(x,y+1)<tV[fW*y+x] ? getPointT(x,y+1) : tV[fW*y+x];
-                    tV[fW*y+x]=getPointT(x,y-1)<tV[fW*y+x] ? getPointT(x,y-1) : tV[fW*y+x];
-
-                    tV[fW*y+x]=getPointT(x+1,y+1)<tV[fW*y+x] ? getPointT(x+1,y+1) : tV[fW*y+x];
-                    tV[fW*y+x]=getPointT(x+1,y  )<tV[fW*y+x] ? getPointT(x+1,y  ) : tV[fW*y+x];
-                    tV[fW*y+x]=getPointT(x+1,y-1)<tV[fW*y+x] ? getPointT(x+1,y-1) : tV[fW*y+x];
-
-                    tV[fW*y+x]=getPointT(x-1,y+1)<tV[fW*y+x] ? getPointT(x-1,y+1) : tV[fW*y+x];
-                    tV[fW*y+x]=getPointT(x-1,y  )<tV[fW*y+x] ? getPointT(x-1,y  ) : tV[fW*y+x];
-                    tV[fW*y+x]=getPointT(x-1,y-1)<tV[fW*y+x] ? getPointT(x-1,y-1) : tV[fW*y+x];
-                }
-            // copy back
-            for(int i=0 ; i<(fH*fW) ; i++)
-                vF[i]=tV[i];
-        }
+        morphologicalErode(samples, 1.);
     }
 
     public void morphologicalDilate(int samples)
@@ -765,7 +748,7 @@ public class NoiseField
         }
     }
 
-    public void normalize(double _min, double _max, int _x1, int _x2, int _y1, int _y2)
+    public double normalize(double _min, double _max, int _x1, int _x2, int _y1, int _y2)
     {
         double _amax,_amin,_adist,_vdist;
         double _distance=_max-_min;
@@ -795,6 +778,7 @@ public class NoiseField
                 this.setPoint(_x,_y,_min+(_p-_amin)*_vdist);
             }
         }
+        return _adist;
     }
 
 

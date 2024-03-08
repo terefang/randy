@@ -28,6 +28,13 @@ public class MoonContext {
         return _ctx;
     }
 
+    public static MoonContext from(int _seed, double _moon_mass) {
+        MoonContext _ctx = new MoonContext();
+        _ctx.mass = _moon_mass;
+        _ctx.seed = _seed;
+        return _ctx;
+    }
+
     public static List<MoonContext> generate(int _seed, PlanetContext _planet) {
         double _moon_max = StarSysUtil.getFloat(StarSysUtil.merge("planet_table", _planet.type, "max_num_moons"));
         double _moon_mass_max = StarSysUtil.getFloat(StarSysUtil.merge("planet_table", _planet.type, "max_combined_mass_of_moons"));
@@ -58,7 +65,7 @@ public class MoonContext {
 
             _moon_mass *= 5.98e+24;
             if((_moon_mass > 0) && (_rng.next(10)>6)) {
-                _list.add(MoonContext.from(_moon_mass));
+                _list.add(MoonContext.from(_seed, _moon_mass));
             }
         }
 
@@ -80,10 +87,10 @@ public class MoonContext {
             }
             double _moon_radian = (_base_radius + (_base_step * Math.pow(1.9, _x))) * _planet.getPlanetDiameter();
             if (_x == 0) {
-                _ctx.randomize(_x++, _moon_radian, _planet);
+                _ctx.randomize(_seed | (_x++), _moon_radian, _planet);
                 _moon_radian = _planet.getPlanetDiameter() * (1.5246 * Math.pow((_planet.getPlanetDensity() / _ctx.getDensity()), 0.5));
             } else {
-                _ctx.randomize(_x++, _moon_radian, _planet);
+                _ctx.randomize(_seed | (_x++), _moon_radian, _planet);
                 _moon_radian = (_ctx.getDiameter() + _moon_diameter_last + _moon_radian_last) * Math.pow(_rng.nextBounds(1.1f, 2f, 0.0001f), 2);
             }
 

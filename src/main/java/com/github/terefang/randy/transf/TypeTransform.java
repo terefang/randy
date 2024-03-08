@@ -47,9 +47,17 @@ public class TypeTransform implements ITransform
             case T_QUART: _result = (_result*_result*_result*_result); break;
             case T_ABS: _result = Math.abs(_result); break;
             case T_ABS1M: _result = 1.-Math.abs(_result); break;
-            case T_HERMITESPLINE: _result = (NoiseUtil.hermiteInterpolator(0.5+_result*0.5) * 2.) - 1.; break;
-            case T_QUINTICSPLINE: _result = (NoiseUtil.quinticInterpolator(0.5+_result*0.5) * 2.) - 1.; break;
-            case T_BARRONSPLINE: _result = (NoiseUtil.barronSpline(0.5+(_result*0.5), .5, .5) * 2.) - 1.; break;
+            case T_IHERMITE: _result = (NoiseUtil.hermiteInterpolator(0.5+_result*0.5) * 2.) - 1.; break;
+            case T_IQUINTIC: _result = (NoiseUtil.quinticInterpolator(0.5+_result*0.5) * 2.) - 1.; break;
+            case T_IBARRON: _result = (NoiseUtil.barronSpline(0.5+(_result*0.5), .5, .5) * 2.) - 1.; break;
+            case T_INVNORM:
+                _result = NoiseUtil.inverseNormalization(_result); break;
+            case T_QMF:
+                _result = NoiseUtil.minkowskiQMF(_result); break;
+            case T_ISPLOBBLE:
+                _result = NoiseUtil.splobble(_result); break;
+            case T_ISPLOBBLEQ:
+                _result = NoiseUtil.splobbleQuintic(_result); break;
             case T_BINARY: _result = (_result<0.) ? -.999887f : .999887f; break;
             case T_LEVEL5: _result = ((int)(_result*5.))/5.; break;
             case T_LEVEL10: _result = ((int)(_result*10.))/10.; break;
@@ -83,6 +91,11 @@ public class TypeTransform implements ITransform
                 break;
             }
             case T_0NONE: break;
+            case T_COLLATZ_1K: _result = NoiseUtil.collatzMutation(_result, 1024); break;
+            case T_COLLATZ_4K: _result = NoiseUtil.collatzMutation(_result, 4096); break;
+            case T_COLLATZ_SINE_4K: _result = Math.sin(NoiseUtil.collatzMutation(_result, 4096)*Math.PI); break;
+            case T_COLLATZ_COSINE_4K: _result = Math.cos(NoiseUtil.collatzMutation(_result, 4096)*Math.PI); break;
+            case T_COLLATZ_INVNORM_4K: _result = NoiseUtil.inverseNormalization(NoiseUtil.collatzMutation(_result, 4096)); break;
             default: break;
         }
         return _result;
@@ -109,9 +122,17 @@ public class TypeTransform implements ITransform
             case T_QUART: _result = (_result*_result*_result*_result); break;
             case T_ABS: _result = Math.abs(_result); break;
             case T_ABS1M: _result = 1.-Math.abs(_result); break;
-            case T_HERMITESPLINE: _result = (NoiseUtil.hermiteInterpolator(0.5+_result*0.5) * 2.) - 1.; break;
-            case T_QUINTICSPLINE: _result = (NoiseUtil.quinticInterpolator(0.5+_result*0.5) * 2.) - 1.; break;
-            case T_BARRONSPLINE: _result = (NoiseUtil.barronSpline(0.5+(_result*0.5), _arg1, .5) * 2.) - 1.; break;
+            case T_IHERMITE: _result = (NoiseUtil.hermiteInterpolator(0.5+_result*0.5) * 2.) - 1.; break;
+            case T_IQUINTIC: _result = (NoiseUtil.quinticInterpolator(0.5+_result*0.5) * 2.) - 1.; break;
+            case T_IBARRON: _result = (NoiseUtil.barronSpline(0.5+(_result*0.5), _arg1, .5) * 2.) - 1.; break;
+            case T_QMF:
+                _result = NoiseUtil.minkowskiQMF(_result); break;
+            case T_INVNORM:
+                _result = NoiseUtil.inverseNormalization(_result); break;
+            case T_ISPLOBBLE:
+                _result = NoiseUtil.splobble(0xb33f1ee7, _result); break;
+            case T_ISPLOBBLEQ:
+                _result = NoiseUtil.splobbleQuintic(0xb33f1ee7, _result); break;
             case T_BINARY: _result = (_result<0.) ? -.999887f : .999887f; break;
             case T_LEVEL5: _result = ((int)(_result*5.))/5.; break;
             case T_LEVEL10: _result = ((int)(_result*10.))/10.; break;
@@ -144,6 +165,11 @@ public class TypeTransform implements ITransform
                 }
                 break;
             }
+            case T_COLLATZ_1K: _result = NoiseUtil.collatzMutation(_result, 1024); break;
+            case T_COLLATZ_4K: _result = NoiseUtil.collatzMutation(_result, 4096); break;
+            case T_COLLATZ_SINE_4K: _result = Math.sin(NoiseUtil.collatzMutation(_result, 4096)*Math.PI); break;
+            case T_COLLATZ_COSINE_4K: _result = Math.cos(NoiseUtil.collatzMutation(_result, 4096)*Math.PI); break;
+            case T_COLLATZ_INVNORM_4K: _result = NoiseUtil.inverseNormalization(NoiseUtil.collatzMutation(_result, 4096)); break;
             case T_0NONE:
             default: break;
         }
@@ -171,9 +197,17 @@ public class TypeTransform implements ITransform
             case T_QUART: _result = (_result*_result*_result*_result); break;
             case T_ABS: _result = Math.abs(_result); break;
             case T_ABS1M: _result = 1.-Math.abs(_result); break;
-            case T_HERMITESPLINE: _result = (NoiseUtil.hermiteInterpolator(0.5+_result*0.5) * 2.) - 1.; break;
-            case T_QUINTICSPLINE: _result = (NoiseUtil.quinticInterpolator(0.5+_result*0.5) * 2.) - 1.; break;
-            case T_BARRONSPLINE: _result = (NoiseUtil.barronSpline(0.5+(_result*0.5), _arg1, _arg2) * 2.) - 1.; break;
+            case T_IHERMITE: _result = (NoiseUtil.hermiteInterpolator(0.5+_result*0.5) * 2.) - 1.; break;
+            case T_IQUINTIC: _result = (NoiseUtil.quinticInterpolator(0.5+_result*0.5) * 2.) - 1.; break;
+            case T_IBARRON: _result = (NoiseUtil.barronSpline(0.5+(_result*0.5), _arg1, _arg2) * 2.) - 1.; break;
+            case T_INVNORM:
+                _result = NoiseUtil.inverseNormalization(_result); break;
+            case T_QMF:
+                _result = NoiseUtil.minkowskiQMF(_result); break;
+            case T_ISPLOBBLE:
+                _result = NoiseUtil.splobble(0xb33f1ee7, _result); break;
+            case T_ISPLOBBLEQ:
+                _result = NoiseUtil.splobbleQuintic(0xb33f1ee7, _result); break;
             case T_BINARY: _result = (_result<0.) ? -.999887f : .999887f; break;
             case T_LEVEL5: _result = ((int)(_result*5.))/5.; break;
             case T_LEVEL10: _result = ((int)(_result*10.))/10.; break;
@@ -206,6 +240,11 @@ public class TypeTransform implements ITransform
                 }
                 break;
             }
+            case T_COLLATZ_1K: _result = NoiseUtil.collatzMutation(_result, 1024); break;
+            case T_COLLATZ_4K: _result = NoiseUtil.collatzMutation(_result, 4096); break;
+            case T_COLLATZ_SINE_4K: _result = Math.sin(NoiseUtil.collatzMutation(_result, 4096)*Math.PI); break;
+            case T_COLLATZ_COSINE_4K: _result = Math.cos(NoiseUtil.collatzMutation(_result, 4096)*Math.PI); break;
+            case T_COLLATZ_INVNORM_4K: _result = NoiseUtil.inverseNormalization(NoiseUtil.collatzMutation(_result, 4096)); break;
             case T_0NONE:
             default: break;
         }

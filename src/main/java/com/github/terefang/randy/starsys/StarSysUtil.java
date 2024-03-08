@@ -565,16 +565,21 @@ public class StarSysUtil {
 
     public static String lookupTabled(ArcRand _rng, String[] _base, String _lookup)
     {
-        List<String> _list = new Vector<>();
-        for(String _k : getKeys(_base, _lookup))
+        return lookupTabled(0., _rng, _base, _lookup);
+    }
+
+    public static String lookupTabled(double _bias, ArcRand _rng, String[] _base, String _lookup)
+    {
+        double _v = 0.;
+        if(_bias>0.)
         {
-            int _c = getInt(merge(_base, _lookup, _k));
-            for(int _i=_c; _i>0; _i--)
-            {
-                _list.add(_k);
-            }
+            _v = _bias + _rng.next(1.-_bias);
         }
-        return _list.get((int) _rng.next(_list.size()));
+        else
+        {
+            _v = _rng.next(1.+_bias) - _bias;
+        }
+        return lookupTabled(_v, _base, _lookup);
     }
 
     public static String lookupTabled(double _rng, String[] _base, String _lookup)
@@ -590,6 +595,11 @@ public class StarSysUtil {
             }
         }
         return _list.get((int) (_list.size()*_rng));
+    }
+
+    public static int bv2temp(double _bv)
+    {
+        return (int) (4600. * (1. / (0.92 * _bv + 1.7) + 1 / (0.92 * _bv + 0.62)));
     }
 
 }

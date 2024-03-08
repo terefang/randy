@@ -64,4 +64,17 @@ public abstract class AbstractNoise implements INoise
     public void setHarshness(double harshness) {
         this.harshness = harshness;
     }
+
+    @Override public double _noise1(long seed, double x, int interpolation) {return 0;}
+    @Override public double _noise2(long seed, double x, double y, int interpolation) {return 0;}
+    @Override public double _noise3(long seed, double x, double y, double z, int interpolation) {return 0;}
+    @Override public double _noise4(long seed, double x, double y, double z, double u, int interpolation) {return 0;}
+    @Override public double _noise5(long seed, double x, double y, double z, double u, double v, int interpolation) {return 0;}
+    @Override public double _noise6(long seed, double x, double y, double z, double u, double v, double w, int interpolation) {return 0;}
+    @Override public double _noise1n(long seed, double x, int interpolation) {return 0;}
+    @Override public double _noise2n(long seed, double x, double y, int interpolation) {return 0;}
+    @Override public double _noise3n(long seed, double x, double y, double z, int interpolation) {return 0;}
+    @Override public double _noise4n(long seed, double x, double y, double z, double u, int interpolation) {return 0;}
+    @Override public double _noise5n(long seed, double x, double y, double z, double u, double v, int interpolation) {return 0;}
+    @Override public double _noise6n(long seed, double x, double y, double z, double u, double v, double w, int interpolation) {return 0;}
 }

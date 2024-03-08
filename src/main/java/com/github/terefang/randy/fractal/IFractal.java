@@ -31,6 +31,10 @@ public interface IFractal
     public INoise getNoise();
     public void setNoise(INoise noise);
 
+    public boolean isFractalSpiral();
+
+    public void setFractalSpiral(boolean fractalSpiral);
+
 
     default public double fractal1(double x)
     {

@@ -39,66 +39,72 @@ public class Test_All {
                 final ITransform.TransformType _ttrans = ITransform.TransformType.T_0NONE;
                 //for(final ITransform.TransformType _ttrans : ITransform.TransformType.values())
                 {
-                    for(final INoise _type : TestUtil.setupNoises(_seed))
-                    {
-                        for(final IFractal _ftype : Arrays.asList(
-                                RandyUtil.samplerFractal(_type, 1, _freq, _gain,true),
-                                RandyUtil.distortFractal(_type,_freq,NoiseUtil.BASE_H, _gain),
-                                RandyUtil.musgraveHeteroTerrainFractal(_type,_freq,NoiseUtil.BASE_H, _gain),
-                                RandyUtil.billowFractal(_type,_freq,NoiseUtil.BASE_H, _gain),
-                                RandyUtil.musgraveFractal(_type,_freq,NoiseUtil.BASE_H, _gain),
-                                RandyUtil.multiFractal(_type,_freq,NoiseUtil.BASE_H, _gain),
-                                RandyUtil.ridgedMultiFractal(_type,_freq,NoiseUtil.BASE_H, _gain),
-                                RandyUtil.bmFractal(_type,_freq,NoiseUtil.BASE_H, _gain)
-                        ))
+                    for (final INoise _type : TestUtil.setupNoises(_seed)) {
+                        for (final boolean _stype : Arrays.asList(false, true))
                         {
-                            _EX.execute(() -> {
-                                _ftype.setLacunarity(_gain);
-                                _ftype.setVseed(true);
-                                final ITransform _trans = TypeTransform.from(_ttrans);
-                                _type.setTransform(_trans);
-                                String _name = _type.name() + "/" + _ftype.name() + String.format("~fq=%04d,G=%02d", (int) (_freq*10), (int)(_gain*10));
-                                System.err.println("-START "+_name);
-                                NoiseField _nf = new NoiseField(_SIZE, _SIZE);
+                            for (final IFractal _ftype : Arrays.asList(
+                                    RandyUtil.samplerFractal(_type, 1, _freq, _gain, true),
+                                    RandyUtil.distortFractal(_type, _freq, NoiseUtil.BASE_H, _gain),
+                                    RandyUtil.musgraveHeteroTerrainFractal(_type, _freq, NoiseUtil.BASE_H, _gain),
+                                    RandyUtil.billowFractal(_type, _freq, NoiseUtil.BASE_H, _gain),
+                                    RandyUtil.musgraveFractal(_type, _freq, NoiseUtil.BASE_H, _gain),
+                                    RandyUtil.multiFractal(_type, _freq, NoiseUtil.BASE_H, _gain),
+                                    RandyUtil.ridgedMultiFractal(_type, _freq, NoiseUtil.BASE_H, _gain),
+                                    RandyUtil.bmFractal(_type, _freq, NoiseUtil.BASE_H, _gain)
+                            )) {
+                                _EX.execute(() -> {
+                                    _ftype.setLacunarity(_gain);
+                                    _ftype.setVseed(true);
+                                    _ftype.setFractalSpiral(_stype);
+                                    final ITransform _trans = TypeTransform.from(_ttrans);
+                                    _type.setTransform(_trans);
+                                    String _name = _type.name() + "/" + _ftype.name() + String.format("~fq=%04d,G=%02d,%s", (int) (_freq * 10), (int) (_gain * 10), _ftype.isFractalSpiral() ? "S" : "N");
+                                    System.err.println("-START " + _name);
+                                    NoiseField _nf = new NoiseField(_SIZE, _SIZE);
 
-                                for (int _o = 0; _o < _OCT.length; _o++)
-                                {
-                                    _ftype.setOctaves(_OCT[_o]);
-                                    int _yo=((_SIZE>>1)*_o)%_SIZE;
-                                    int _xo=(_SIZE>>1)*(_o/2);
-                                    for (int _y = 0; _y < (_SIZE>>1); _y++)
-                                    {
-                                        for (int _x = 0; _x < (_SIZE>>1); _x++)
-                                        {
-                                            float _fx = ((((float) _x) / ((float) (_SIZE>>1))) - .5f)*2f;
-                                            float _fy = ((((float) _y) / ((float) (_SIZE>>1))) - .5f)*2f;
-                                            double _value = _ftype.fractal2(_fx,_fy); // /((double)_oct*_oct);
-                                            _nf.setPoint(_xo+_x, _yo+_y,_value);
+                                    for (int _o = 0; _o < _OCT.length; _o++) {
+                                        _ftype.setOctaves(_OCT[_o]);
+                                        int _yo = ((_SIZE >> 1) * _o) % _SIZE;
+                                        int _xo = (_SIZE >> 1) * (_o / 2);
+                                        for (int _y = 0; _y < (_SIZE >> 1); _y++) {
+                                            for (int _x = 0; _x < (_SIZE >> 1); _x++) {
+                                                float _fx = ((((float) _x) / ((float) (_SIZE >> 1))) - .5f) * 2f;
+                                                float _fy = ((((float) _y) / ((float) (_SIZE >> 1))) - .5f) * 2f;
+                                                double _value = _ftype.fractal2(_fx, _fy); // /((double)_oct*_oct);
+                                                _nf.setPoint(_xo + _x, _yo + _y, _value);
+                                            }
                                         }
                                     }
-                                }
 
-                                _nf.normalize(-1., 1., 0,(_SIZE>>1)-1, 0,(_SIZE>>1)-1);
-                                _nf.normalize(-1., 1., 0,(_SIZE>>1)-1, (_SIZE>>1),_SIZE-1);
-                                _nf.normalize(-1., 1., (_SIZE>>1),_SIZE-1, 0,(_SIZE>>1)-1);
-                                _nf.normalize(-1., 1., (_SIZE>>1),_SIZE-1, (_SIZE>>1),_SIZE-1);
+                                    double _n00 = _nf.normalize(-1., 1., 0, (_SIZE >> 1) - 1, 0, (_SIZE >> 1) - 1);
+                                    double _n01 = _nf.normalize(-1., 1., 0, (_SIZE >> 1) - 1, (_SIZE >> 1), _SIZE - 1);
+                                    double _n10 = _nf.normalize(-1., 1., (_SIZE >> 1), _SIZE - 1, 0, (_SIZE >> 1) - 1);
+                                    double _n11 = _nf.normalize(-1., 1., (_SIZE >> 1), _SIZE - 1, (_SIZE >> 1), _SIZE - 1);
 
-                                _nf.normalize((_v) -> { return ((int)(_v*20.))/20.; });
+                                    _nf.normalize((_v) -> {
+                                        return ((int) (_v * 20.)) / 20.;
+                                    });
 
-                                BufferedImage _bi = NoiseFieldUtil.getHFEImage(_nf, -1., 1.);
-                                Graphics2D _g = (Graphics2D) _bi.getGraphics();
-                                BmpFont _font = BmpFont.defaultInstance();
-                                _font.drawString(_g,10, 10,"F = "+_ftype.name(), Color.YELLOW,Color.BLACK);
-                                _font.drawString(_g,10, 30,"T = "+_type.name(), Color.YELLOW,Color.BLACK);
-                                _font.drawString(_g,10, 50,"FREQ = "+_freq, Color.YELLOW,Color.BLACK);
-                                _font.drawString(_g,10, 70,"OCT = 1 2 4 8", Color.YELLOW,Color.BLACK);
-                                _font.drawString(_g,10, 90,"GAIN = "+_gain, Color.YELLOW,Color.BLACK);
+                                    BufferedImage _bi = NoiseFieldUtil.getHFEImage(_nf, -1., 1.);
+                                    Graphics2D _g = (Graphics2D) _bi.getGraphics();
+                                    BmpFont _font = BmpFont.defaultInstance();
+                                    _font.drawString(_g, 10, 10, "F = " + _ftype.name(), Color.YELLOW, Color.BLACK);
+                                    _font.drawString(_g, 10, 30, "T = " + _type.name(), Color.YELLOW, Color.BLACK);
+                                    _font.drawString(_g, 10, 50, "FREQ = " + _freq, Color.YELLOW, Color.BLACK);
+                                    _font.drawString(_g, 10, 70, "OCT = 1 2 4 8", Color.YELLOW, Color.BLACK);
+                                    _font.drawString(_g, 10, 90, "GAIN = " + _gain, Color.YELLOW, Color.BLACK);
 
-                                _g.dispose();
-                                NoiseFieldUtil.savePNG(_bi, "./out/fract-all/" + _name + ".png");
+                                    _font.drawString(_g, (_SIZE >> 1) - 350, (_SIZE >> 1) - 20, String.format("PtP: %.3f", _n00), Color.WHITE, Color.BLACK);
+                                    _font.drawString(_g, (_SIZE >> 1) - 350, _SIZE - 20, String.format("PtP: %.3f", _n10), Color.WHITE, Color.BLACK);
+                                    _font.drawString(_g, _SIZE - 350, (_SIZE >> 1) - 20, String.format("PtP: %.3f", _n01), Color.WHITE, Color.BLACK);
+                                    _font.drawString(_g, _SIZE - 350, _SIZE - 20, String.format("PtP: %.3f", _n11), Color.WHITE, Color.BLACK);
 
-                                System.err.println("-END "+_name);
-                            });
+                                    _g.dispose();
+                                    NoiseFieldUtil.savePNG(_bi, "./out/fract-all/" + _name + ".png");
+
+                                    System.err.println("-END " + _name);
+                                });
+                            }
                         }
                     }
                 }

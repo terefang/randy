@@ -12,7 +12,8 @@ public class TestHoney {
     {
         for(INoise _rng : Arrays.asList(RandyUtil.honeyNoise(0x1ee7b33f, NoiseUtil.LINEAR),
                 RandyUtil.honeyNoise(0x1ee7b33f, NoiseUtil.HERMITE),
-                RandyUtil.honeyNoise(0x1ee7b33f, NoiseUtil.QUINTIC)))
+                RandyUtil.honeyNoise(0x1ee7b33f, NoiseUtil.QUINTIC),
+                RandyUtil.honeyNoise(0x1ee7b33f, NoiseUtil.COSINE)))
         {
             TestUtil.testAll(_rng);
             TestUtil.test2d(_rng,"honeyNoise");

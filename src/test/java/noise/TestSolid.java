@@ -12,7 +12,8 @@ public class TestSolid {
     {
         for(INoise _rng : Arrays.asList(RandyUtil.solidNoise(0x1ee7b33f, NoiseUtil.LINEAR),
                 RandyUtil.solidNoise(0x1ee7b33f, NoiseUtil.HERMITE),
-                RandyUtil.solidNoise(0x1ee7b33f, NoiseUtil.QUINTIC)))
+                RandyUtil.solidNoise(0x1ee7b33f, NoiseUtil.QUINTIC),
+                RandyUtil.solidNoise(0x1ee7b33f, NoiseUtil.COSINE)))
         {
             TestUtil.testAll(_rng);
             TestUtil.test2d(_rng,"solidNoise");

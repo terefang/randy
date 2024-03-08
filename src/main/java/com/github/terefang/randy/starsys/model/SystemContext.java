@@ -17,6 +17,10 @@ public class SystemContext
 
 	SolarContext context;
 	List<PlanetContext> planets = new Vector<>();
+	private double _surface_distance_au;
+	private double _base_radius;
+	private ArcRand _rng;
+	private double _base_step;
 
 	public static SystemContext from(long id, int seed)
 	{
@@ -44,29 +48,28 @@ public class SystemContext
 		this.init();
 	}
 
-	public void init()
+	public void init_from_context(int _seed)
 	{
-		int _seed = (int) (this.seed ^ ((this.id>>>32) & 0x7fffffff) ^ (this.id & 0x7fffffff));
-		ArcRand _rng = ArcRand.from(_seed-1);
-
 		if(this.context==null)
 		{
 			this.context = SolarContext.tabledMK(_seed);
 			this.context.randomizeFromMk(_seed);
 		}
 
-		double _surface_distance_au = this.context.getSurfaceDistance()*StarSysUtil.SOL_TO_AU;
+		this._surface_distance_au = this.context.getSurfaceDistance()*StarSysUtil.SOL_TO_AU;
 
-		double _base_radius=_surface_distance_au*(1+((int)_rng.next(7900)+10)/1000f); // (1+int(rand(7900)+10)/1000)
+		this._base_radius=_surface_distance_au*(1+((int)_rng.next(7900)+10)/1000f); // (1+int(rand(7900)+10)/1000)
 
 		if (_base_radius<_surface_distance_au) _base_radius=_surface_distance_au*1.1;
 
-		double _base_step=((int)_rng.next(70)+10)/200f;
+		this._base_step=((int)_rng.next(70)+10)/200f;
 
-		if("!".equalsIgnoreCase(this.context.getSpectra())) return;
 
-		double _lastAU = _surface_distance_au;
+	}
 
+	public void init_planets(int _seed)
+	{
+		double _lastAU = this._surface_distance_au;
 		try
 		{
 			int _num_rad = StarSysUtil.getInt(StarSysUtil.merge("stellar_type", this.context.getSpectra(), this.context.getRsize(),"orbitals"));
@@ -88,7 +91,7 @@ public class SystemContext
 				_planet.setMoonLimitAU((_planet.getOrbit()-_lastAU)/4.);
 				if((_rng.next(100) > 15) && !"A".equalsIgnoreCase(_planet.getType()))
 				{
-					_planet.moons = MoonContext.generate(_orbital, _planet);
+					_planet.moons = MoonContext.generate((_seed<<8)|_orbital, _planet);
 					//for(MoonContext _moon : _planet.moons)
 					//{
 					//	_moon.outputInformation(_afh);
@@ -103,6 +106,17 @@ public class SystemContext
 		}
 		//_fh.println("\n\n\n\n\n");
 		//_fh.flush();
+	}
+	public void init()
+	{
+		int _seed = (int) (this.seed ^ ((this.id>>>32) & 0x7fffffff) ^ (this.id & 0x7fffffff));
+		this._rng = ArcRand.from(_seed-1);
+
+		init_from_context(_seed);
+
+		if("!".equalsIgnoreCase(this.context.getSpectra())) return;
+
+		init_planets(_seed);
 	}
 
 	@SneakyThrows

@@ -39,11 +39,8 @@ public class LdataParser {
             _tokener.resetSyntax();
             _tokener.quoteChar('"');
             _tokener.tripleQuotes(true);
-            _tokener.slashSlashComments(true);
-            _tokener.slashStarComments(true);
-            _tokener.commentChar('#');
             _tokener.whitespaceChars(0, 32);
-            _tokener.whitespaceChar(',', ';');
+            _tokener.whitespaceChar(',', ';',':', '=');
             _tokener.wordChars('a', 'z');
             _tokener.wordChars('A', 'Z');
             _tokener.wordChars('0', '9');
@@ -51,7 +48,12 @@ public class LdataParser {
             _tokener.parseNumbers();
             _tokener.hexLiterals(true);
             _tokener.byteLiterals(_byteLiterals);
-            _tokener.dateTimeLiterals(true);
+            _tokener.dateTimeLiterals(false);
+            _tokener.slashSlashComments(true);
+            _tokener.slashStarComments(true);
+            _tokener.commentChar('#');
+            _tokener.commentChar('!');
+            _tokener.commentChar('%');
 
             int _token = _tokener.nextToken();
             // check for unicode marker !
@@ -85,26 +87,7 @@ public class LdataParser {
     @SneakyThrows
     static Map<String, Object> readKeyValuePairs(CustomStreamTokenizer _tokener, boolean _byteLiterals)
     {
-        return readKeyValuePairs(_tokener, null, false, _byteLiterals);
-    }
-
-    @SneakyThrows
-    static Map<String, Object> readKeyValuePairs(CustomStreamTokenizer _tokener, String _first, boolean _check, boolean _byteLiterals)
-    {
         Map<String, Object> _ret = new LinkedHashMap<>();
-
-        if(_first!=null)
-        {
-            _ret.put(_first, readValue(_tokener, _check, _byteLiterals));
-        }
-        else if(_check)
-        {
-            int _assign = _tokener.nextToken();
-            if((_assign!='=') && (_assign!=':'))
-            {
-                throw new IllegalArgumentException(String.format("Token not '=' or ':' in line %d", _tokener.lineno()));
-            }
-        }
 
         int _token;
         while((_token = _tokener.nextToken()) != CustomStreamTokenizer.TOKEN_TYPE_EOF)
@@ -118,26 +101,35 @@ public class LdataParser {
             }
             else
             {
-                if(_token == CustomStreamTokenizer.TOKEN_TYPE_WORD || _token == '"')
+                switch (_token)
                 {
-                    _key = _tokener.tokenAsString();
-                }
-                else
-                if(_token == CustomStreamTokenizer.TOKEN_TYPE_NUMBER)
-                {
-                    _key = Long.toString((long) _tokener.tokenAsNumber());
-                }
-                else
-                if(_token == CustomStreamTokenizer.TOKEN_TYPE_CARDINAL)
-                {
-                    _key = Long.toString(_tokener.tokenAsCardinal());
+                    case '"':
+                    case CustomStreamTokenizer.TOKEN_TYPE_WORD:
+                    {
+                        _key = _tokener.tokenAsString();
+                        break;
+                    }
+                    case CustomStreamTokenizer.TOKEN_TYPE_NUMBER:
+                    {
+                        _key = Long.toString((long) _tokener.tokenAsNumber());
+                        break;
+                    }
+                    case CustomStreamTokenizer.TOKEN_TYPE_CARDINAL:
+                    {
+                        _key = Long.toString(_tokener.tokenAsCardinal());
+                        break;
+                    }
+                    default:
+                    {
+                        break;
+                    }
                 }
 
                 if(_key!=null)
                 {
-                    _val = readValue(_tokener, true, _byteLiterals);
+                    _val = readValue(_tokener, _byteLiterals);
 
-                   if(_ret.containsKey(_key))
+                    if(_ret.containsKey(_key))
                     {
                         throw new IllegalArgumentException(String.format("duplicate Key in line %d", _tokener.lineno()));
                     }
@@ -153,16 +145,8 @@ public class LdataParser {
     }
 
     @SneakyThrows
-    static Object readValue(CustomStreamTokenizer _tokener, boolean _check, boolean _byteLiterals)
+    static Object readValue(CustomStreamTokenizer _tokener, boolean _byteLiterals)
     {
-        //System.err.println("-value-");
-        if(_check)
-        {
-            int _assign = _tokener.nextToken();
-            if(_assign!='=' && _assign!=':') {
-                throw new IllegalArgumentException(String.format("Token not '=' or ':' in line %d", _tokener.lineno()));
-            }
-        }
         int _peek = _tokener.nextToken();
         Object _ret = null;
         switch(_peek)
@@ -174,8 +158,8 @@ public class LdataParser {
             case CustomStreamTokenizer.TOKEN_TYPE_CARDINAL: return _tokener.tokenAsCardinal();
             case CustomStreamTokenizer.TOKEN_TYPE_DATETIME: return new Date(_tokener.tokenAsCardinal());
             case CustomStreamTokenizer.TOKEN_TYPE_NUMBER: return _tokener.tokenAsNumber();
-            case '[': _tokener.pushBack(); return readList(_tokener, null, _byteLiterals);
-            case '{': return readKeyValuePairs(_tokener, null, false, _byteLiterals);
+            case '[': return readList(_tokener, _byteLiterals);
+            case '{': return readKeyValuePairs(_tokener, _byteLiterals);
         }
         return _ret;
     }
@@ -196,39 +180,21 @@ public class LdataParser {
         return _sb.toString().substring(_sb.toString().indexOf('\n')+1);
     }
 
-
     @SneakyThrows
-    static List readList(CustomStreamTokenizer _tokener, boolean _byteLiterals)
-    {
-        return readList(_tokener, null, _byteLiterals);
-    }
-
-    @SneakyThrows
-    static List readList(CustomStreamTokenizer _tokener, Object _first, boolean _byteLiterals)
+    static List readList(CustomStreamTokenizer _tokener,boolean _byteLiterals)
     {
         List _ret = new Vector();
-
-        if(_first==null)
-        {
-            int _assign = _tokener.nextToken();
-            if(_assign!='[' && _assign!='{') throw new IllegalArgumentException(String.format("Token not '[' or '{' in line %d", _tokener.lineno()));
-        }
-        else
-        {
-            _ret.add(_first);
-        }
 
         int _token;
         while((_token = _tokener.nextToken()) != CustomStreamTokenizer.TOKEN_TYPE_EOF)
         {
             switch (_token)
             {
-                case ']':
-                case '}': return _ret;
+                case ']': return _ret;
                 case CustomStreamTokenizer.TOKEN_TYPE_BYTES: if(_byteLiterals) {_ret.add(_tokener.tokenAsBytes()); break;}
                 case '<': _ret.add(readHereDoc(_tokener)); break;
-                case '[': _tokener.pushBack(); _ret.add(readList(_tokener, null, _byteLiterals)); break;
-                case '{': _tokener.pushBack(); _ret.add(readKeyValuePairs(_tokener, null, true, _byteLiterals)); break;
+                case '[': _ret.add(readList(_tokener, _byteLiterals)); break;
+                case '{': _ret.add(readKeyValuePairs(_tokener, _byteLiterals)); break;
                 case '"':
                 case CustomStreamTokenizer.TOKEN_TYPE_WORD: _ret.add(_tokener.tokenAsString()); break;
                 case CustomStreamTokenizer.TOKEN_TYPE_CARDINAL: _ret.add(_tokener.tokenAsCardinal()); break;
@@ -239,7 +205,4 @@ public class LdataParser {
         }
         return _ret;
     }
-
-
-
 }

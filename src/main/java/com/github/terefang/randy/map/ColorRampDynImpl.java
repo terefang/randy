@@ -48,6 +48,28 @@ public class ColorRampDynImpl implements ColorRamp
         }
     }
 
+    public static ColorRamp getEarth()
+    {
+        ColorRampDynImpl r = new ColorRampDynImpl();
+        r.SEA_COLOR = new ColorDef[] {
+                rgbt(new Color(0x08,0x57,0x81), 1.0f),
+                rgbt(new Color(0x28,0x87,0xa1), 1.0f-.33330f),
+                rgbt(new Color(0x79,0x97,0xac), 1.0f-.66670f),
+                rgbt(new Color(0xa5,0xb8,0xd8), 1.0f-.83330f),
+                rgbt(new Color(0x95,0xa8,0xd8), .000f)
+        };
+        r.LAND_COLOR = new ColorDef[] {
+                rgbt(new Color(0x68,0xca,0x82), .00000f),
+                rgbt(new Color(0xed,0xea,0xc2), .3f),
+                rgbt(new Color(0xd6,0xbd,0x8d), .5f),
+                rgbt(new Color(0xbd,0x92,0x5a), .7f),
+                rgbt(new Color(0xA1,0x69,0x28), .89f),
+                rgbt(new Color(255,255,255), 1.f)
+        };
+        r.seaHardRamp=false;
+        r.landHardRamp=false;
+        return r;
+    }
     public static ColorRamp getDefault()
     {
         ColorRampDynImpl r = new ColorRampDynImpl();

@@ -10,6 +10,8 @@ public class ValueNoise extends NoiseUtil implements INoise
     {
         switch (this.getInterpolation())
         {
+            case COSINE:
+                return super.name()+"Cosine";
             case QUINTIC:
                 return super.name()+"Quintic";
             case HERMITE:
@@ -95,6 +97,10 @@ public class ValueNoise extends NoiseUtil implements INoise
         int yFloor = y >= 0 ? (int) y : (int) y - 1;
         y -= yFloor;
         switch (interpolation) {
+            case COSINE:
+                x = cosineInterpolator(x);
+                y = cosineInterpolator(y);
+                break;
             case HERMITE:
                 x = hermiteInterpolator(x);
                 y = hermiteInterpolator(y);
@@ -134,6 +140,11 @@ public class ValueNoise extends NoiseUtil implements INoise
                 y = quinticInterpolator(y);
                 z = quinticInterpolator(z);
                 break;
+            case COSINE:
+                x = cosineInterpolator(x);
+                y = cosineInterpolator(y);
+                z = cosineInterpolator(z);
+                break;
         }
         //0xDB4F1, 0xBBE05, 0xA0F2F
         xFloor *= 0xDB4F1;
@@ -172,6 +183,12 @@ public class ValueNoise extends NoiseUtil implements INoise
                 y = quinticInterpolator(y);
                 z = quinticInterpolator(z);
                 w = quinticInterpolator(w);
+                break;
+            case COSINE:
+                x = cosineInterpolator(x);
+                y = cosineInterpolator(y);
+                z = cosineInterpolator(z);
+                w = cosineInterpolator(w);
                 break;
         }
         //0xE19B1, 0xC6D1D, 0xAF36D, 0x9A695
@@ -224,6 +241,13 @@ public class ValueNoise extends NoiseUtil implements INoise
                 z = quinticInterpolator(z);
                 w = quinticInterpolator(w);
                 u = quinticInterpolator(u);
+                break;
+            case COSINE:
+                x = cosineInterpolator(x);
+                y = cosineInterpolator(y);
+                z = cosineInterpolator(z);
+                w = cosineInterpolator(w);
+                u = cosineInterpolator(u);
                 break;
         }
         //0xE60E3, 0xCEBD7, 0xB9C9B, 0xA6F57, 0x9609D, 0x86D51
@@ -299,6 +323,14 @@ public class ValueNoise extends NoiseUtil implements INoise
                 w = quinticInterpolator(w);
                 u = quinticInterpolator(u);
                 v = quinticInterpolator(v);
+                break;
+            case COSINE:
+                x = cosineInterpolator(x);
+                y = cosineInterpolator(y);
+                z = cosineInterpolator(z);
+                w = cosineInterpolator(w);
+                u = cosineInterpolator(u);
+                v = cosineInterpolator(v);
                 break;
         }
         //0xE95E1, 0xD4BC7, 0xC1EDB, 0xB0C8B, 0xA1279, 0x92E85
@@ -410,6 +442,14 @@ public class ValueNoise extends NoiseUtil implements INoise
                 w = quinticInterpolator(w);
                 u = quinticInterpolator(u);
                 v = quinticInterpolator(v);
+                break;
+            case COSINE:
+                x = cosineInterpolator(x);
+                y = cosineInterpolator(y);
+                z = cosineInterpolator(z);
+                w = cosineInterpolator(w);
+                u = cosineInterpolator(u);
+                v = cosineInterpolator(v);
                 break;
         }
         xFloor *= 0xEBEDF;

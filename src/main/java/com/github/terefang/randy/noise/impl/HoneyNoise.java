@@ -10,6 +10,8 @@ public class HoneyNoise   extends NoiseUtil implements INoise
     {
         switch (this.getInterpolation())
         {
+            case COSINE:
+                return super.name()+"Cosine";
             case QUINTIC:
                 return super.name()+"Quintic";
             case HERMITE:

@@ -18,6 +18,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
@@ -360,51 +361,95 @@ public class TestUtil {
 
     public static void test2d_image(INoise _type, NoiseField _nf, float _freq, String _suffix, String _category, String _name)
     {
+        test2d_image(_type, _nf, _freq, _suffix, _category, _name, true);
+    }
+    public static void test2d_image(INoise _type, NoiseField _nf, float _freq, String _suffix, String _category, String _name, boolean _things)
+    {
         BufferedImage _bi = NoiseFieldUtil.getHFEImage(_nf, -1., 1.);
-        Graphics2D _g = (Graphics2D) _bi.getGraphics();
-        BmpFont _font = BmpFont.defaultInstance();
-        _font.drawString(_g,10, 10,"T = "+_type.name()+_suffix+String.format(" : Seed = 0x%08X", _type.getSeed()), Color.YELLOW,Color.BLACK);
-        _font.drawString(_g,10, 30,"FREQ = "+_freq, Color.YELLOW,Color.BLACK);
-
-        int[] _histo = new int[256];
-        int _max = 0;
-        for(double _v : _nf.getData())
+        if(_things)
         {
-            int _t = (int) (128+ (_v*128));
-            if(_t<0 || _t>255) {
-                //IGNORE
-            }
-            else {
-                _histo[_t]++;
-                if(_max<_histo[_t]) _max = _histo[_t];
-            }
-        }
+            Graphics2D _g = (Graphics2D) _bi.getGraphics();
+            _g.setColor(Color.BLACK);
+            _g.setStroke(new BasicStroke(1f));
+            _g.drawLine(512, 0, 512,1024);
+            _g.drawLine(0, 512, 1024,512);
 
-        _g.setColor(Color.MAGENTA);
-        _g.setStroke(new BasicStroke(2f));
-        for(int _i =1; _i<256; _i++)
-        {
-            int _that1= (int) (1023- ((_histo[_i-1])*768d/_max));
-            int _that2= (int) (1023-  ((_histo[_i])*768d/_max));
-            _g.drawLine((_i-1)*4, _that1, (_i)*4,_that2);
-        }
+            int[] _histo = new int[256];
+            int _max = 0;
+            for(double _v : _nf.getData())
+            {
+                int _t = (int) (128+ (_v*128));
+                if(_t<0 || _t>255) {
+                    //IGNORE
+                }
+                else {
+                    _histo[_t]++;
+                    if(_max<_histo[_t]) _max = _histo[_t];
+                }
+            }
 
-        _g.dispose();
+            _g.setColor(Color.MAGENTA);
+            _g.setStroke(new BasicStroke(2f));
+            for(int _i =1; _i<256; _i++)
+            {
+                int _that1= (int) (1023- ((_histo[_i-1])*768d/_max));
+                int _that2= (int) (1023-  ((_histo[_i])*768d/_max));
+                _g.drawLine((_i-1)*4, _that1, (_i)*4,_that2);
+            }
+
+            _g.setColor(Color.ORANGE);
+            _g.setStroke(new BasicStroke(2f));
+            //for(int _j =0; _j<_nf.getWidth(); _j+=_nf.getWidth()/16)
+            int _j =512;
+            {
+                for(int _i =1; _i<_nf.getWidth(); _i++)
+                {
+                    int _that1= (int) (512-(_nf.getPoint(_i-1, _j)*512));
+                    int _that2= (int) (512-(_nf.getPoint(_i, _j)*512));
+                    _g.drawLine((_i-1), _that1, (_i),_that2);
+                }
+            }
+
+            BmpFont _font = BmpFont.defaultInstance();
+            _font.drawString(_g,10, 10,"T = "+_type.name()+_suffix+String.format(" : Seed = 0x%08X", _type.getSeed()), Color.YELLOW,Color.BLACK);
+            _font.drawString(_g,10, 30,"FREQ = "+_freq, Color.YELLOW,Color.BLACK);
+            _g.dispose();
+        }
         NoiseFieldUtil.savePNG(_bi, "./out/noise/" + _category +"/"+_name + ".png");
     }
 
     @SneakyThrows
     public static void test2d(INoise _type, String _category) {
+        test2d(_type, _category, false, true);
+    }
+    @SneakyThrows
+
+    public static void test2d(INoise _type, String _category, boolean _normalize, boolean _things)
+    {
+        test2d(_type,Arrays.asList(ITransform.TransformType.values()), _category, _normalize, _things, null);
+    }
+
+    public static void test2d(INoise _type, List<ITransform.TransformType> _ttransList, String _category, boolean _normalize, boolean _things, NoiseField.NoiseFieldProcess _nfp) {
         for(final float _freq : _FREQ)
         {
-            for(final ITransform.TransformType _ttrans : ITransform.TransformType.values()) {
+            for(final ITransform.TransformType _ttrans : _ttransList) {
                 _type.setTransform(TypeTransform.from(_ttrans));
                 String _name = String.format("~xy-2d~fq=%04d", (int) (_freq * 10));
                 System.err.println("-START " + _name);
                 NoiseField _nf = new NoiseField(_SIZE, _SIZE);
                 test2d_field(_type, _nf, _freq);
 
-                test2d_image(_type, _nf, _freq, "", _category, _type.name()+_name);
+                if(_normalize)
+                {
+                    _nf.normalize(-.98765, 0.98765);
+                }
+
+                if(_nfp!=null)
+                {
+                    _nfp.process(_nf);
+                }
+
+                test2d_image(_type, _nf, _freq, "", _category, _type.name()+_name, _things);
 
                 System.err.println("-END " + _name);
             }
@@ -421,6 +466,7 @@ public class TestUtil {
     public static List<INoise> setupBaseNoises(long _seed)
     {
         return Arrays.asList(
+                RandyUtil.perlinNoise(_seed, NoiseUtil.COSINE),
                 RandyUtil.perlinNoise(_seed, NoiseUtil.QUINTIC),
                 RandyUtil.perlinNoise(_seed, NoiseUtil.HERMITE),
                 RandyUtil.perlinNoise(_seed, NoiseUtil.LINEAR),
@@ -462,12 +508,15 @@ public class TestUtil {
 
                 RandyUtil.cubicNoise(_seed, NoiseUtil.BASE_HARSHNESS),
                 RandyUtil.lumpNoise(_seed, NoiseUtil.BASE_HARSHNESS),
+                RandyUtil.honeyNoise(_seed, NoiseUtil.COSINE),
                 RandyUtil.honeyNoise(_seed, NoiseUtil.QUINTIC),
                 RandyUtil.honeyNoise(_seed, NoiseUtil.HERMITE),
                 RandyUtil.honeyNoise(_seed, NoiseUtil.LINEAR),
+                RandyUtil.solidNoise(_seed, NoiseUtil.COSINE),
                 RandyUtil.solidNoise(_seed, NoiseUtil.QUINTIC),
                 RandyUtil.solidNoise(_seed, NoiseUtil.HERMITE),
                 RandyUtil.solidNoise(_seed, NoiseUtil.LINEAR),
+                RandyUtil.valueNoise(_seed, NoiseUtil.COSINE),
                 RandyUtil.valueNoise(_seed, NoiseUtil.QUINTIC),
                 RandyUtil.valueNoise(_seed, NoiseUtil.HERMITE),
                 RandyUtil.valueNoise(_seed, NoiseUtil.LINEAR),
@@ -478,6 +527,10 @@ public class TestUtil {
                 RandyUtil.dwxNoise(_seed, NoiseUtil.BASE_HARSHNESS, RandyUtil.solidNoise(_seed, NoiseUtil.HERMITE)),
                 RandyUtil.dwxNoise(_seed, NoiseUtil.BASE_HARSHNESS, RandyUtil.valueNoise(_seed, NoiseUtil.HERMITE)),
                 RandyUtil.dwxNoise(_seed, NoiseUtil.BASE_HARSHNESS, RandyUtil.perlinNoise(_seed, NoiseUtil.HERMITE)),
+                RandyUtil.dwxNoise(_seed, NoiseUtil.BASE_HARSHNESS, RandyUtil.honeyNoise(_seed, NoiseUtil.COSINE)),
+                RandyUtil.dwxNoise(_seed, NoiseUtil.BASE_HARSHNESS, RandyUtil.solidNoise(_seed, NoiseUtil.COSINE)),
+                RandyUtil.dwxNoise(_seed, NoiseUtil.BASE_HARSHNESS, RandyUtil.valueNoise(_seed, NoiseUtil.COSINE)),
+                RandyUtil.dwxNoise(_seed, NoiseUtil.BASE_HARSHNESS, RandyUtil.perlinNoise(_seed, NoiseUtil.COSINE)),
                 RandyUtil.dwxNoise(_seed, NoiseUtil.BASE_HARSHNESS, RandyUtil.simplexNoise(_seed))
         );
     }

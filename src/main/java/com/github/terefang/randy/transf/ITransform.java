@@ -51,11 +51,15 @@ public interface ITransform
         T_ABS,
         T_ABS1M,
         T_INVERT,
+        T_INVNORM,
         T_EXP,
         T_EX,
-        T_HERMITESPLINE,
-        T_QUINTICSPLINE,
-        T_BARRONSPLINE,
+        T_IHERMITE,
+        T_IQUINTIC,
+        T_IBARRON,
+        T_ISPLOBBLE,
+        T_ISPLOBBLEQ,
+        T_QMF,
         T_BINARY,
         T_CLAMP01,
         T_CLAMP10,
@@ -64,7 +68,12 @@ public interface ITransform
         T_LEVEL4,
         T_LEVEL8,
         T_LEVEL16,
-        T_LEVEL32
+        T_LEVEL32,
+        T_COLLATZ_1K,
+        T_COLLATZ_4K,
+        T_COLLATZ_SINE_4K,
+        T_COLLATZ_COSINE_4K,
+        T_COLLATZ_INVNORM_4K
         ;
     }
 }

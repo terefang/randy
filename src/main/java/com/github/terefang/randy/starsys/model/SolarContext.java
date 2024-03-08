@@ -24,6 +24,67 @@ public class SolarContext
     double surfaceTemperature;
     double safeJumpDistance;
 
+    public static SolarContext randomType(int _seed, double _bias)
+    {
+        ArcRand _rng = ArcRand.from(_seed);
+        String _lookup = StarSysUtil.getString(StarSysUtil.merge("star_table","default"));
+        _lookup = StarSysUtil.lookupTabled(_bias, _rng, StarSysUtil.merge("star_table"), _lookup);
+        while(_lookup.startsWith("*"))
+        {
+            _lookup = StarSysUtil.lookupTabled(_rng, StarSysUtil.merge("star_table"), _lookup);
+        }
+        String _spectra=StarSysUtil.getString(StarSysUtil.merge("star_table",_lookup,"spectra"));
+        List<String> _list = StarSysUtil.getList(StarSysUtil.merge("star_table",_lookup,"sizes"));
+        String _rsize = _list.get((int) _rng.next(_list.size()));
+        float _num = _rng.next(100f)/10f;
+        return from(_seed, _spectra, _rsize, _num);
+    }
+
+    public static SolarContext from(int _seed, String _spectra, String _rsize, float _num)
+    {
+        SolarContext _ctx = new SolarContext();
+        _ctx.seed = _seed;
+        _ctx.spectra = _spectra;
+        _ctx.rsize = _rsize;
+        if(!"!".equalsIgnoreCase(_ctx.spectra))
+        {
+            _ctx.size = StarSysUtil.getInt(StarSysUtil.merge("quantify","size",_ctx.rsize));
+        }
+        _ctx.num = _num;
+        return _ctx;
+    }
+
+    public static SolarContext from(int _seed, double _mass, boolean _gaia)
+    {
+        return from(_seed, _mass, -1., -1., Double.MIN_VALUE, _gaia);
+    }
+    public static SolarContext from(int _seed, double _mass, double _radius, double _lum, double _bv, boolean _gaia)
+    {
+        SolarContext _ctx = new SolarContext();
+        _ctx.seed = _seed;
+        _ctx.mass = _mass;
+
+        _ctx.luminosity= (_lum < 0.) ? StarSysUtil.calcStarLuminosityFromMass(_ctx.mass, _gaia) : _lum;
+        _ctx.surfaceDistance = (_radius < 0.) ? StarSysUtil.calcStarRadiusMS(_ctx.mass) : _radius;
+
+        _ctx.surfaceTemperature = (_bv == Double.MIN_VALUE) ?
+                StarSysUtil.calcStarSurfaceTempKelvin(_ctx.surfaceDistance, _ctx.luminosity)
+                : StarSysUtil.bv2temp(_bv) ;
+
+        _ctx.spectra = StarSysUtil.calcStarSpectralClass(_ctx.surfaceTemperature);
+        _ctx.num = StarSysUtil.calcStarSpectralNum(_ctx.surfaceTemperature, _ctx.mass, _ctx.spectra);
+
+        _ctx.size = StarSysUtil.getInt(StarSysUtil.merge("quantify", "spectra", _ctx.spectra));
+        _ctx.rsize = StarSysUtil.getString(StarSysUtil.merge("quantify", "rsize"), _ctx.size);
+
+        _ctx.surfaceDistance *= (_radius < 0.) ? StarSysUtil.getFloat(StarSysUtil.merge("stellar_type",_ctx.spectra,_ctx.rsize,"surface_distance_adjustment")): 1.;
+
+        _ctx.outerPlanetaryLimit = StarSysUtil.calcStarOuterPlanetaryLimit(_ctx.mass);
+        _ctx.safeJumpDistance = StarSysUtil.calcSafeJumpDistanceAU(_ctx.surfaceDistance*StarSysUtil.SOL_TO_AU, _ctx.mass);
+
+        return _ctx;
+    }
+
     public static SolarContext randomMK(int _seed)
     {
         SolarContext _ctx = new SolarContext();
@@ -34,7 +95,6 @@ public class SolarContext
         List<String> _list = StarSysUtil.getKeys(StarSysUtil.merge("quantify","spectra"));
         int _off = (int) _rng.nextDice(1, _list.size(), -1);
         _ctx.spectra = _list.get(_off);
-
         _ctx.num = _rng.next(100f)/10f;
 
         _list = StarSysUtil.getList(StarSysUtil.merge("quantify", "rsize"));
@@ -46,23 +106,17 @@ public class SolarContext
 
     public static SolarContext tabledMK(int _seed)
     {
-        SolarContext _ctx = new SolarContext();
-        _ctx.seed = _seed;
         ArcRand _rng = ArcRand.from(_seed);
         String _lookup = StarSysUtil.getString(StarSysUtil.merge("star_table","default"));
         while(_lookup.startsWith("*"))
         {
             _lookup = StarSysUtil.lookupTabled(_rng, StarSysUtil.merge("star_table"), _lookup);
         }
-        _ctx.spectra=StarSysUtil.getString(StarSysUtil.merge("star_table",_lookup,"spectra"));
+        String _spectra=StarSysUtil.getString(StarSysUtil.merge("star_table",_lookup,"spectra"));
         List<String> _list = StarSysUtil.getList(StarSysUtil.merge("star_table",_lookup,"sizes"));
-        _ctx.rsize = _list.get((int) _rng.next(_list.size()));
-        if(!"!".equalsIgnoreCase(_ctx.spectra))
-        {
-            _ctx.size = StarSysUtil.getInt(StarSysUtil.merge("quantify","size",_ctx.rsize));
-        }
-        _ctx.num = _rng.next(100f)/10f;
-        return _ctx;
+        String _rsize = _list.get((int) _rng.next(_list.size()));
+        float _num = _rng.next(100f)/10f;
+        return from(_seed, _spectra, _rsize, _num);
     }
 
     public static SolarContext tabledMK(int _seed, double _u, double _v, double _w)
@@ -261,7 +315,11 @@ public class SolarContext
         this.safeJumpDistance = StarSysUtil.calcSafeJumpDistanceAU(this.surfaceDistance*StarSysUtil.SOL_TO_AU, this.mass);
     }
 
-
-
-
+    public static void main(String[] args) {
+        for(double _i=10. ; _i>.1; _i-=.25)
+        {
+            SystemContext.from(0,0,
+            SolarContext.from(0xbeef, _i, true), true).outputInformation(System.err);
+        }
+    }
 }
