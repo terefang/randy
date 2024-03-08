@@ -16,6 +16,7 @@ float3 cross(float3 a, float3 b)
 }
 
 // -------------------------------------------------
+// https://www.decarpentier.nl/scape-procedural-extensions
 
 float swissTurbulence(float2 p, float seed, int octaves,
                       float lacunarity = 2.0, float gain = 0.5,
@@ -40,6 +41,7 @@ float swissTurbulence(float2 p, float seed, int octaves,
 
 
 // -------------------------------------------------
+// https://www.decarpentier.nl/scape-procedural-extensions
 
 float jordanTurbulence(float2 p, float seed, int octaves, float lacunarity = 2.0,
                        float gain1 = 0.8, float gain = 0.5,
@@ -158,49 +160,6 @@ float iqTurbulence(float2 p, float seed, int octaves,
         amp *= gain;
     }
     return sum;
-}
-
-// -------------------------------------------------
-
-float3 perlinNoisePseudoDeriv(float2 p, float seed)
-{
-    // Calculate 2D integer coordinates i and fraction p.
-    float2 i = floor(p);
-    float2 f = p - i;
-
-    // Get weights from the coordinate fraction
-    float2 w = f * f * f * (f * (f * 6 - 15) + 10);
-    float4 w4 = float4(1, w.x, w.y, w.x * w.y);
-
-    // Get pseudo derivative weights
-    float2 dw = f * f * (f * (30 * f - 60) + 30);
-
-    // Get the four randomly permutated indices from the noise lattice nearest to
-    // p and offset these numbers with the seed number.
-    float4 perm = tex2D(samplerPerlinPerm2D, i / 256) + seed;
-
-    // Permutate the four offseted indices again and get the 2D gradient for each
-    // of the four permutated coordinates-seed pairs.
-    float4 g1 = tex2D(samplerPerlinGrad2D, perm.xy) * 2 - 1;
-    float4 g2 = tex2D(samplerPerlinGrad2D, perm.zw) * 2 - 1;
-
-    // Evaluate the four lattice gradients at p
-    float a = dot(g1.xy, f);
-    float b = dot(g2.xy, f + float2(-1,  0));
-    float c = dot(g1.zw, f + float2( 0, -1));
-    float d = dot(g2.zw, f + float2(-1, -1));
-
-    // Bi-linearly blend between the gradients, using w4 as blend factors.
-    float4 grads = float4(a, b - a, c - a, a - b - c + d);
-    float n = dot(grads, w4);
-
-    // Calculate pseudo derivates
-    float dx = dw.x * (grads.y + grads.w*w.y);
-    float dy = dw.y * (grads.z + grads.w*w.x);
-
-    // Return the noise value, roughly normalized in the range [-1, 1]
-    // Also return the pseudo dn/dx and dn/dy, scaled by the same factor
-    return float3(n, dx, dy) * 1.5;
 }
 
 ```

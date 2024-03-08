@@ -2,6 +2,8 @@ package com.github.terefang.randy.noise.impl;
 
 import com.github.terefang.randy.noise.INoise;
 import com.github.terefang.randy.noise.NoiseUtil;
+import com.github.terefang.randy.noise.double2;
+import com.github.terefang.randy.noise.double3;
 
 public class CellularMergeNoise extends NoiseUtil implements INoise
 {
