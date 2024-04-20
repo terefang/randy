@@ -1,10 +1,33 @@
 package com.github.terefang.randy.noise;
 
 import java.awt.*;
+import java.util.UUID;
 
 public abstract class NoiseUtil extends AbstractNoise
 {
     // ----------------------------------------------------------------------------
+
+    public static double value(double _x, double _y)
+    {
+        return Math.sqrt(_x*_x+_y*_y);
+    }
+
+    public static double value(double _x, double _y, double _z)
+    {
+        return Math.sqrt(_x*_x+_y*_y+_z*_z);
+    }
+
+    public static long toSeed(String _seed)
+    {
+        UUID _u = UUID.nameUUIDFromBytes(_seed.getBytes());
+        return _u.getMostSignificantBits() ^ _u.getLeastSignificantBits();
+    }
+
+    public static long toSeed(byte[] _seed)
+    {
+        UUID _u = UUID.nameUUIDFromBytes(_seed);
+        return _u.getMostSignificantBits() ^ _u.getLeastSignificantBits();
+    }
 
     public static double[] singleGradientPerturb2(int interpolation, int seed, double perturbAmp, double frequency, double[] v2)
     {

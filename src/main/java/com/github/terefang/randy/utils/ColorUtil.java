@@ -389,7 +389,7 @@ public class ColorUtil
         double _V = RgbToHsvV(_r,_g,_b);
         double _S = RgbToHsvS(_r,_g,_b);
         double _H = RgbToHsvH(_r,_g,_b);
-        return fromHSV(_H+_h, _S, _V);
+        return fromHSV(_H+_h, _S*100f, _V*100f);
     }
 
     public static Color colorLerp(Color a, Color b, double t)

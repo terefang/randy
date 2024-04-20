@@ -143,8 +143,8 @@ public class PlanetContext
         }
         this.exoTemp=StarSysUtil.calcExospericTemp(_sol.getLuminosity(),this.orbit);
         this.planetTemp=(Math.sqrt(Math.sqrt(_sol.getLuminosity())/this.orbit)*340)-273.15;
-        this.planetTempMax=(Math.sqrt(Math.sqrt(_sol.getLuminosity())/(this.orbit*(1-this.planetEccent)))*340)-273.15;
-        this.planetTempMin=(Math.sqrt(Math.sqrt(_sol.getLuminosity())/(this.orbit*(1+this.planetEccent)))*340)-273.15;
+        this.planetTempMax=(Math.sqrt(Math.sqrt(_sol.getLuminosity())/(this.orbit*(1-this.planetEccent)))*340*Math.pow(this.rotationPeriod/24., .2))-273.15;
+        this.planetTempMin=(Math.sqrt(Math.sqrt(_sol.getLuminosity())/(this.orbit*(1+this.planetEccent)))*340*Math.pow(24./this.rotationPeriod, .2))-273.15;
         this.planetTempAvg=(this.planetTemp+this.planetTempMin+this.planetTempMax)/3;
 
         this.rmsVelocity = StarSysUtil.calcRmsVelocity(28, _sol.getLuminosity(), this.orbit);

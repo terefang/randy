@@ -7,6 +7,7 @@
 package com.github.terefang.randy.planetj.proc;
 
 import com.github.terefang.randy.planetj.PlanetJ;
+import com.github.terefang.randy.utils.LogSink;
 
 import java.util.concurrent.Callable;
 
@@ -19,20 +20,21 @@ public class AzimuthProc implements Callable<AzimuthProc>
     public double ymin;
     public double ymax;
     PlanetJ main = null;
-
+    LogSink _log;
     int j;
     boolean k;
 
-    public AzimuthProc(PlanetJ that, boolean m_k, int m_j)
+    public AzimuthProc(PlanetJ that,LogSink _log, boolean m_k, int m_j)
     {
         main = that;
         k=m_k;
         j=m_j;
+        this._log=_log;
     }
     
-    public static AzimuthProc create(PlanetJ planetJ, int j, boolean k)
+    public static AzimuthProc create(PlanetJ planetJ,LogSink _log, int j, boolean k)
     {
-        return new AzimuthProc(planetJ, k, j);
+        return new AzimuthProc(planetJ, _log,k, j);
     }
     
     @Override
@@ -58,7 +60,7 @@ public class AzimuthProc implements Callable<AzimuthProc>
                 main.planet_main(i,j,x1,y1,z1, main.Depth, k);
             }
         }
-        main.tickH(j);
+        main.tickH(j, _log);
         return this;
     }
 }

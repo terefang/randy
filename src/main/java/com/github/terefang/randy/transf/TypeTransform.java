@@ -31,6 +31,8 @@ public class TypeTransform implements ITransform
     {
         switch (this.transformType)
         {
+            case T_NEAR:
+                return (_result/(1.+Math.abs(_result)))*2.;
             case T_EX: try { _result = ((_result-1.) / (_result+1.)); break; } catch (Exception _xe) { _result = Double.MAX_VALUE; break; }
             case T_EXP: _result = -Math.log(0.5 - _result * 0.5) / 2.0; break;
             case T_SINE: _result = Math.sin(_result*Math.PI); break;
@@ -106,6 +108,8 @@ public class TypeTransform implements ITransform
     {
         switch (this.transformType)
         {
+            case T_NEAR:
+                return (_result/(1.+Math.abs(_result)))*2.;
             case T_EX: try { _result = ((_result-1.) / (_result+1.)); break; } catch (Exception _xe) { _result = Double.MAX_VALUE; break; }
             case T_EXP: _result = -Math.log(0.5 - _result * 0.5) / 2.0; break;
             case T_SINE: _result = Math.sin(_result*Math.PI); break;
@@ -181,6 +185,8 @@ public class TypeTransform implements ITransform
     {
         switch (this.transformType)
         {
+            case T_NEAR:
+                return (_result/(1.+Math.abs(_result)))*2.;
             case T_EX: try { _result = ((_result-1.) / (_result+1.)); break; } catch (Exception _xe) { _result = Double.MAX_VALUE; break; }
             case T_EXP: _result = -Math.log(0.5 - _result * 0.5) / 2.0; break;
             case T_SINE: _result = Math.sin(_result*Math.PI); break;

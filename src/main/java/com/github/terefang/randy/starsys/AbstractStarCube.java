@@ -2,7 +2,6 @@ package com.github.terefang.randy.starsys;
 
 import com.github.terefang.randy.RandyUtil;
 import com.github.terefang.randy.fractal.IFractal;
-import com.github.terefang.randy.fractal.RidgedMultiFractal;
 import com.github.terefang.randy.noise.INoise;
 import com.github.terefang.randy.noise.NoiseUtil;
 import lombok.Data;

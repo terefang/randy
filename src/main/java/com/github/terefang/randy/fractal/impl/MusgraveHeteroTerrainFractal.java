@@ -1,21 +1,24 @@
-package com.github.terefang.randy.fractal;
+package com.github.terefang.randy.fractal.impl;
 
+import com.github.terefang.randy.fractal.AbstractFractal;
+import com.github.terefang.randy.fractal.IFractal;
 import com.github.terefang.randy.noise.INoise;
 
-public class MusgraveFractal extends AbstractFractal implements IFractal
+public class MusgraveHeteroTerrainFractal extends AbstractFractal implements IFractal
 {
 
     @Override
     public double _fractal1(INoise _noise, double offset, double H, int octaves, double frequency, double lacunarity, double gain, boolean _vseed, double x) {
         x *= frequency;
         double y = 0;
-        double value = 0.0f;
-        double pwr = 1.0f;
-        double pwHL = (double) Math.pow(lacunarity, -H);
+        double pwr = 1.;
+        double pwHL = Math.pow(lacunarity, -H);
+
+        double value = 1.;
 
         for (int i = 0; i < octaves; i++)
         {
-            value += (_noise.noise1((_vseed ? i : 0), x) + offset) * pwr;
+            value += (_noise.noise1((_vseed ? i : 0), x) + offset) * pwr * value;
             pwr *= pwHL;
             if(fractalSpiral)
             {
@@ -35,13 +38,14 @@ public class MusgraveFractal extends AbstractFractal implements IFractal
         x *= frequency;
         y *= frequency;
 
-        double value = 0.0f;
-        double pwr = 1.0f;
-        double pwHL = (double) Math.pow(lacunarity, -H);
+        double pwr = 1.;
+        double pwHL = Math.pow(lacunarity, -H);
+
+        double value = 1.;
 
         for (int i = 0; i < octaves; i++)
         {
-            value += (_noise.noise2((_vseed ? i : 0), x,y) + offset) * pwr;
+            value += (_noise.noise2((_vseed ? i : 0), x,y) + offset) * pwr * value;
             pwr *= pwHL;
             if(fractalSpiral)
             {
@@ -62,13 +66,14 @@ public class MusgraveFractal extends AbstractFractal implements IFractal
         y *= frequency;
         z *= frequency;
 
-        double value = 0.0f;
-        double pwr = 1.0f;
-        double pwHL = (double) Math.pow(lacunarity, -H);
+        double pwr = 1.;
+        double pwHL = Math.pow(lacunarity, -H);
+
+        double value = 1.;
 
         for (int i = 0; i < octaves; i++)
         {
-            value += (_noise.noise3((_vseed ? i : 0), x,y,z) + offset) * pwr;
+            value += (_noise.noise3((_vseed ? i : 0), x,y,z) + offset) * pwr * value;
             pwr *= pwHL;
             if(fractalSpiral)
             {
@@ -91,13 +96,14 @@ public class MusgraveFractal extends AbstractFractal implements IFractal
         z *= frequency;
         u *= frequency;
 
-        double value = 0.0f;
-        double pwr = 1.0f;
-        double pwHL = (double) Math.pow(lacunarity, -H);
+        double pwr = 1.;
+        double pwHL = Math.pow(lacunarity, -H);
+
+        double value = 1.;
 
         for (int i = 0; i < octaves; i++)
         {
-            value += (_noise.noise4((_vseed ? i : 0), x,y,z,u) + offset) * pwr;
+            value += (_noise.noise4((_vseed ? i : 0), x,y,z,u) + offset) * pwr * value;
             pwr *= pwHL;
             if(fractalSpiral)
             {
@@ -122,13 +128,14 @@ public class MusgraveFractal extends AbstractFractal implements IFractal
         u *= frequency;
         v *= frequency;
 
-        double value = 0.0f;
-        double pwr = 1.0f;
-        double pwHL = (double) Math.pow(lacunarity, -H);
+        double pwr = 1.;
+        double pwHL = Math.pow(lacunarity, -H);
+
+        double value = 1.;
 
         for (int i = 0; i < octaves; i++)
         {
-            value += (_noise.noise5((_vseed ? i : 0), x,y,z,u,v) + offset) * pwr;
+            value += (_noise.noise5((_vseed ? i : 0), x,y,z,u,v) + offset) * pwr * value;
             pwr *= pwHL;
             if(fractalSpiral)
             {
@@ -155,13 +162,14 @@ public class MusgraveFractal extends AbstractFractal implements IFractal
         v *= frequency;
         w *= frequency;
 
-        double value = 0.0f;
-        double pwr = 1.0f;
-        double pwHL = (double) Math.pow(lacunarity, -H);
+        double pwr = 1.;
+        double pwHL = Math.pow(lacunarity, -H);
+
+        double value = 1.;
 
         for (int i = 0; i < octaves; i++)
         {
-            value += (_noise.noise6((_vseed ? i : 0), x,y,z,u,v,w) + offset) * pwr;
+            value += (_noise.noise6((_vseed ? i : 0), x,y,z,u,v,w) + offset) * pwr * value;
             pwr *= pwHL;
             if(fractalSpiral)
             {

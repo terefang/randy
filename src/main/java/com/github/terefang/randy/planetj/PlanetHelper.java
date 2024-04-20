@@ -2,9 +2,8 @@ package com.github.terefang.randy.planetj;
 
 import com.github.terefang.randy.RandyUtil;
 import com.github.terefang.randy.fractal.IFractal;
-import com.github.terefang.randy.fractal.MultiFractal;
-import com.github.terefang.randy.fractal.RidgedMultiFractal;
-import com.github.terefang.randy.fractal.SamplerFractal;
+import com.github.terefang.randy.fractal.impl.MultiFractal;
+import com.github.terefang.randy.fractal.impl.SamplerFractal;
 import com.github.terefang.randy.noise.NoiseUtil;
 import com.github.terefang.randy.planetj.projection.IProjectionCallback;
 import com.github.terefang.randy.planetj.projection.PlanetJProjectionContext;

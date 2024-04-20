@@ -1,14 +1,8 @@
 package planet;
 
-import com.github.terefang.randy.RandyUtil;
-import com.github.terefang.randy.fractal.IFractal;
-import com.github.terefang.randy.fractal.RidgedMultiFractal;
 import com.github.terefang.randy.map.ColorRamp;
-import com.github.terefang.randy.noise.NoiseUtil;
 import com.github.terefang.randy.planetj.PlanetHelper;
 import com.github.terefang.randy.planetj.codec.ImageCodec;
-import com.github.terefang.randy.planetj.projection.IProjectionCallback;
-import com.github.terefang.randy.planetj.projection.PlanetJProjectionContext;
 import lombok.SneakyThrows;
 import com.github.terefang.randy.planetj.PlanetJ;
 

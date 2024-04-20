@@ -8,6 +8,7 @@ package com.github.terefang.randy.planetj.proc;
 
 
 import com.github.terefang.randy.planetj.PlanetJ;
+import com.github.terefang.randy.utils.LogSink;
 
 /**
  *
@@ -16,21 +17,22 @@ import com.github.terefang.randy.planetj.PlanetJ;
 public class MercatorProc implements Runnable
 {
     PlanetJ main = null;
-    
+    LogSink _log;
     double y,scale1,cos2,theta1;
     int i,j,k;
     boolean b;
-    public MercatorProc(PlanetJ that, int m_k, int m_j, boolean m_b)
+    public MercatorProc(PlanetJ that,LogSink _log, int m_k, int m_j, boolean m_b)
     {
         main = that;
         k=m_k;
         j=m_j;
         b=m_b;
+        this._log=_log;
     }
     
-    public static MercatorProc create(PlanetJ planetJ, int j, int k,boolean b)
+    public static MercatorProc create(PlanetJ planetJ,LogSink _log, int j, int k,boolean b)
     {
-        return new MercatorProc(planetJ, k, j, b);
+        return new MercatorProc(planetJ, _log, k, j, b);
     }
     
     @Override
@@ -60,7 +62,7 @@ public class MercatorProc implements Runnable
                 }
             main.planet_main(i,j,Math.cos(theta1)*cos2,y,-Math.sin(theta1)*cos2, sDepth, b);
         }
-        main.tickH(j);
+        main.tickH(j,_log);
     }
     
 }

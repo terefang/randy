@@ -1,5 +1,7 @@
-package com.github.terefang.randy.fractal;
+package com.github.terefang.randy.fractal.impl;
 
+import com.github.terefang.randy.fractal.AbstractFractal;
+import com.github.terefang.randy.fractal.IFractal;
 import com.github.terefang.randy.noise.INoise;
 
 public class RidgedMultiFractal extends AbstractFractal implements IFractal

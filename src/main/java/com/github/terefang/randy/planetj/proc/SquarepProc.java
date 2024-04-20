@@ -1,21 +1,25 @@
 package com.github.terefang.randy.planetj.proc;
 
 import com.github.terefang.randy.planetj.PlanetJ;
+import com.github.terefang.randy.utils.LogSink;
+
 public class SquarepProc implements Runnable
 {
+	private final LogSink _log;
 	PlanetJ main = null;
 	
 	int i,j,k;
 	boolean b;
 
-	public static SquarepProc create(PlanetJ that, int m_j, int m_k, boolean m_b) { return new SquarepProc(that, m_j, m_k, m_b); }
+	public static SquarepProc create(PlanetJ that, LogSink _log, int m_j, int m_k, boolean m_b) { return new SquarepProc(that, _log, m_j, m_k, m_b); }
 	
-	public SquarepProc(PlanetJ that, int m_j, int m_k, boolean m_b)
+	public SquarepProc(PlanetJ that,LogSink _log, int m_j, int m_k, boolean m_b)
 	{
 		main = that;
 		j=m_j;
 		k=m_k;
 		b=m_b;
+		this._log=_log;
 	}
 	
 	@Override
@@ -45,7 +49,7 @@ public class SquarepProc implements Runnable
 				}
 			}
 		}
-		main.tickH(j);
+		main.tickH(j,_log);
 	}
 	
 }

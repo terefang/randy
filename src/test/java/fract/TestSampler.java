@@ -2,7 +2,6 @@ package fract;
 
 import com.github.terefang.randy.RandyUtil;
 import com.github.terefang.randy.fractal.IFractal;
-import com.github.terefang.randy.fractal.MusgraveHeteroTerrainFractal;
 import com.github.terefang.randy.nfield.NoiseField;
 import com.github.terefang.randy.nfield.NoiseFieldUtil;
 import com.github.terefang.randy.noise.INoise;
@@ -16,7 +15,6 @@ import util.TestUtil;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 

@@ -42,6 +42,7 @@ public class MoonContext {
         ArcRand _rng = ArcRand.from(_seed);
 
         double _moon_masses = _planet.getPlanetMass() * _rng.nextBounds(1, (float) _moon_mass_max, 0.0001f) / 100;
+
         int _x = 0;
 
         List<MoonContext> _list = new Vector<>();
@@ -75,6 +76,7 @@ public class MoonContext {
         {
             _base_radius = _roche;
         }
+
         double _base_step = ((_rng.next(8) + 3) / 20);
 
         double _moon_radian_last = 0;
@@ -103,6 +105,19 @@ public class MoonContext {
 
             if ((_moon_radian_last > 0) && (_moon_radian < (_moon_radian_last + _ctx.getDiameter() + _moon_diameter_last))) {
                 _moon_radian = _moon_radian_last + (_moon_radian / 4) + _ctx.getDiameter() + _moon_diameter_last;
+            }
+
+            double _rradian = StarSysUtil.calcRocheLimit(_ctx.getDiameter(),_ctx.getMassRel());
+            if(_rradian>_moon_radian)
+            {
+                _moon_radian=_rradian+(.5*_moon_radian);
+            }
+
+            // wobble limit
+            double _wobbleLimit = _planet.getPlanetDiameter() /(1+(_planet.getPlanetMass()/_ctx.getMass()));
+            while(_wobbleLimit>_moon_radian)
+            {
+                _moon_radian *= 1.1;
             }
 
             _ctx.setOrbit(_moon_radian);

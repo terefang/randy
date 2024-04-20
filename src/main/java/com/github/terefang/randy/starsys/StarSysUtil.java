@@ -12,9 +12,15 @@ import java.util.*;
 public class StarSysUtil {
     static Map<String,Object> _data;
 
+    // Calculate the Roche limit for a fluid body on circular orbit
     public static double calcRocheLimit(double _diameter /* km */, double _dp, double _dm /* densties */)
     {
         return 2.44 * (_diameter/2.) * Math.pow(_dp/_dm, 1./3.);
+    }
+
+    public static double calcRocheLimit(double _diameter /* km */, double _q /* mass ratio < 1 */)
+    {
+        return 2.44 * (_diameter/2.) * Math.pow(_q, -1./3.);
     }
 
     public static int calcOrbitalZone(double _orbit /* AU */, double _lum /* sol */)
@@ -74,12 +80,43 @@ public class StarSysUtil {
         return (_radiusAU*100)+Math.pow(_massSOL,0.3);
     }
 
+    /*
+    *    Black-body based conversion between effective temperature and B-V color.
+
+    Ballesteros 2012 (EPL 97, 34008) present a conversion between
+    effective temperature and B-V color index based on a black body
+    spectrum and the filter functions.
+    */
+
+    public static final double BALL_A = 0.92;
+    public static final double BALL_B = 1.7;
+    public static final double BALL_C = 0.62;
+    public static final double BALL_T0 = 4600.;
+
+    public static double calcStarTempFromBV_Ballesteros(double _bv)
+    {
+        return BALL_T0*(1.0/(BALL_A*_bv + BALL_B) + 1.0/(BALL_A*_bv + BALL_C));
+    }
+
+
     public static double calcStarBVcolorIndex(double _temp)
     {
         return Math.pow((5601./_temp), 1.5) - .4;
     }
 
-    public static float calcStarSpectralNum(double _temp, double _mass, String _spectra)
+    public static double calcStarTempFromBV(double _bv)
+    {
+        /* lets average between the quick and black body method */
+        return .5*(calcStarTempFromBV_Quick(_bv)+calcStarTempFromBV_Ballesteros(_bv));
+    }
+
+    public static double calcStarTempFromBV_Quick(double _bv)
+    {
+
+        return 5601./Math.pow((_bv +.4),(2./3.));
+    }
+
+    public static float calcStarSpectralNum(double _temp)
     {
         double num = 0;
         if(_temp >= 30000.)
@@ -191,6 +228,60 @@ public class StarSysUtil {
         return "!";
     }
 
+    public static int calcStarGaiaSize(double _temp)
+    {
+        if(_temp >= 30000.)
+        {
+            return 3; // "O";
+        }
+        else
+        if(_temp >= 10000.)
+        {
+            return 4; // "B";
+        }
+        else
+        if(_temp >= 7500.)
+        {
+            return 4; // "A";
+        }
+        else
+        if(_temp >= 6000.)
+        {
+            return 5; // "F";
+        }
+        else
+        if(_temp >= 5200.)
+        {
+            return 5; // "G";
+        }
+        else
+        if(_temp >= 3700.)
+        {
+            return 5; // "K";
+        }
+        else
+        if(_temp >= 2400.)
+        {
+            return 5; // "M";
+        }
+        else
+        if(_temp >= 1300.)
+        {
+            return 6; // "R"; // L
+        }
+        else
+        if(_temp >= 550.)
+        {
+            return 6; // "N"; // T
+        }
+        else
+        if(_temp >= 273.)
+        {
+            return 6; // "S"; // Y
+        }
+        return 7;
+    }
+
     public static double calcStarOuterPlanetaryLimit(double _mass)
     {
         double _limit = (200 * Math.pow(Math.pow(_mass,2),0.3333333333333333));
@@ -221,6 +312,14 @@ public class StarSysUtil {
     public static double calcStarRadius(double _lum, double _temp)
     {
         return Math.pow((_lum/Math.pow((_temp/5806),4)),0.5);
+    }
+
+    public static double calcStarLuminosityFromMassAndMetalicity(double _Mass, double _metalicity, boolean _gaia)
+    {
+        // Populatiion I stars have currently metalicity of 0.6
+        // L = 4.6 × M^3 × m^4
+        // solving for sol L=M=1 -> m^4 = 1/4.6 -> m = 0.682826774
+        return 4.6*Math.pow(_Mass,3.)*Math.pow(_metalicity,4.);
     }
 
     public static double calcStarLuminosityFromMass(double _mass, boolean _gaia)
@@ -595,11 +694,6 @@ public class StarSysUtil {
             }
         }
         return _list.get((int) (_list.size()*_rng));
-    }
-
-    public static int bv2temp(double _bv)
-    {
-        return (int) (4600. * (1. / (0.92 * _bv + 1.7) + 1 / (0.92 * _bv + 0.62)));
     }
 
 }

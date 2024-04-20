@@ -1,37 +1,33 @@
-package com.github.terefang.randy.fractal;
+package com.github.terefang.randy.fractal.impl;
 
+import com.github.terefang.randy.fractal.AbstractFractal;
+import com.github.terefang.randy.fractal.IFractal;
 import com.github.terefang.randy.noise.INoise;
 
-public class BrownianMotionFractal extends AbstractFractal implements IFractal
+public class BillowFractal extends AbstractFractal implements IFractal
 {
 
     @Override
     public double _fractal1(INoise _noise, double offset, double H, int octaves, double frequency, double lacunarity, double gain, boolean _vseed, double x) {
         x *= frequency;
-        double y = 0;
 
-        double sum = _noise.noise1(x);
+        double sum = ((Math.abs(_noise.noise1(x)) * 2) - 1);
         double amp = 1;
 
         for (int i = 1; i < octaves; i++) {
             x *= lacunarity;
-            y *= lacunarity;
 
             amp *= gain;
-            sum += _noise.noise1((_vseed ? i : 0), x) * amp;
-            if(fractalSpiral)
-            {
-                final double x2 = rotateX2D(x, y);
-                final double y2 = rotateY2D(x, y);
-                x = x2; y = y2;
-            }
+            sum += ((Math.abs(_noise.noise1((_vseed ? i : 0), x)) * 2) - 1) * amp;
         }
+
         amp = gain;
         double ampFractal = 1;
         for (int i = 1; i < octaves; i++) {
             ampFractal += amp;
             amp *= gain;
         }
+
         return sum / ampFractal;
     }
 
@@ -40,7 +36,7 @@ public class BrownianMotionFractal extends AbstractFractal implements IFractal
         x *= frequency;
         y *= frequency;
 
-        double sum = _noise.noise2(x, y);
+        double sum = ((Math.abs(_noise.noise2(x, y)) * 2) - 1);
         double amp = 1;
 
         for (int i = 1; i < octaves; i++) {
@@ -48,20 +44,16 @@ public class BrownianMotionFractal extends AbstractFractal implements IFractal
             y *= lacunarity;
 
             amp *= gain;
-            sum += _noise.noise2((_vseed ? i : 0), x, y) * amp;
-            if(fractalSpiral)
-            {
-                final double x2 = rotateX2D(x, y);
-                final double y2 = rotateY2D(x, y);
-                x = x2; y = y2;
-            }
+            sum += ((Math.abs(_noise.noise2((_vseed ? i : 0), x, y)) * 2) - 1) * amp;
         }
+
         amp = gain;
         double ampFractal = 1;
         for (int i = 1; i < octaves; i++) {
             ampFractal += amp;
             amp *= gain;
         }
+
         return sum / ampFractal;
     }
 
@@ -71,7 +63,7 @@ public class BrownianMotionFractal extends AbstractFractal implements IFractal
         y *= frequency;
         z *= frequency;
 
-        double sum = _noise.noise3(x, y, z);
+        double sum = ((Math.abs(_noise.noise3(x, y, z)) * 2) - 1);
         double amp = 1;
 
         for (int i = 1; i < octaves; i++) {
@@ -80,20 +72,16 @@ public class BrownianMotionFractal extends AbstractFractal implements IFractal
             z *= lacunarity;
 
             amp *= gain;
-            sum += _noise.noise3((_vseed ? i : 0), x, y, z) * amp;
-            if(fractalSpiral)
-            {
-                final double x2 = rotateX2D(x, y);
-                final double y2 = rotateY2D(x, y);
-                x = x2; y = y2;
-            }
+            sum += ((Math.abs(_noise.noise3((_vseed ? i : 0), x, y, z)) * 2) - 1) * amp;
         }
+
         amp = gain;
         double ampFractal = 1;
         for (int i = 1; i < octaves; i++) {
             ampFractal += amp;
             amp *= gain;
         }
+
         return sum / ampFractal;
     }
 
@@ -104,7 +92,7 @@ public class BrownianMotionFractal extends AbstractFractal implements IFractal
         z *= frequency;
         u *= frequency;
 
-        double sum = _noise.noise4(x, y, z, u);
+        double sum = ((Math.abs(_noise.noise4(x, y, z, u)) * 2) - 1);
         double amp = 1;
 
         for (int i = 1; i < octaves; i++) {
@@ -114,20 +102,16 @@ public class BrownianMotionFractal extends AbstractFractal implements IFractal
             u *= lacunarity;
 
             amp *= gain;
-            sum += _noise.noise4((_vseed ? i : 0), x, y, z, u) * amp;
-            if(fractalSpiral)
-            {
-                final double x2 = rotateX2D(x, y);
-                final double y2 = rotateY2D(x, y);
-                x = x2; y = y2;
-            }
+            sum += ((Math.abs(_noise.noise4((_vseed ? i : 0), x, y, z, u)) * 2) - 1) * amp;
         }
+
         amp = gain;
         double ampFractal = 1;
         for (int i = 1; i < octaves; i++) {
             ampFractal += amp;
             amp *= gain;
         }
+
         return sum / ampFractal;
     }
 
@@ -139,7 +123,7 @@ public class BrownianMotionFractal extends AbstractFractal implements IFractal
         u *= frequency;
         v *= frequency;
 
-        double sum = _noise.noise5(x, y, z, u, v);
+        double sum = ((Math.abs(_noise.noise5(x, y, z, u, v)) * 2) - 1);
         double amp = 1;
 
         for (int i = 1; i < octaves; i++) {
@@ -150,20 +134,16 @@ public class BrownianMotionFractal extends AbstractFractal implements IFractal
             v *= lacunarity;
 
             amp *= gain;
-            sum += _noise.noise5((_vseed ? i : 0), x, y, z, u, v) * amp;
-            if(fractalSpiral)
-            {
-                final double x2 = rotateX2D(x, y);
-                final double y2 = rotateY2D(x, y);
-                x = x2; y = y2;
-            }
+            sum += ((Math.abs(_noise.noise5((_vseed ? i : 0), x, y, z, u, v)) * 2) - 1) * amp;
         }
+
         amp = gain;
         double ampFractal = 1;
         for (int i = 1; i < octaves; i++) {
             ampFractal += amp;
             amp *= gain;
         }
+
         return sum / ampFractal;
     }
 
@@ -177,7 +157,7 @@ public class BrownianMotionFractal extends AbstractFractal implements IFractal
         u *= frequency;
         v *= frequency;
 
-        double sum = _noise.noise6(x, y, z, u, v, w);
+        double sum = ((Math.abs(_noise.noise6(x, y, z, w, u, v)) * 2) - 1);
         double amp = 1;
 
         for (int i = 1; i < octaves; i++) {
@@ -189,20 +169,16 @@ public class BrownianMotionFractal extends AbstractFractal implements IFractal
             v *= lacunarity;
 
             amp *= gain;
-            sum += _noise.noise6((_vseed ? i : 0), x, y, z, u, v, w) * amp;
-            if(fractalSpiral)
-            {
-                final double x2 = rotateX2D(x, y);
-                final double y2 = rotateY2D(x, y);
-                x = x2; y = y2;
-            }
+            sum += ((Math.abs(_noise.noise6((_vseed ? i : 0), x, y, z, w, u, v)) * 2) - 1) * amp;
         }
+
         amp = gain;
         double ampFractal = 1;
         for (int i = 1; i < octaves; i++) {
             ampFractal += amp;
             amp *= gain;
         }
+
         return sum / ampFractal;
     }
 }

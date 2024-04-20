@@ -581,6 +581,12 @@ public class NoiseFieldUtil
     }
 
     @SneakyThrows
+    public static void saveHFEImage(NoiseField nf, double _min, double _max, int _bands, String pngFileName)
+    {
+        savePNG(getHFEImage(nf,_min, _max, _bands), pngFileName);
+    }
+
+    @SneakyThrows
     public static void savePNG(BufferedImage bufferedImage, String pngFileName)
     {
         File file = new File(pngFileName);
@@ -614,6 +620,39 @@ public class NoiseFieldUtil
                 else
                 {
                     _h = (float)((_h-_min)/(_max-_min));
+                    col = new Color(_h,_h,_h);
+                }
+                bufferedImage.setRGB(x,y, col.getRGB());
+            }
+        }
+
+        return bufferedImage;
+    }
+
+    @SneakyThrows
+    public static BufferedImage getHFEImage(NoiseField nf, double _min, double _max, int _bands)
+    {
+        BufferedImage bufferedImage = new BufferedImage(nf.getWidth(), nf.getHeight(), BufferedImage.TYPE_INT_ARGB);
+
+        for(int y=0 ; y<nf.getHeight() ; ++y)
+        {
+            for(int x=0 ; x<nf.getWidth() ; ++x)
+            {
+                float _h = (float) nf.getPoint(x,y);
+                Color col = null;
+                if(_h<_min)
+                {
+                    col = Color.BLUE;
+                }
+                else
+                if(_h>_max)
+                {
+                    col = Color.RED;
+                }
+                else
+                {
+                    _h = (int)((float)((_h-_min)/(_max-_min))*_bands);
+                    _h = _h / ((float)_bands);
                     col = new Color(_h,_h,_h);
                 }
                 bufferedImage.setRGB(x,y, col.getRGB());

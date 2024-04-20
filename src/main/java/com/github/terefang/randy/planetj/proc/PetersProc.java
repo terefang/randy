@@ -1,23 +1,26 @@
 package com.github.terefang.randy.planetj.proc;
 
 import com.github.terefang.randy.planetj.PlanetJ;
+import com.github.terefang.randy.utils.LogSink;
 
 public class PetersProc implements Runnable
 {
+	private final LogSink _log;
 	PlanetJ main = null;
 	
 	double y,scale1,cos2,theta1;
 	int i,j,k;
 	boolean b;
 
-	public static PetersProc create(PlanetJ that, int m_j, int m_k, boolean m_b) { return new PetersProc(that, m_j, m_k, m_b); }
+	public static PetersProc create(PlanetJ that, LogSink _log, int m_j, int m_k, boolean m_b) { return new PetersProc(that, _log, m_j, m_k, m_b); }
 	
-	public PetersProc(PlanetJ that, int m_j, int m_k,boolean m_b)
+	public PetersProc(PlanetJ that,LogSink _log, int m_j, int m_k,boolean m_b)
 	{
 		main = that;
 		j=m_j;
 		k=m_k;
 		b=m_b;
+		this._log = _log;
 	}
 	
 	@Override
@@ -42,7 +45,7 @@ public class PetersProc implements Runnable
 				}
 			}
 		}
-		main.tickH(j);
+		main.tickH(j,this._log);
 	}
 	
 }

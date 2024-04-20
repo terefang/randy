@@ -1,8 +1,6 @@
 package util;
 
 import com.github.terefang.randy.RandyUtil;
-import com.github.terefang.randy.fractal.IFractal;
-import com.github.terefang.randy.fractal.MusgraveHeteroTerrainFractal;
 import com.github.terefang.randy.nfield.NoiseField;
 import com.github.terefang.randy.nfield.NoiseFieldUtil;
 import com.github.terefang.randy.noise.INoise;
@@ -18,7 +16,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
@@ -188,6 +185,16 @@ public class TestUtil {
         Graphics2D _g = _bI.createGraphics();
         _g.setColor(Color.BLACK);
         _g.fillRect(0,0,1023,1023);
+        _g.dispose();
+        return _bI;
+    }
+
+    public static BufferedImage setupImage(int _w)
+    {
+        BufferedImage _bI = new BufferedImage(_w, _w, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D _g = _bI.createGraphics();
+        _g.setColor(Color.BLACK);
+        _g.fillRect(0,0,_w-1,_w-1);
         _g.dispose();
         return _bI;
     }
@@ -533,5 +540,27 @@ public class TestUtil {
                 RandyUtil.dwxNoise(_seed, NoiseUtil.BASE_HARSHNESS, RandyUtil.perlinNoise(_seed, NoiseUtil.COSINE)),
                 RandyUtil.dwxNoise(_seed, NoiseUtil.BASE_HARSHNESS, RandyUtil.simplexNoise(_seed))
         );
+    }
+    public static List<INoise> setupPerlinNoises(long _seed)
+    {
+        return Arrays.asList(
+                RandyUtil.perlinNoise(_seed, NoiseUtil.COSINE),
+                RandyUtil.perlinNoise(_seed, NoiseUtil.QUINTIC),
+                RandyUtil.perlinNoise(_seed, NoiseUtil.HERMITE),
+                RandyUtil.perlinNoise(_seed, NoiseUtil.LINEAR),
+                RandyUtil.simplexNoise(_seed)
+        );
+    }
+    public static List<INoise> setupMixerNoises(long _seed)
+    {
+        return Arrays.asList(
+                RandyUtil.lumpNoise(_seed, NoiseUtil.BASE_HARSHNESS),
+                RandyUtil.honeyNoise(_seed, NoiseUtil.COSINE),
+                RandyUtil.honeyNoise(_seed, NoiseUtil.QUINTIC),
+                RandyUtil.honeyNoise(_seed, NoiseUtil.HERMITE),
+                RandyUtil.honeyNoise(_seed, NoiseUtil.LINEAR),
+                RandyUtil.foamNoise(_seed, NoiseUtil.BASE_SHARPNESS)
+
+                );
     }
 }

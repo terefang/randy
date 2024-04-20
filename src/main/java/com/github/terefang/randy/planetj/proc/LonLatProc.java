@@ -8,6 +8,7 @@ package com.github.terefang.randy.planetj.proc;
 
 
 import com.github.terefang.randy.planetj.PlanetJ;
+import com.github.terefang.randy.utils.LogSink;
 
 /**
  *
@@ -16,20 +17,22 @@ import com.github.terefang.randy.planetj.PlanetJ;
 public class LonLatProc implements Runnable
 {
     PlanetJ main = null;
+    LogSink _log;
 
     int j;
     boolean k;
 
-    public LonLatProc(PlanetJ that, boolean m_k, int m_j)
+    public LonLatProc(PlanetJ that,LogSink _log, boolean m_k, int m_j)
     {
         main = that;
         k=m_k;
         j=m_j;
+        this._log = _log;
     }
     
-    public static LonLatProc create(PlanetJ planetJ, int j, boolean k)
+    public static LonLatProc create(PlanetJ planetJ,LogSink _log, int j, boolean k)
     {
-        return new LonLatProc(planetJ, k, j);
+        return new LonLatProc(planetJ, _log,k, j);
     }
     
     @Override
@@ -48,7 +51,7 @@ public class LonLatProc implements Runnable
                 double _z = Math.cos(_lon)*_ysin;
                 main.planet_main(i,j,_x,_y,_z, sDepth, k);
             }
-        main.tickH(j);
+        main.tickH(j,_log);
     }
     
 }

@@ -8,6 +8,8 @@ package com.github.terefang.randy.planetj.proc;
 
 
 import com.github.terefang.randy.planetj.PlanetJ;
+import com.github.terefang.randy.utils.LogSink;
+
 /**
  *
  * @author fredo
@@ -15,20 +17,21 @@ import com.github.terefang.randy.planetj.PlanetJ;
 public class HexagonalProc implements Runnable
 {
     PlanetJ main = null;
-
+    LogSink _log;
     int j;
     boolean k;
 
-    public HexagonalProc(PlanetJ that, boolean m_k, int m_j)
+    public HexagonalProc(PlanetJ that,LogSink _log, boolean m_k, int m_j)
     {
         main = that;
         k=m_k;
         j=m_j;
+        this._log=_log;
     }
     
-    public static HexagonalProc create(PlanetJ planetJ, int j, boolean k)
+    public static HexagonalProc create(PlanetJ planetJ,LogSink _log, int j, boolean k)
     {
-        return new HexagonalProc(planetJ, k, j);
+        return new HexagonalProc(planetJ, _log, k, j);
     }
     
     @Override
@@ -55,7 +58,7 @@ public class HexagonalProc implements Runnable
         {
             main.heights[i][j] = Double.NaN;
         }
-        main.tickH(j);
+        main.tickH(j,this._log);
     }
 
 

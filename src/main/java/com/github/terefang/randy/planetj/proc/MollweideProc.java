@@ -8,6 +8,8 @@ package com.github.terefang.randy.planetj.proc;
 
 
 import com.github.terefang.randy.planetj.PlanetJ;
+import com.github.terefang.randy.utils.LogSink;
+
 /**
  *
  * @author fredo
@@ -15,20 +17,21 @@ import com.github.terefang.randy.planetj.PlanetJ;
 public class MollweideProc implements Runnable
 {
     PlanetJ main = null;
-
+    LogSink _log;
     int j;
     boolean k;
 
-    public MollweideProc(PlanetJ that, boolean m_k, int m_j)
+    public MollweideProc(PlanetJ that,LogSink _log, boolean m_k, int m_j)
     {
         main = that;
         k=m_k;
         j=m_j;
+        this._log=_log;
     }
 
-    public static MollweideProc create(PlanetJ planetJ, int j, boolean k)
+    public static MollweideProc create(PlanetJ planetJ,LogSink _log, int j, boolean k)
     {
-        return new MollweideProc(planetJ, k, j);
+        return new MollweideProc(planetJ, _log, k, j);
     }
 
     @Override
@@ -64,7 +67,7 @@ public class MollweideProc implements Runnable
                 }
             }
         }
-        main.tickH(j);
+        main.tickH(j, this._log);
     }
     
 }

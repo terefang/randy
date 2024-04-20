@@ -1,6 +1,6 @@
 package com.github.terefang.randy.starsys;
 
-import com.github.terefang.randy.fractal.RidgedMultiFractal;
+import com.github.terefang.randy.fractal.impl.RidgedMultiFractal;
 import lombok.Data;
 import com.github.terefang.randy.starsys.model.SystemContext;
 

@@ -13,7 +13,7 @@ public class AbstractFractal implements IFractal
     double gain = NoiseUtil.BASE_GAIN;
     boolean vseed = true;
 
-    boolean fractalSpiral = false;
+    protected boolean fractalSpiral = false;
 
     public boolean isFractalSpiral() {
         return fractalSpiral;

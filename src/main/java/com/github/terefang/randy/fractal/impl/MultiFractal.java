@@ -1,23 +1,21 @@
-package com.github.terefang.randy.fractal;
+package com.github.terefang.randy.fractal.impl;
 
+import com.github.terefang.randy.fractal.AbstractFractal;
+import com.github.terefang.randy.fractal.IFractal;
 import com.github.terefang.randy.noise.INoise;
+import com.github.terefang.randy.noise.NoiseUtil;
 
-public class MusgraveHeteroTerrainFractal extends AbstractFractal implements IFractal
+public class MultiFractal extends AbstractFractal implements IFractal
 {
 
     @Override
     public double _fractal1(INoise _noise, double offset, double H, int octaves, double frequency, double lacunarity, double gain, boolean _vseed, double x) {
         x *= frequency;
         double y = 0;
-        double pwr = 1.;
-        double pwHL = Math.pow(lacunarity, -H);
-
-        double value = 1.;
-
-        for (int i = 0; i < octaves; i++)
-        {
-            value += (_noise.noise1((_vseed ? i : 0), x) + offset) * pwr * value;
-            pwr *= pwHL;
+        double sum = 0f, correction = 0f;
+        for (int i = 0; i < octaves; i++) {
+            correction += gain;
+            sum += _noise.noise1((_vseed ? i : 0), x) * gain;
             if(fractalSpiral)
             {
                 final double x2 = rotateX2D(x, y);
@@ -27,8 +25,7 @@ public class MusgraveHeteroTerrainFractal extends AbstractFractal implements IFr
             x *= lacunarity;
             y *= lacunarity;
         }
-
-        return value/Math.pow(pwHL,octaves);
+        return sum/correction;
     }
 
     @Override
@@ -36,15 +33,10 @@ public class MusgraveHeteroTerrainFractal extends AbstractFractal implements IFr
         x *= frequency;
         y *= frequency;
 
-        double pwr = 1.;
-        double pwHL = Math.pow(lacunarity, -H);
-
-        double value = 1.;
-
-        for (int i = 0; i < octaves; i++)
-        {
-            value += (_noise.noise2((_vseed ? i : 0), x,y) + offset) * pwr * value;
-            pwr *= pwHL;
+        double sum = 0f, correction = 0f;
+        for (int i = 0; i < octaves; i++) {
+            correction += gain;
+            sum += _noise.noise2((_vseed ? i : 0), x, y) * gain;
             if(fractalSpiral)
             {
                 final double x2 = rotateX2D(x, y);
@@ -54,8 +46,7 @@ public class MusgraveHeteroTerrainFractal extends AbstractFractal implements IFr
             x *= lacunarity;
             y *= lacunarity;
         }
-
-        return value/Math.pow(pwHL,octaves);
+        return sum/correction;
     }
 
     @Override
@@ -64,15 +55,10 @@ public class MusgraveHeteroTerrainFractal extends AbstractFractal implements IFr
         y *= frequency;
         z *= frequency;
 
-        double pwr = 1.;
-        double pwHL = Math.pow(lacunarity, -H);
-
-        double value = 1.;
-
-        for (int i = 0; i < octaves; i++)
-        {
-            value += (_noise.noise3((_vseed ? i : 0), x,y,z) + offset) * pwr * value;
-            pwr *= pwHL;
+        double sum = 0f, correction = 0f;
+        for (int i = 0; i < octaves; i++) {
+            correction += gain;
+            sum += _noise.noise3((_vseed ? i : 0), x, y, z) * gain;
             if(fractalSpiral)
             {
                 final double x2 = rotateX2D(x, y);
@@ -83,8 +69,7 @@ public class MusgraveHeteroTerrainFractal extends AbstractFractal implements IFr
             y *= lacunarity;
             z *= lacunarity;
         }
-
-        return value/Math.pow(pwHL,octaves);
+        return sum/correction;
     }
 
     @Override
@@ -94,15 +79,10 @@ public class MusgraveHeteroTerrainFractal extends AbstractFractal implements IFr
         z *= frequency;
         u *= frequency;
 
-        double pwr = 1.;
-        double pwHL = Math.pow(lacunarity, -H);
-
-        double value = 1.;
-
-        for (int i = 0; i < octaves; i++)
-        {
-            value += (_noise.noise4((_vseed ? i : 0), x,y,z,u) + offset) * pwr * value;
-            pwr *= pwHL;
+        double sum = 0f, correction = 0f;
+        for (int i = 0; i < octaves; i++) {
+            correction += gain;
+            sum += _noise.noise4((_vseed ? i : 0), x, y, z, u) * gain;
             if(fractalSpiral)
             {
                 final double x2 = rotateX2D(x, y);
@@ -114,8 +94,7 @@ public class MusgraveHeteroTerrainFractal extends AbstractFractal implements IFr
             z *= lacunarity;
             u *= lacunarity;
         }
-
-        return value/Math.pow(pwHL,octaves);
+        return sum/correction;
     }
 
     @Override
@@ -126,15 +105,10 @@ public class MusgraveHeteroTerrainFractal extends AbstractFractal implements IFr
         u *= frequency;
         v *= frequency;
 
-        double pwr = 1.;
-        double pwHL = Math.pow(lacunarity, -H);
-
-        double value = 1.;
-
-        for (int i = 0; i < octaves; i++)
-        {
-            value += (_noise.noise5((_vseed ? i : 0), x,y,z,u,v) + offset) * pwr * value;
-            pwr *= pwHL;
+        double sum = 0f, correction = 0f;
+        for (int i = 0; i < octaves; i++) {
+            correction += gain;
+            sum += _noise.noise5((_vseed ? i : 0), x, y, z, u, v) * gain;
             if(fractalSpiral)
             {
                 final double x2 = rotateX2D(x, y);
@@ -147,28 +121,23 @@ public class MusgraveHeteroTerrainFractal extends AbstractFractal implements IFr
             u *= lacunarity;
             v *= lacunarity;
         }
-
-        return value/Math.pow(pwHL,octaves);
+        return sum/correction;
     }
 
     @Override
-    public double _fractal6(INoise _noise, double offset, double H, int octaves, double frequency, double lacunarity, double gain, boolean _vseed, double x, double y, double z, double u, double v, double w) {
+    public double _fractal6(INoise _noise, double offset, double H, int octaves, double frequency, double lacunarity, double gain, boolean _vseed, double x, double y, double z, double u, double v, double w)
+    {
         x *= frequency;
         y *= frequency;
         z *= frequency;
+        w *= frequency;
         u *= frequency;
         v *= frequency;
-        w *= frequency;
 
-        double pwr = 1.;
-        double pwHL = Math.pow(lacunarity, -H);
-
-        double value = 1.;
-
-        for (int i = 0; i < octaves; i++)
-        {
-            value += (_noise.noise6((_vseed ? i : 0), x,y,z,u,v,w) + offset) * pwr * value;
-            pwr *= pwHL;
+        double sum = 0f, correction = 0f;
+        for (int i = 0; i < octaves; i++) {
+            correction += gain;
+            sum += _noise.noise6((_vseed ? i : 0), x, y, z, u, v, w) * gain;
             if(fractalSpiral)
             {
                 final double x2 = rotateX2D(x, y);
@@ -178,11 +147,10 @@ public class MusgraveHeteroTerrainFractal extends AbstractFractal implements IFr
             x *= lacunarity;
             y *= lacunarity;
             z *= lacunarity;
+            w *= lacunarity;
             u *= lacunarity;
             v *= lacunarity;
-            w *= lacunarity;
         }
-
-        return value/Math.pow(pwHL,octaves);
+        return sum/correction;
     }
 }

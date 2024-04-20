@@ -7,6 +7,7 @@ import com.github.terefang.randy.planetj.codec.*;
 import com.github.terefang.randy.planetj.proc.*;
 import com.github.terefang.randy.planetj.projection.*;
 import com.github.terefang.randy.utils.ColorUtil;
+import com.github.terefang.randy.utils.LogSink;
 import lombok.SneakyThrows;
 
 import javax.imageio.ImageIO;
@@ -51,6 +52,16 @@ import java.util.concurrent.Future;
 
 public class PlanetJ implements IPlanet
 {
+
+	LogSink logSink;
+
+	public LogSink getLogSink() {
+		return logSink;
+	}
+
+	public void setLogSink(LogSink logSink) {
+		this.logSink = logSink;
+	}
 
 	private IProjectionCallback<PlanetJProjectionContext> _fractalOverlay;
 	private PlanetJProjectionContext _fractalContext;
@@ -486,6 +497,10 @@ public class PlanetJ implements IPlanet
 
 	public BufferedImage makeRgbImageTemperature()
 	{
+		return makeRgbImageTemperature(this.logSink);
+	}
+	public BufferedImage makeRgbImageTemperature(LogSink _log)
+	{
 		BufferedImage bufferedImage = new BufferedImage(Width, Height, BufferedImage.TYPE_INT_RGB);
 		double tmin = 0, tmax = 0;
 		for(int ix=0; ix<Width; ix++)
@@ -564,7 +579,7 @@ public class PlanetJ implements IPlanet
 				bufferedImage.getRaster().setPixel(ix, iy, c);
 			}
 		}
-		System.err.printf("temp min/max = %f / %f\n", tmin, tmax);
+		if(_log!=null) _log.log(String.format( "temp min/max = %f / %f\n", tmin, tmax));
 		return bufferedImage;
 	}
 
@@ -1318,9 +1333,25 @@ public class PlanetJ implements IPlanet
 	}
 
 
-
-
 	public void process()
+	{
+		if(this.logSink==null)
+		{
+			process(new LogSink() {
+				@Override
+				public void log(String message) {
+					System.err.println(message);
+				}
+			});
+		}
+		else
+		{
+			process(this.logSink);
+		}
+	}
+
+
+	public void process(LogSink _log)
 	{
             
 		start=System.currentTimeMillis();
@@ -1332,58 +1363,58 @@ public class PlanetJ implements IPlanet
 			switch (view) {
 
 				case PROJ_VIEW_MERCATOR: /* Mercator projection */
-					mercator(_b);
+					mercator(_b,_log);
 					break;
 
 				case PROJ_VIEW_AREA_PRESERVING_CYLINDRICAL: /* Peters projection (area preserving cylindrical) */
-					peter(_b);
+					peter(_b,_log);
 					break;
 
 				case PROJ_VIEW_EQUIDISTANT_LATITUDES: /* Square projection (equidistant latitudes) */
-					squarep(_b);
+					squarep(_b,_log);
 					break;
 
 				case PROJ_VIEW_MOLLWEIDE: /* Mollweide projection (area preserving) */
-					mollweide(_b);
+					mollweide(_b,_log);
 					break;
 
 				case PROJ_VIEW_SINUSOID: /* Sinusoid projection (area preserving) */
-					sinusoid(_b);
+					sinusoid(_b,_log);
 					break;
 
 				case PROJ_VIEW_STEREOGRAPHIC: /* Stereographic projection */
-					stereo(_b);
+					stereo(_b,_log);
 					break;
 
 				case PROJ_VIEW_ORTHOGRAPHIC: /* Orthographic projection */
-					orthographic(_b);
+					orthographic(_b,_log);
 					break;
 
 				case PROJ_VIEW_GNOMONIC: /* Gnomonic projection */
-					gnomonic(_b);
+					gnomonic(_b,_log);
 					break;
 
 				case PROJ_VIEW_AZIMUTAL: /* Area preserving azimuthal projection */
-					azimuth(_b);
+					azimuth(_b,_log);
 					break;
 
 				case PROJ_VIEW_HEXAGONAL: /* hexagonal gamified */
-					hexagonal(_b);
+					hexagonal(_b,_log);
 					break;
 
 				case PROJ_VIEW_LONGLAT:
-					longitudeLatitude(_b);
+					longitudeLatitude(_b,_log);
 					break;
 
 				default:
-					mercator(_b);
+					mercator(_b,_log);
 					break;
 
 			}
 		}
 
 		long s2 = System.currentTimeMillis();
-		System.out.println("took = "+(s2-start));
+		_log.log("took = "+(s2-start));
 		if(this.threaded)
 		{
 			exec.shutdownNow();
@@ -1419,8 +1450,7 @@ public class PlanetJ implements IPlanet
 		}
 		int _hc = (int) (100*(_cw/(Width*Height)));
 
-		System.err.println(String.format("sea/land => %f / %f = %d%%",_nh,_mh,_hc));
-
+		_log.log(String.format("sea/land => %f / %f = %d%%",_nh,_mh,_hc));
 	}
 	
 	void makeoutline(boolean doBw)
@@ -1696,25 +1726,25 @@ public class PlanetJ implements IPlanet
 		return(colour);
 	}
 	
-	public void tick(int i) {
-		System.err.println("- TICK:"+new Date()+" finished = "+i);
+	public void tick(int i,LogSink _log) {
+		_log.log("- TICK:"+new Date()+" finished = "+i);
 	}
 	
-	public void tickH(int j) {
+	public void tickH(int j,LogSink _log) {
 		long curr=System.currentTimeMillis();
 		
 		if((j % (Height/10))==0)
 		{
-			System.err.println("- "+(j*100/Height)+"% ETA:"+new Date(System.currentTimeMillis()+((curr-start)*(Height-j+1)/(j+1))));
+			_log.log("- "+(j*100/Height)+"% ETA:"+new Date(System.currentTimeMillis()+((curr-start)*(Height-j+1)/(j+1))));
 		}
 	}
 	
-	public void tickW(int j) {
+	public void tickW(int j,LogSink _log) {
 		long curr=System.currentTimeMillis();
 
 		if((j % (Width/10))==0)
 		{
-			System.err.println("- "+(j*100/Width)+"% ETA:"+new Date(System.currentTimeMillis()+((curr-start)*(Width-j+1)/(j+1))));
+			_log.log("- "+(j*100/Width)+"% ETA:"+new Date(System.currentTimeMillis()+((curr-start)*(Width-j+1)/(j+1))));
 		}
 	}
 
@@ -1765,7 +1795,7 @@ public class PlanetJ implements IPlanet
 		}
 	}
 
-	public void waitForExecution()
+	public void waitForExecution(LogSink _log)
 	{
 		if(this.threaded)
 		{
@@ -1773,7 +1803,7 @@ public class PlanetJ implements IPlanet
 			int u=0;
 			while(!ended)
 			{
-				tick(u);
+				tick(u,_log);
 				try
 				{
 					Thread.sleep(1000L);
@@ -1797,7 +1827,7 @@ public class PlanetJ implements IPlanet
 		}
 	}
 
-	public void hexagonal(boolean _b)
+	public void hexagonal(boolean _b,LogSink _log)
 	{
 		if(!_b) {
 			this.tryMakeWaterLandPercentage();
@@ -1805,7 +1835,7 @@ public class PlanetJ implements IPlanet
 
 		for (int j = 0; j < Height; j++)
 		{
-			HexagonalProc runfunc = HexagonalProc.create(this, j, _b);
+			HexagonalProc runfunc = HexagonalProc.create(this, _log, j, _b);
 			if(this.threaded)
 			{
 				tList.add(exec.submit(runfunc));
@@ -1816,10 +1846,10 @@ public class PlanetJ implements IPlanet
 			}
 		}
 
-		waitForExecution();
+		waitForExecution(_log);
 	}
 
-	public void longitudeLatitude(boolean _b)
+	public void longitudeLatitude(boolean _b,LogSink _log)
 	{
 		if(!_b) {
 			this.tryMakeWaterLandPercentage();
@@ -1828,7 +1858,7 @@ public class PlanetJ implements IPlanet
 		for (int j = 0; j < Height; j++)
 		{
 			//WidthByHeightProc runfunc = WidthByHeightProc.create(this, LongLatProjection.create(), PlanetJProcCallback.create(), j, _b);
-			LonLatProc runfunc = LonLatProc.create(this, j, _b);
+			LonLatProc runfunc = LonLatProc.create(this, _log, j, _b);
 			if(this.threaded)
 			{
 				tList.add(exec.submit(runfunc));
@@ -1839,7 +1869,7 @@ public class PlanetJ implements IPlanet
 			}
 		}
 
-		waitForExecution();
+		waitForExecution(_log);
 
 		if(!_b) {
 			if (hgrid != 0.0)
@@ -1875,7 +1905,7 @@ public class PlanetJ implements IPlanet
 		}
 	}
 
-	public void mercator(boolean _b)
+	public void mercator(boolean _b,LogSink _log)
 	{
 		double y,scale1,cos2,theta1;
 		int i,j,k;
@@ -1891,7 +1921,7 @@ public class PlanetJ implements IPlanet
                 
 		for (j = 0; j < Height; j++) 
 		{
-			MercatorProc runfunc = MercatorProc.create(this, j, k, _b);
+			MercatorProc runfunc = MercatorProc.create(this,_log, j, k, _b);
 			if(this.threaded)
 			{
 				tList.add(exec.submit(runfunc));
@@ -1902,7 +1932,7 @@ public class PlanetJ implements IPlanet
 			}
 		}
 
-		waitForExecution();
+		waitForExecution(_log);
 
 		if (hgrid != 0.0) { /* draw horisontal gridlines */
 			for (theta1 = 0.0; theta1>-90.0; theta1-=hgrid);
@@ -1923,7 +1953,7 @@ public class PlanetJ implements IPlanet
 		}
 	}
 	
-	public void peter(boolean _b)
+	public void peter(boolean _b,LogSink _log)
 	{
 		double y,cos2,theta1,scale1;
 		int k,i,j;
@@ -1937,7 +1967,7 @@ public class PlanetJ implements IPlanet
 
 		for (j = 0; j < Height; j++)
 		{
-			PetersProc runfunc = PetersProc.create(this, j, k, _b);
+			PetersProc runfunc = PetersProc.create(this,_log, j, k, _b);
 			if(this.threaded)
 			{
 				tList.add(exec.submit(runfunc));
@@ -1948,7 +1978,7 @@ public class PlanetJ implements IPlanet
 			}
 		}
 
-		waitForExecution();
+		waitForExecution(_log);
 
 		if (hgrid != 0.0) { /* draw horisontal gridlines */
 			for (theta1 = 0.0; theta1>-90.0; theta1-=hgrid);
@@ -1970,7 +2000,7 @@ public class PlanetJ implements IPlanet
 		}
 	}
 
-	public void mollweide(boolean _b)
+	public void mollweide(boolean _b,LogSink _log)
 	{
 		double x,y,y1,theta1,theta2;
 		int i,j,i1=1,k;
@@ -1981,7 +2011,7 @@ public class PlanetJ implements IPlanet
 
 		for (j = 0; j < Height; j++)
 		{
-			MollweideProc runfunc = MollweideProc.create(this, j, _b);
+			MollweideProc runfunc = MollweideProc.create(this,_log, j, _b);
 			if(this.threaded)
 			{
 				tList.add(exec.submit(runfunc));
@@ -1992,7 +2022,7 @@ public class PlanetJ implements IPlanet
 			}
 		}
 
-		waitForExecution();
+		waitForExecution(_log);
 
 		if (hgrid != 0.0) { /* draw horisontal gridlines */
 			for (theta1 = 0.0; theta1>-90.0; theta1-=hgrid);
@@ -2043,7 +2073,7 @@ public class PlanetJ implements IPlanet
 	}
 	
 
-	public void sinusoid(boolean _b)
+	public void sinusoid(boolean _b,LogSink _log)
 	{
 		double y,theta1,theta2,cos2,l1,i1,scale1;
 		int k,i,j,l,c;
@@ -2082,7 +2112,7 @@ public class PlanetJ implements IPlanet
 					}
 				}
 			}
-			tickH(j);
+			tickH(j,_log);
 		}
 		if (hgrid != 0.0) { /* draw horisontal gridlines */
 			for (theta1 = 0.0; theta1>-90.0; theta1-=hgrid);
@@ -2119,7 +2149,7 @@ public class PlanetJ implements IPlanet
 		}
 	}
 	
-	public void stereo(boolean _b)
+	public void stereo(boolean _b,LogSink _log)
 	{
 		double x,y,ymin,ymax,z,zz,x1,y1,z1,theta1,theta2;
 		int i,j;
@@ -2146,7 +2176,7 @@ public class PlanetJ implements IPlanet
 				if (y1 > ymax) ymax = y1;
 				planet_main(i,j,x1,y1,z1, Depth, _b);
 			}
-			tickH(j);
+			tickH(j,_log);
 		}
 		if (hgrid != 0.0) { /* draw horisontal gridlines */
 			for (theta1 = 0.0; theta1>-90.0; theta1-=hgrid);
@@ -2190,7 +2220,7 @@ public class PlanetJ implements IPlanet
 		}
 	}
 
-	public void orthographic(boolean _b)
+	public void orthographic(boolean _b,LogSink _log)
 	{
 		double x,y,z,x1,y1,z1,ymin,ymax,theta1,theta2,zz;
 		int i,j;
@@ -2200,7 +2230,7 @@ public class PlanetJ implements IPlanet
 		}
 
 		for (j = 0; j < Height; j++) {
-			OrthographicProc runfunc = OrthographicProc.create(this, j,_b);
+			OrthographicProc runfunc = OrthographicProc.create(this,_log, j,_b);
 			if(this.threaded)
 			{
 				tList.add(exec.submit(runfunc));
@@ -2210,7 +2240,7 @@ public class PlanetJ implements IPlanet
 				runfunc.run();
 			}
 		}
-		waitForExecution();
+		waitForExecution(_log);
 
 		if (hgrid != 0.0) { /* draw horisontal gridlines */
 			for (theta1 = 0.0; theta1>-90.0; theta1-=hgrid);
@@ -2250,7 +2280,7 @@ public class PlanetJ implements IPlanet
 		}
 	}
 
-	public void gnomonic(boolean _b)
+	public void gnomonic(boolean _b, LogSink _log)
 	{
 		double x,y,z,x1,y1,z1,zz,theta1,theta2,ymin,ymax;
 		int i,j;
@@ -2275,7 +2305,7 @@ public class PlanetJ implements IPlanet
 				if (y1 > ymax) ymax = y1;
 				planet_main(i,j,x1,y1,z1, Depth, _b);
 			}
-			tickH(j);
+			tickH(j,_log);
 		}
 		if(!_b) {
 			if (hgrid != 0.0) { /* draw horisontal gridlines */
@@ -2323,7 +2353,7 @@ public class PlanetJ implements IPlanet
 
 
 	@SneakyThrows
-	public void azimuth(boolean _b)
+	public void azimuth(boolean _b, LogSink _log)
 	{
 		double x,y,z,x1,y1,z1,zz,theta1,theta2,ymin,ymax;
 		int i,j;
@@ -2334,7 +2364,7 @@ public class PlanetJ implements IPlanet
 			this.tryMakeWaterLandPercentage();
 		}
 		for (j = 0; j < Height; j++) {
-			AzimuthProc runfunc = AzimuthProc.create(this, j,_b);
+			AzimuthProc runfunc = AzimuthProc.create(this, _log,j,_b);
 			runfunc.ymin = 2.0;
 			runfunc.ymax = -2.0;
 			if(this.threaded)
@@ -2348,7 +2378,7 @@ public class PlanetJ implements IPlanet
 				if(runfunc.ymax > ymax) ymax = runfunc.ymax;
 			}
 		}
-		waitForExecution();
+		waitForExecution(_log);
 		if(this.threaded)
 		{
 			for(Future _t : tList)
@@ -2405,7 +2435,7 @@ public class PlanetJ implements IPlanet
 	}
 
 
-	public void squarep(boolean _b)
+	public void squarep(boolean _b, LogSink _log)
 	{
 		double y,scale1,theta1,cos2;
 		int k,i,j;
@@ -2416,7 +2446,7 @@ public class PlanetJ implements IPlanet
 
 		k = (int)(baseLatitude*Width*scale/PI);
 		for (j = 0; j < Height; j++) {
-			SquarepProc runfunc = SquarepProc.create(this, j, k, _b);
+			SquarepProc runfunc = SquarepProc.create(this,_log, j, k, _b);
 			if(this.threaded)
 			{
 				tList.add(exec.submit(runfunc));
@@ -2427,7 +2457,7 @@ public class PlanetJ implements IPlanet
 			}
 		}
 
-		waitForExecution();
+		waitForExecution(_log);
 
 		if (hgrid != 0.0) { /* draw horisontal gridlines */
 			for (theta1 = 0.0; theta1>-90.0; theta1-=hgrid);

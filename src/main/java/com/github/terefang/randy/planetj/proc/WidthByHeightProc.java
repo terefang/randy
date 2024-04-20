@@ -4,12 +4,15 @@ import com.github.terefang.randy.planetj.PlanetJ;
 import com.github.terefang.randy.planetj.projection.IProjection;
 import com.github.terefang.randy.planetj.projection.IProjectionCallback;
 import com.github.terefang.randy.planetj.projection.PlanetJProjectionContext;
+import com.github.terefang.randy.utils.LogSink;
 
 public class WidthByHeightProc implements Runnable
 {
-	public static WidthByHeightProc create(PlanetJ planetJ, IProjection<PlanetJProjectionContext> _p, IProjectionCallback<PlanetJProjectionContext> _cb, int j, boolean k)
+	private final LogSink _log;
+
+	public static WidthByHeightProc create(PlanetJ planetJ, LogSink _log, IProjection<PlanetJProjectionContext> _p, IProjectionCallback<PlanetJProjectionContext> _cb, int j, boolean k)
 	{
-		return new WidthByHeightProc(planetJ, _p, _cb, k, j);
+		return new WidthByHeightProc(planetJ, _log, _p, _cb, k, j);
 	}
 
 
@@ -18,12 +21,13 @@ public class WidthByHeightProc implements Runnable
 	IProjectionCallback<PlanetJProjectionContext> _cb;
 	int _j;
 
-	public WidthByHeightProc(PlanetJ _that, IProjection<PlanetJProjectionContext> _p, IProjectionCallback<PlanetJProjectionContext> _cb, boolean m_k, int m_j)
+	public WidthByHeightProc(PlanetJ _that, LogSink _log, IProjection<PlanetJProjectionContext> _p, IProjectionCallback<PlanetJProjectionContext> _cb, boolean m_k, int m_j)
 	{
 		_context = PlanetJProjectionContext.create(_that, m_k);
 		this._j=m_j;
 		this._projection = _p;
 		this._cb = _cb;
+		this._log = _log;
 	}
 
 	@Override
@@ -32,7 +36,7 @@ public class WidthByHeightProc implements Runnable
 		{
 			this._projection.projectCall(_context, _i, _j, this._cb);
 		}
-		_context.getMain().tickH(this._j);
+		_context.getMain().tickH(this._j, this._log);
 	}
 
 }

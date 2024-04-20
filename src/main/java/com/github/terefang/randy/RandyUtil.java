@@ -1,6 +1,7 @@
 package com.github.terefang.randy;
 
 import com.github.terefang.randy.fractal.*;
+import com.github.terefang.randy.fractal.impl.*;
 import com.github.terefang.randy.noise.INoise;
 import com.github.terefang.randy.noise.NoiseUtil;
 import com.github.terefang.randy.noise.impl.*;
@@ -10,6 +11,13 @@ import java.util.List;
 import java.util.Vector;
 
 public class RandyUtil {
+    public static INoise adaptAsNoise(IFractal _f)
+    {
+        FractalAsNoiseHolder _fnh = new FractalAsNoiseHolder();
+        _fnh.setFractal(_f);
+        return _fnh;
+    }
+
     public static IRandom arcRng(long _seed)
     {
         ArcRandom _rng = new ArcRandom();
@@ -24,7 +32,7 @@ public class RandyUtil {
         return _rng;
     }
 
-     public static IRandom mtRng(long _seed)
+    public static IRandom mtRng(long _seed)
     {
         MTRandom _rng = new MTRandom();
         _rng.setSeed(_seed);
@@ -211,6 +219,15 @@ public class RandyUtil {
     public static DistortFractal distortFractal(INoise _type, double _freq, double _H, double _lacu)
     {
         DistortFractal _rng = new DistortFractal();
+        _rng.setNoise(_type);
+        _rng.setFrequency(_freq);
+        _rng.setH(_H);
+        _rng.setLacunarity(_lacu);
+        return _rng;
+    }
+    public static ExoTerrainFractal exoFractal(INoise _type, double _freq, double _H, double _lacu)
+    {
+        ExoTerrainFractal _rng = new ExoTerrainFractal();
         _rng.setNoise(_type);
         _rng.setFrequency(_freq);
         _rng.setH(_H);

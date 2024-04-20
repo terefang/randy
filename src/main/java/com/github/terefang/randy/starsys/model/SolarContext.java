@@ -69,10 +69,10 @@ public class SolarContext
 
         _ctx.surfaceTemperature = (_bv == Double.MIN_VALUE) ?
                 StarSysUtil.calcStarSurfaceTempKelvin(_ctx.surfaceDistance, _ctx.luminosity)
-                : StarSysUtil.bv2temp(_bv) ;
+                : StarSysUtil.calcStarTempFromBV(_bv) ;
 
         _ctx.spectra = StarSysUtil.calcStarSpectralClass(_ctx.surfaceTemperature);
-        _ctx.num = StarSysUtil.calcStarSpectralNum(_ctx.surfaceTemperature, _ctx.mass, _ctx.spectra);
+        _ctx.num = StarSysUtil.calcStarSpectralNum(_ctx.surfaceTemperature);
 
         _ctx.size = StarSysUtil.getInt(StarSysUtil.merge("quantify", "spectra", _ctx.spectra));
         _ctx.rsize = StarSysUtil.getString(StarSysUtil.merge("quantify", "rsize"), _ctx.size);
@@ -299,17 +299,17 @@ public class SolarContext
         }
 
         this.spectra = StarSysUtil.calcStarSpectralClass(this.surfaceTemperature);
-        this.num = StarSysUtil.calcStarSpectralNum(this.surfaceTemperature, this.mass, this.spectra);
+        this.num = StarSysUtil.calcStarSpectralNum(this.surfaceTemperature);
 
-        if(_gaia) {
-            this.size = 5;
-            this.rsize = "V";
+        if(_gaia)
+        {
+            this.size = StarSysUtil.calcStarGaiaSize(this.surfaceTemperature);
         }
         else
         {
             this.size = StarSysUtil.getInt(StarSysUtil.merge("quantify", "spectra", this.spectra));
-            this.rsize = StarSysUtil.getString(StarSysUtil.merge("quantify", "rsize"), this.size);
         }
+        this.rsize = StarSysUtil.getString(StarSysUtil.merge("quantify", "rsize"), this.size);
         this.outerPlanetaryLimit = StarSysUtil.calcStarOuterPlanetaryLimit(this.mass);
 
         this.safeJumpDistance = StarSysUtil.calcSafeJumpDistanceAU(this.surfaceDistance*StarSysUtil.SOL_TO_AU, this.mass);

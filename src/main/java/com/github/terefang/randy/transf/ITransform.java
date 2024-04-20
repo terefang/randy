@@ -73,7 +73,8 @@ public interface ITransform
         T_COLLATZ_4K,
         T_COLLATZ_SINE_4K,
         T_COLLATZ_COSINE_4K,
-        T_COLLATZ_INVNORM_4K
+        T_COLLATZ_INVNORM_4K,
+        T_NEAR
         ;
     }
 }

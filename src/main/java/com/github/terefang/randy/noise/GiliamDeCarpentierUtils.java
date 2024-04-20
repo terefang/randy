@@ -217,11 +217,11 @@ public class GiliamDeCarpentierUtils {
     // -------------------------------------------------
 
     /* I. Quillez */
-    public static double iqTurbulence(double px, double py, int _seed, int octaves)
+    public static double iQuillezTurbulence(double px, double py, int _seed, int octaves)
     {
-        return iqTurbulence(px,py,_seed,octaves, 2., .5);
+        return iQuillezTurbulence(px,py,_seed,octaves, 2., .5);
     }
-    public static double iqTurbulence(double px, double py, int _seed, int octaves, double lacunarity, double gain)
+    public static double iQuillezTurbulence(double px, double py, int _seed, int octaves, double lacunarity, double gain)
     {
         double2 p = double2.from(px, py);
         double sum = 0.5;

@@ -1,21 +1,24 @@
 package com.github.terefang.randy.planetj.proc;
 
 import com.github.terefang.randy.planetj.PlanetJ;
+import com.github.terefang.randy.utils.LogSink;
+
 public class OrthographicProc implements Runnable
 {
 	PlanetJ main = null;
-	
+	LogSink _log;
 	double y,scale1,cos2,theta1;
 	int i,j;
 	boolean b;
 
-	public static OrthographicProc create(PlanetJ that, int m_j, boolean m_b) { return new OrthographicProc(that, m_j, m_b); }
+	public static OrthographicProc create(PlanetJ that,LogSink _log, int m_j, boolean m_b) { return new OrthographicProc(that, _log, m_j, m_b); }
 	
-	public OrthographicProc(PlanetJ that, int m_j, boolean m_b)
+	public OrthographicProc(PlanetJ that,LogSink _log, int m_j, boolean m_b)
 	{
 		main = that;
 		j=m_j;
 		b=m_b;
+		this._log=_log;
 	}
 	
 	@Override
@@ -39,7 +42,7 @@ public class OrthographicProc implements Runnable
 				main.planet_main(i,j,x1,y1,z1, main.Depth, b);
 			}
 		}
-		main.tickH(j);
+		main.tickH(j, _log);
 	}
 	
 }
