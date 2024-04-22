@@ -10,8 +10,8 @@ public class LongLatProjection implements IProjection<PlanetJProjectionContext>
 		int sDepth = 3*((int)(_context.main.log_2(_context.main.Height)))+3;
 		sDepth = (sDepth<_context.main.Depth) ? sDepth : _context.main.Depth;
 
-		double _lat = (Math.PI*((double)_j)/((double)_context.main.Height-1))-_context.main.baseLatitude;
-		double _lon = Math.PI+(2*Math.PI*((double)(_i))/((double)_context.main.Width-1))+_context.main.baseLongitude;
+		double _lat = ((Math.PI*((double)_j)/((double)_context.main.Height-1))/_context.main.scale)-_context.main.baseLatitude;
+		double _lon = Math.PI+((2*Math.PI*((double)(_i))/((double)_context.main.Width-1))/_context.main.scale)+_context.main.baseLongitude;
 
 		double _y = -Math.cos(_lat);
 		double _ysin = Math.sin(_lat);

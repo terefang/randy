@@ -1,14 +1,116 @@
 package com.github.terefang.randy.planetj.codec;
 
 
+import com.github.terefang.randy.utils.LEDataInputStream;
 import com.github.terefang.randy.utils.LEDataOutputStream;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 
 public class WilburMdrCodec {
+
+    public static final double[] peekMDR_Attr(File _f) throws IOException
+    {
+        try (LEDataInputStream _in = new LEDataInputStream(new BufferedInputStream(new FileInputStream(_f)));)
+        {
+            double[] _ret = new double[8];
+            if(_in.readInt() == 0x52424c57)
+            {
+                _in.skipBytes(0x104);
+                for(int _i = 0; _i<_ret.length;_i++)
+                {
+                    _ret[_i] = _in.readDouble();
+                }
+                return _ret;
+            }
+        }
+        catch (Exception _xe)
+        {
+            return null;
+        }
+        return null;
+    }
+
+    public static final int[] peekMDR_Info(File _f) throws IOException
+    {
+        try (LEDataInputStream _in = new LEDataInputStream(new BufferedInputStream(new FileInputStream(_f)));)
+        {
+            int[] _ret = new int[2];
+            if(_in.readInt() == 0x52424c57)
+            {
+                _in.skipBytes(0x144);
+                _ret[0] = _in.readInt();
+                _ret[1] = _in.readInt();
+                return _ret;
+            }
+        }
+        catch (Exception _xe)
+        {
+            return null;
+        }
+        return null;
+    }
+
+    public static final int[] peekMDR_HW(File _f) throws IOException
+    {
+        try (LEDataInputStream _in = new LEDataInputStream(new BufferedInputStream(new FileInputStream(_f)));)
+        {
+            int[] _ret = new int[2];
+            if(_in.readInt() == 0x52424c57)
+            {
+                _in.skipBytes(0x164);
+                _ret[0] = _in.readInt();
+                _ret[1] = _in.readInt();
+                return _ret;
+            }
+        }
+        catch (Exception _xe)
+        {
+            return null;
+        }
+        return null;
+    }
+
+    public static final double[] readMDR(File _f, int _w, int _h, double _scale) throws IOException
+    {
+        try (LEDataInputStream _in = new LEDataInputStream(new BufferedInputStream(new FileInputStream(_f)));)
+        {
+            double[] _ret = new double[_w*_h];
+            if(_in.readInt() == 0x52424c57)
+            {
+                _in.skipBytes(0x148);
+                int _type = _in.readInt();
+                _in.skipBytes(0x18);
+                if(_w == _in.readInt() && _h == _in.readInt())
+                {
+                    for(int _i = 0; _i<_ret.length;_i++)
+                    {
+                        switch (_type)
+                        {
+                            case 0: // 32 bit float
+                                _ret[_i] = _in.readFloat()*_scale;
+                                break;
+                            case 1: // 16 bit int
+                                _ret[_i] = _in.readShort()*_scale;
+                                break;
+                            case 2: // 8 bit int
+                                _ret[_i] = _in.readByte()*_scale;
+                                break;
+                            case 4: // 64 bit double
+                            default:
+                                _ret[_i] = _in.readDouble()*_scale;
+                                break;
+                        }
+                    }
+                    return _ret;
+                }
+            }
+        }
+        catch (Exception _xe)
+        {
+            return null;
+        }
+        return null;
+    }
 
     public static final void writeMDR(File _f, int _w, int _h, double _res, double _min, double _max, double[] z) throws IOException
     {

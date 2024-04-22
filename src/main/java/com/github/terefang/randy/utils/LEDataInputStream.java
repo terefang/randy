@@ -30,7 +30,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class LEDataInputStream implements DataInput 
+public class LEDataInputStream implements DataInput , AutoCloseable
 {
 
     private static final String EmbeddedCopyright =
