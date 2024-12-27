@@ -70,6 +70,11 @@ public class SystemContext
 	public void init_planets(int _seed)
 	{
 		double _lastAU = this._surface_distance_au;
+		if(this.context.isMulti())
+		{
+			_lastAU += this.context.getComponentOffsets().get(this.context.getComponentOffsets().size()-1);
+		}
+
 		try
 		{
 			int _num_rad = StarSysUtil.getInt(StarSysUtil.merge("stellar_type", this.context.getSpectra(), this.context.getRsize(),"orbitals"));
@@ -79,6 +84,8 @@ public class SystemContext
 				double _orbit = _base_radius+(_base_step*Math.pow(1.8,_orbital));
 
 				if(_planet_chance < _rng.next(111)) continue;
+
+				if (_orbit < _lastAU) continue;
 
 				if (_orbit > this.context.getOuterPlanetaryLimit()) break;
 
@@ -123,21 +130,35 @@ public class SystemContext
 	public void outputInformation(Appendable _afh)
 	{
 		this.getContext().outputStarInformation(_afh);
+
 		for(PlanetContext _p : this.getPlanets())
 		{
+			_afh.append('\n');
 			_p.outputPlanetInformation(_afh);
+
 			if(_p.moons != null)
-			for(MoonContext _m : _p.moons)
 			{
-				_m.outputInformation(_afh);
+				for(MoonContext _m : _p.moons)
+				{
+					_afh.append('\n');
+					_m.outputInformation(_afh);
+				}
 			}
 		}
 		_afh.append('\n');
 		_afh.append('\n');
 		_afh.append('\n');
-		_afh.append('\n');
-		_afh.append('\n');
-		_afh.append('\n');
-		_afh.append('\n');
+	}
+
+	@Override
+	public String toString() {
+		return "SystemContext{" +
+				"id=" + id +
+				", seed=" + seed +
+				", gaia=" + gaia +
+				", multi=" + context.isMulti() +
+				", sun=" + context.getSpectra() +
+				", planets=" + planets.size() +
+				'}';
 	}
 }

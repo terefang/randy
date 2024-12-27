@@ -1,6 +1,7 @@
 package com.github.terefang.randy.nfield;
 
 import com.github.terefang.randy.map.ColorRamp;
+import com.github.terefang.randy.planetj.PlanetJ;
 import com.github.terefang.randy.utils.LEDataInputStream;
 import com.github.terefang.randy.utils.LEDataOutputStream;
 import lombok.SneakyThrows;
@@ -362,6 +363,80 @@ public class NoiseFieldUtil
         }
     }
 
+    public static NoiseField toNoiseField(PlanetJ _pl, boolean _n)
+    {
+        NoiseField nf = new NoiseField(_pl.getWidth(), _pl.getHeight());
+        for(int _x=0 ; _x<nf.getWidth() ; _x++)
+        {
+            for(int _y=0 ; _y<nf.getHeight() ; _y++)
+            {
+                double _v = _pl.heights[_x][_y];
+                if(Double.isNaN(_v)) _v=0.;
+                nf.setPoint(_x,_y,_v);
+            }
+        }
+        if(_n) nf.normalize(-1.,1.);
+        return nf;
+    }
+
+    public static NoiseField readHF(String fileName)
+    {
+        NoiseField nf = null;
+        try
+        {
+            BufferedImage _img = ImageIO.read(new File(fileName));
+            nf = new NoiseField(_img.getWidth(), _img.getHeight());
+
+            for(int _x=0 ; _x<nf.getWidth() ; _x++)
+            {
+                for(int _y=0 ; _y<nf.getHeight() ; _y++)
+                {
+                    int _rgb =_img.getRGB(_x,_y);
+                    double _value = ((_rgb >>> 16) & 0xff)/255.;
+                    _value += ((_rgb >>> 8) & 0xff)/255.;
+                    _value += (_rgb & 0xff)/255.;
+                    _value /= 3.;
+                    nf.setPoint(_x,_y,_value);
+                }
+            }
+        }
+        catch(Exception e)
+        {
+            System.err.println(e.toString());
+        }
+        return nf;
+    }
+
+    public static int compareTo(NoiseField _nf1, NoiseField _nf2, double _delta, boolean _fakeNeg)
+    {
+        int _error = 0;
+        try
+        {
+            for(int _x=0 ; _x<_nf1.getWidth() ; _x++)
+            {
+                for(int _y=0 ; _y<_nf1.getHeight() ; _y++)
+                {
+                    double _v1 = _nf1.getPoint(_x,_y);
+                    double _v2 = _nf2.getPoint(_x,_y);
+                    double _df = Math.abs(Math.min(_v1,_v2)-Math.max(_v1,_v2));
+                    if(_fakeNeg && _v1<=0. && _v2<=0.)
+                    {
+                        // IGNORE
+                    }
+                    else if(_df > _delta)
+                    {
+                        _error++;
+                    }
+                }
+            }
+        }
+        catch(Exception e)
+        {
+            System.err.println(e.toString());
+        }
+        return _error;
+    }
+
     public static void saveBT(NoiseField nf, String fileName)
     {
         try
@@ -560,7 +635,21 @@ public class NoiseFieldUtil
             for(int x=0 ; x<nf.getWidth() ; ++x)
             {
                 float _h = (float) nf.getPoint(x,y);
-                Color col = new Color(_h/sscale,_h/sscale,_h/sscale);
+                Color col = null;
+                if(_h>=1.)
+                {
+                    col = Color.WHITE;
+                }
+                else
+                if(_h<=0.)
+                {
+                    col = Color.BLACK;
+                }
+                else
+                {
+                    col = new Color(_h/sscale,_h/sscale,_h/sscale);
+                }
+            
                 bufferedImage.setRGB(x,y, col.getRGB());
             }
         }

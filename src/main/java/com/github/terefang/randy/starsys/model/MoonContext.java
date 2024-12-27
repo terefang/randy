@@ -83,6 +83,7 @@ public class MoonContext {
         double _moon_diameter_last = 0;
         //while (@moon_mass_list && ($moon_radian_last<15900000)) {
         _x = 0;
+        List<MoonContext> _rem = new Vector<>();
         for (MoonContext _ctx : _list) {
             if (_moon_radian_last < 1) {
                 _moon_radian_last = _roche * _planet.getPlanetDiameter();
@@ -94,6 +95,12 @@ public class MoonContext {
             } else {
                 _ctx.randomize(_seed | (_x++), _moon_radian, _planet);
                 _moon_radian = (_ctx.getDiameter() + _moon_diameter_last + _moon_radian_last) * Math.pow(_rng.nextBounds(1.1f, 2f, 0.0001f), 2);
+            }
+
+            double _mol = StarSysUtil.calcMoleculeLimit(_ctx.getMass(), _ctx.getDiameter(), _planet.getExoTemp());
+            if(_ctx.getDensity() < _mol)
+            {
+                _rem.add(_ctx);
             }
 
             _ctx.setOrbital(_x);
@@ -132,6 +139,7 @@ public class MoonContext {
         if (_list.size() > _x) {
             _list = _list.subList(0, _x);
         }
+        _list.removeAll(_rem);
         return _list;
     }
 

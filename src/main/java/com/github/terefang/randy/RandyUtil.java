@@ -82,6 +82,14 @@ public class RandyUtil {
         return _rng;
     }
 
+    public static INoise perlueNoise(long _seed, int _i)
+    {
+        PerlueNoise _rng = new PerlueNoise();
+        _rng.setSeed(_seed);
+        _rng.setInterpolation(_i);
+        return _rng;
+    }
+
     public static INoise simplexNoise(long _seed)
     {
         SimplexNoise _rng = new SimplexNoise();
@@ -196,6 +204,23 @@ public class RandyUtil {
         return _rng;
     }
 
+    public static INoise cyclicNoise(long _seed, int _octaves)
+    {
+        CyclicNoise _rng = new CyclicNoise();
+        _rng.setOctaves(_octaves);
+        _rng.setSeed(_seed);
+        return _rng;
+    }
+
+    public static INoise cyclicNoise(long _seed, int _octaves, double _freq)
+    {
+        CyclicNoise _rng = new CyclicNoise();
+        _rng.setFrequency(_freq);
+        _rng.setOctaves(_octaves);
+        _rng.setSeed(_seed);
+        return _rng;
+    }
+
     public static BillowFractal billowFractal(INoise _type, double _freq, double _H, double _lacu)
     {
         BillowFractal _rng = new BillowFractal();
@@ -206,12 +231,12 @@ public class RandyUtil {
         return _rng;
     }
 
-    public static BrownianMotionFractal bmFractal(INoise _type, double _freq, double _H, double _lacu)
+    public static BrownianMotionFractal bmFractal(INoise _type, double _freq, double _gain, double _lacu)
     {
         BrownianMotionFractal _rng = new BrownianMotionFractal();
         _rng.setNoise(_type);
         _rng.setFrequency(_freq);
-        _rng.setH(_H);
+        _rng.setGain(_gain);
         _rng.setLacunarity(_lacu);
         return _rng;
     }
@@ -255,6 +280,15 @@ public class RandyUtil {
         return _rng;
     }
 
+    public static TurbulenceFractal turbulenceFractal(INoise _type, double _omega, double _lambda)
+    {
+        TurbulenceFractal _rng = new TurbulenceFractal();
+        _rng.setNoise(_type);
+        _rng.setGain(_omega);
+        _rng.setLacunarity(_lambda);
+        return _rng;
+    }
+
     public static MusgraveFractal musgraveFractal(INoise _type, double _freq, double _H, double _lacu)
     {
         MusgraveFractal _rng = new MusgraveFractal();
@@ -285,7 +319,7 @@ public class RandyUtil {
         _rng.setVseed(_vseed);
         return _rng;
     }
-
+    
     public static IFractal samplerFractal(INoise _type, int _octaves, double _frequency, double _gain, boolean _vseed, boolean _spiral)
     {
         SamplerFractal _rng = new SamplerFractal();
@@ -297,8 +331,51 @@ public class RandyUtil {
         _rng.setFractalSpiral(_spiral);
         return _rng;
     }
-
-
+    
+    public static AbstractOctavationModeFractal octFbmFractal(INoise _type, int _octaves, double _frequency, double _gain, boolean _vseed)
+    {
+        AbstractOctavationModeFractal _rng = AbstractOctavationModeFractal.fromFBM();
+        _rng.setNoise(_type);
+        _rng.setFrequency(_frequency);
+        _rng.setOctaves(_octaves);
+        _rng.setGain(_gain);
+        _rng.setVseed(_vseed);
+        return _rng;
+    }
+    
+    public static AbstractOctavationModeFractal octBillowFractal(INoise _type, int _octaves, double _frequency, double _gain, boolean _vseed)
+    {
+        AbstractOctavationModeFractal _rng = AbstractOctavationModeFractal.fromBILLOW();
+        _rng.setNoise(_type);
+        _rng.setFrequency(_frequency);
+        _rng.setOctaves(_octaves);
+        _rng.setGain(_gain);
+        _rng.setVseed(_vseed);
+        return _rng;
+    }
+    
+    public static AbstractOctavationModeFractal octTurbulenceFractal(INoise _type, int _octaves, double _frequency, double _gain, boolean _vseed)
+    {
+        AbstractOctavationModeFractal _rng = AbstractOctavationModeFractal.fromTURBULENCE();
+        _rng.setNoise(_type);
+        _rng.setFrequency(_frequency);
+        _rng.setOctaves(_octaves);
+        _rng.setGain(_gain);
+        _rng.setVseed(_vseed);
+        return _rng;
+    }
+    
+    public static AbstractOctavationModeFractal octRidgedMultiFractal(INoise _type, int _octaves, double _frequency, double _gain, boolean _vseed)
+    {
+        AbstractOctavationModeFractal _rng = AbstractOctavationModeFractal.fromRIDGEDMULTI();
+        _rng.setNoise(_type);
+        _rng.setFrequency(_frequency);
+        _rng.setOctaves(_octaves);
+        _rng.setGain(_gain);
+        _rng.setVseed(_vseed);
+        return _rng;
+    }
+    
     public static double vanDerCorput(final int base, final int index)
     {
         if (base <= 2)
@@ -519,5 +596,9 @@ public class RandyUtil {
         _ret = Math.sqrt(_ret);
         return _ret;
     }
-
+    
+    public static INoise fractalAsNoise(IFractal _fr)
+    {
+        return FractalAsNoiseHolder.from(_fr);
+    }
 }

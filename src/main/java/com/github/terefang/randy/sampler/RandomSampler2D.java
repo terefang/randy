@@ -102,19 +102,7 @@ public class RandomSampler2D implements Sampler<double[]>
                 _x[_ps[0]][_ps[1]]=_ret.size();
             }
         }
-        else
-        {
-            /*
-            for(int _i=0; _i<this.dimensions; _i++)
-            {
-                _point[_i] = this.start[_i]+((this.end[_i]-this.start[_i])/2.);
-                _ps[_i] = (int)((_point[_i]-this.start[_i])/_slot);
-            }
-            _ret.add(_point);
-            _x[_ps[0]][_ps[1]]=1;
 
-             */
-        }
 
         int _bb = 0;
         while((_ret.size()-_preseed.size())<this.num)

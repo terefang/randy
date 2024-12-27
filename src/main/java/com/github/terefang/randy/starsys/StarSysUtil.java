@@ -1,6 +1,7 @@
 package com.github.terefang.randy.starsys;
 
 import com.github.terefang.randy.rng.impl.ArcRand;
+import com.github.terefang.randy.starsys.model.SolarContext;
 import com.github.terefang.randy.utils.ClasspathResourceLoader;
 import com.github.terefang.randy.utils.LdataParser;
 import lombok.SneakyThrows;
@@ -23,7 +24,7 @@ public class StarSysUtil {
         return 2.44 * (_diameter/2.) * Math.pow(_q, -1./3.);
     }
 
-    public static int calcOrbitalZone(double _orbit /* AU */, double _lum /* sol */)
+    public static int calcOrbitalZone0(double _orbit /* AU */, double _lum /* sol */)
     {
         if(_orbit < (0.8f*Math.sqrt(_lum)))
         {
@@ -34,6 +35,55 @@ public class StarSysUtil {
             return 2;
         }
         return 3;
+    }
+
+    public static int calcOrbitalZone(double _orbit /* AU */, double _lum /* sol */)
+    {
+        int _zone = calcOrbitalZone0(_orbit,_lum);
+        double _f = _orbit/Math.sqrt(_lum);
+        if(_f < 0.8f)
+        {
+            return 1;
+        }
+        else if(_f < 1.6f)
+        {
+            return 2;
+        }
+        return 3;
+    }
+
+    public static int calcOrbitalZone(double _orbit /* AU */, SolarContext _sol)
+    {
+        int _zone = calcOrbitalZone(_orbit, _sol.getLuminosity());
+        int _czone = _zone;
+        double _outer = 0.;
+        if(_sol.isMulti())
+        {
+            double _f = 0.;
+            for(int _i=_sol.getComponents().size()-1 ; _i>=0; _i--)
+            {
+                double _off = _sol.getComponentOffsets().get(_i);
+                double _o = _orbit-_off;
+                double _l = _sol.getComponents().get(_i).getLuminosity();
+                _f += _o/Math.sqrt(_l);
+                _outer += _off;
+            }
+            _outer+=1.6;
+
+            if(_f < 0.8f)
+            {
+                _czone = 1;
+            }
+            else if(_f < _outer)
+            {
+                _czone = 2;
+            }
+            else
+            {
+                _czone = 3;
+            }
+        }
+        return (_zone<_czone) ? _zone : _czone;
     }
 
     public static double calcPlanetaryEmpiricalDensity(double _mass, double _radius, double _lum)
@@ -321,7 +371,13 @@ public class StarSysUtil {
         // solving for sol L=M=1 -> m^4 = 1/4.6 -> m = 0.682826774
         return 4.6*Math.pow(_Mass,3.)*Math.pow(_metalicity,4.);
     }
-
+    
+    public static double calcStarLuminosityFromBolometricMagnitude(double _mbol)
+    {
+        // L = 85.5 x 0.4 ^ Mbol
+        return 85.5 * Math.pow(0.4, _mbol);
+    }
+    
     public static double calcStarLuminosityFromMass(double _mass, boolean _gaia)
     {
         if(_gaia)
@@ -378,15 +434,41 @@ public class StarSysUtil {
     {
         return (1273*_lum/Math.pow(_orbit,2));
     }
+
+    public static double calcExospericTemp(SolarContext _sol, double _orbit)
+    {
+        if(_sol.isMulti())
+        {
+            double _t = 0;
+            for(int _i=0 ; _i<_sol.getComponents().size(); _i++)
+            {
+                _t+= _sol.getComponents().get(_i).getLuminosity()/Math.pow(_orbit-_sol.getComponentOffsets().get(_i),2);
+            }
+            return (1273*_t);
+        }
+        return (1273*_sol.getLuminosity()/Math.pow(_orbit,2));
+    }
     public static double calcRmsVelocity(double _mol, double _lum, double _orbit)
     { //# in molar_weight, solar_luminance, AU, returns m/sec
         double _exospheric_temp = calcExospericTemp(_lum, _orbit);
         return Math.sqrt((3.0 * 8314.41 * _exospheric_temp)/_mol);
     }
 
+    public static double calcRmsVelocity(double _mol, double _exospheric_temp)
+    { //# in molar_weight, solar_luminance, AU, returns m/sec
+        return Math.sqrt((3.0 * 8314.41 * _exospheric_temp)/_mol);
+    }
+
     public static double calcMoleculeLimit(double _mass, double _diameter, double _lum, double _orbit)
     { //# in kg and km, returns mol
-        double _exospheric_temp = (1273*_lum/Math.pow(_orbit,2));
+        double _exospheric_temp = calcExospericTemp(_lum, _orbit);
+        double _ev = calcEscapeVelocity(_mass,_diameter);
+        return ((3*Math.pow(5,2)*8.31441*_exospheric_temp)/Math.pow((_ev*1000),2)*1000);
+        //#return (3*(5**2)*8.31441*1273*$lum)/((escape_velo($mass,$diameter)*1000)**2)*1000;
+    }
+
+    public static double calcMoleculeLimit(double _mass, double _diameter, double _exospheric_temp)
+    { //# in kg and km, returns mol
         double _ev = calcEscapeVelocity(_mass,_diameter);
         return ((3*Math.pow(5,2)*8.31441*_exospheric_temp)/Math.pow((_ev*1000),2)*1000);
         //#return (3*(5**2)*8.31441*1273*$lum)/((escape_velo($mass,$diameter)*1000)**2)*1000;
@@ -478,7 +560,7 @@ public class StarSysUtil {
         _rock_fract= (_rock_fract>=_cloud_adjustment) ? (_rock_fract-_cloud_adjustment) : 0;
         _hydro= (_hydro>_cloud_adjustment) ? (_hydro-_cloud_adjustment) : 0;
         _ice= (_ice>_cloud_adjustment) ? (_ice-_cloud_adjustment) : 0;
-       double _cloud_part = _cloud * 0.52; // rand_about(0.52,0.2);
+        double _cloud_part = _cloud * 0.52; // rand_about(0.52,0.2);
         //my $rock_part = ($pressure<0.00000001) ? ($rock_fract*rand_about(0.07,0.3)) : ($rock_fract*rand_about(0.15,0.1)) ;
         double _rock_part = (_pressure<0.00000001) ? (_rock_fract*0.07) : (_rock_fract*0.15) ;
         //my $water_part = $water_fract * rand_about(0.04,0.2);
@@ -487,6 +569,29 @@ public class StarSysUtil {
         double _ice_part = (_pressure<0.00000001) ? (_ice*0.5) : (_ice*0.7) ;
         return (_cloud_part + _rock_part + _water_part + _ice_part);
     }
+
+    public static double calcBondAlbedo(double _ice, double _pressure)
+    {
+        return calcAlbedo(0.,0.,_ice,_pressure);
+    }
+
+    /* Bond Albedo :
+        Mercury	0.088
+        Venus	0.76
+        Earth	0.306
+            Moon	0.11
+        Mars 	0.25
+        Jupiter	0.503
+        Saturn	0.342
+            Enceladus	0.81
+        Uranus	0.300
+        Neptune	0.290
+        Pluto	0.41
+            Charon	0.29
+            Haumea	0.33
+            Makemake	0.74
+            Eris	0.99
+    */
 
     public static double calcGreenRise(double _opt,double _temp,double _pressure)
     {
@@ -696,4 +801,24 @@ public class StarSysUtil {
         return _list.get((int) (_list.size()*_rng));
     }
 
+    public static double calcSimpleTemp(SolarContext _sol, double _orbit,double _planetEccent,double _rotationPeriod)
+    {
+        double _rellum = 0;
+        if(_sol.isMulti())
+        {
+            for(int _i=0 ; _i<_sol.getComponents().size(); _i++)
+            {
+                _rellum += Math.sqrt(_sol.getComponents().get(_i).getLuminosity())/((_orbit-_sol.getComponentOffsets().get(_i))*(_planetEccent));
+            }
+        }
+        else
+        {
+            _rellum = Math.sqrt(_sol.getLuminosity())/(_orbit*(_planetEccent));
+        }
+        return (Math.sqrt(_rellum)*340*Math.pow(_rotationPeriod, .2))-273.15;
+    }
+    
+    
+    
+    
 }

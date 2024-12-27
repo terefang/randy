@@ -191,7 +191,13 @@ public class ArcRand {
     {
         return next()/256f;
     }
-
+    
+    public long next64() { return ((long) next32() <<32L)|(~next32() & 0xffffffffffffL); }
+    public double nextDouble()
+    {
+        return (next64() & 0x7ffffffffffffffL)/((double)0x800000000000000L);
+    }
+    
     public float nextFloat16()
     {
         return next16()/65536f;

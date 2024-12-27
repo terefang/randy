@@ -5,6 +5,12 @@ import com.github.terefang.randy.noise.INoise;
 
 public class FractalAsNoiseHolder extends AbstractNoise implements INoise
 {
+    public static INoise from(IFractal _f)
+    {
+        FractalAsNoiseHolder _n = new FractalAsNoiseHolder();
+        _n.setFractal(_f);
+        return _n;
+    }
     IFractal fractal;
 
     public IFractal getFractal() {

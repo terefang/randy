@@ -41,7 +41,9 @@ public class TestSampler {
                     final ITransform.TransformType _ttrans = ITransform.TransformType.T_0NONE;
                     //for(final ITransform.TransformType _ttrans : ITransform.TransformType.values())
                     {
-                        for(final INoise _type : TestUtil.setupNoises(_seed)) {
+                        final INoise _type = RandyUtil.cyclicNoise(_seed,4);
+                        {
+                        //for(final INoise _type : TestUtil.setupNoises(_seed)) {
                             for (final IFractal _ftype : Arrays.asList(
                                     RandyUtil.samplerFractal(_type, _oct, _freq, _gain, true, false),
                                     RandyUtil.samplerFractal(_type, _oct, _freq, _gain, true, true)

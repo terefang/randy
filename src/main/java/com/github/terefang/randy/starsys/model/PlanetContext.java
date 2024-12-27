@@ -60,7 +60,7 @@ public class PlanetContext
         _ctx.orbit = _orbit;
         _ctx.orbital = _orbital;
         _ctx.rseed = _seed + _orbital;
-        _ctx.zone = StarSysUtil.calcOrbitalZone(_orbit, _sol.getLuminosity());
+        _ctx.zone = StarSysUtil.calcOrbitalZone(_orbit, _sol);
 
         String _lookup = StarSysUtil.getList(StarSysUtil.merge("planet_table",(_gaia?"gaia-":"")+"zones")).get(_ctx.zone-1);
         while(_lookup.startsWith("*"))
@@ -141,10 +141,15 @@ public class PlanetContext
         {
             this.rotationPeriod = this.zone*100*Math.pow(((2*3.1415)/(0.19*6.667e-11*this.planetDensity)),0.5)/(60*60*24);
         }
-        this.exoTemp=StarSysUtil.calcExospericTemp(_sol.getLuminosity(),this.orbit);
-        this.planetTemp=(Math.sqrt(Math.sqrt(_sol.getLuminosity())/this.orbit)*340)-273.15;
-        this.planetTempMax=(Math.sqrt(Math.sqrt(_sol.getLuminosity())/(this.orbit*(1-this.planetEccent)))*340*Math.pow(this.rotationPeriod/24., .2))-273.15;
-        this.planetTempMin=(Math.sqrt(Math.sqrt(_sol.getLuminosity())/(this.orbit*(1+this.planetEccent)))*340*Math.pow(24./this.rotationPeriod, .2))-273.15;
+
+
+        this.exoTemp=StarSysUtil.calcExospericTemp(_sol,this.orbit);
+        this.planetTemp=StarSysUtil.calcSimpleTemp(_sol,this.orbit,1.,1.);
+
+
+
+        this.planetTempMax=StarSysUtil.calcSimpleTemp(_sol,this.orbit,1-this.planetEccent,this.rotationPeriod/24.);
+        this.planetTempMin=StarSysUtil.calcSimpleTemp(_sol,this.orbit,1+this.planetEccent,24./this.rotationPeriod);
         this.planetTempAvg=(this.planetTemp+this.planetTempMin+this.planetTempMax)/3;
 
         this.rmsVelocity = StarSysUtil.calcRmsVelocity(28, _sol.getLuminosity(), this.orbit);

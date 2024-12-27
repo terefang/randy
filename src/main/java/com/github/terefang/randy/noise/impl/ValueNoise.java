@@ -16,6 +16,8 @@ public class ValueNoise extends NoiseUtil implements INoise
                 return super.name()+"Quintic";
             case HERMITE:
                 return super.name()+"Hermite";
+            case RADIAN:
+                return super.name()+"Radian";
             case LINEAR:
             default:
                 return super.name()+"Linear";
@@ -109,6 +111,10 @@ public class ValueNoise extends NoiseUtil implements INoise
                 x = quinticInterpolator(x);
                 y = quinticInterpolator(y);
                 break;
+            case RADIAN:
+                x = radianInterpolator(x);
+                y = radianInterpolator(y);
+                break;
         }
         xFloor *= STEPX;
         yFloor *= STEPY;
@@ -139,6 +145,11 @@ public class ValueNoise extends NoiseUtil implements INoise
                 x = quinticInterpolator(x);
                 y = quinticInterpolator(y);
                 z = quinticInterpolator(z);
+                break;
+            case RADIAN:
+                x = radianInterpolator(x);
+                y = radianInterpolator(y);
+                z = radianInterpolator(z);
                 break;
             case COSINE:
                 x = cosineInterpolator(x);
@@ -183,6 +194,12 @@ public class ValueNoise extends NoiseUtil implements INoise
                 y = quinticInterpolator(y);
                 z = quinticInterpolator(z);
                 w = quinticInterpolator(w);
+                break;
+            case RADIAN:
+                x = radianInterpolator(x);
+                y = radianInterpolator(y);
+                z = radianInterpolator(z);
+                w = radianInterpolator(w);
                 break;
             case COSINE:
                 x = cosineInterpolator(x);
@@ -241,6 +258,13 @@ public class ValueNoise extends NoiseUtil implements INoise
                 z = quinticInterpolator(z);
                 w = quinticInterpolator(w);
                 u = quinticInterpolator(u);
+                break;
+            case RADIAN:
+                x = radianInterpolator(x);
+                y = radianInterpolator(y);
+                z = radianInterpolator(z);
+                w = radianInterpolator(w);
+                u = radianInterpolator(u);
                 break;
             case COSINE:
                 x = cosineInterpolator(x);
@@ -323,6 +347,14 @@ public class ValueNoise extends NoiseUtil implements INoise
                 w = quinticInterpolator(w);
                 u = quinticInterpolator(u);
                 v = quinticInterpolator(v);
+                break;
+            case RADIAN:
+                x = radianInterpolator(x);
+                y = radianInterpolator(y);
+                z = radianInterpolator(z);
+                w = radianInterpolator(w);
+                u = radianInterpolator(u);
+                v = radianInterpolator(v);
                 break;
             case COSINE:
                 x = cosineInterpolator(x);
@@ -442,6 +474,14 @@ public class ValueNoise extends NoiseUtil implements INoise
                 w = quinticInterpolator(w);
                 u = quinticInterpolator(u);
                 v = quinticInterpolator(v);
+                break;
+            case RADIAN:
+                x = radianInterpolator(x);
+                y = radianInterpolator(y);
+                z = radianInterpolator(z);
+                w = radianInterpolator(w);
+                u = radianInterpolator(u);
+                v = radianInterpolator(v);
                 break;
             case COSINE:
                 x = cosineInterpolator(x);

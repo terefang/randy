@@ -3,8 +3,28 @@ package com.github.terefang.randy.noise;
 import java.awt.*;
 import java.util.UUID;
 
+import static com.github.terefang.randy.noise.GradientVectors.*;
+
 public abstract class NoiseUtil extends AbstractNoise
 {
+    /**
+     * Given inputs as {@code x} in the range -1.0 to 1.0 that are too biased towards 0.0, this "squashes" the range
+     * softly to widen it and spread it away from 0.0 without increasing bias anywhere else.
+     * <br>
+     * This starts with a common sigmoid function, {@code x / sqrt(x * x + add)}, but instead of approaching -1 and 1
+     * but never reaching them, this multiplies the result so the line crosses -1 when x is -1, and crosses 1 when x is
+     * 1. It has a smooth derivative, if that matters to you.
+     *
+     * @param x between -1 and 1
+     * @param add if greater than 1, this will have nearly no effect; the lower this goes below 1, the more this will
+     *           separate results near the center of the range. This must be greater than or equal to 0.0
+     * @param mul typically the result of calling {@code Math.sqrt(add + 1f)}
+     * @return a float with a slightly different distribution from {@code x}, but still between -1 and 1
+     */
+    public static double equalize(double x, double add, double mul) {
+        return x * mul / Math.sqrt(x * x + add);
+    }
+
     // ----------------------------------------------------------------------------
 
     public static double value(double _x, double _y)
@@ -49,6 +69,10 @@ public abstract class NoiseUtil extends AbstractNoise
             case HERMITE:
                 xs = hermiteInterpolator(xf - x0);
                 ys = hermiteInterpolator(yf - y0);
+                break;
+            case RADIAN:
+                xs = radianInterpolator(xf - x0);
+                ys = radianInterpolator(yf - y0);
                 break;
             case QUINTIC:
                 xs = quinticInterpolator(xf - x0);
@@ -99,6 +123,11 @@ public abstract class NoiseUtil extends AbstractNoise
                 xs = hermiteInterpolator(xf - x0);
                 ys = hermiteInterpolator(yf - y0);
                 zs = hermiteInterpolator(zf - z0);
+                break;
+            case RADIAN:
+                xs = radianInterpolator(xf - x0);
+                ys = radianInterpolator(yf - y0);
+                zs = radianInterpolator(zf - z0);
                 break;
             case QUINTIC:
                 xs = quinticInterpolator(xf - x0);
@@ -164,6 +193,11 @@ public abstract class NoiseUtil extends AbstractNoise
                         +(hermiteInterpolator(_x)*hermiteInterpolator(1.-_y)*_v10)
                         +(hermiteInterpolator(1.-_x)*hermiteInterpolator(_y)*_v01)
                         +(hermiteInterpolator(_x)*hermiteInterpolator(_y)*_v11);
+            case RADIAN:
+                return (radianInterpolator(1.-_x)*radianInterpolator(1.-_y)*_v00)
+                        +(radianInterpolator(_x)*radianInterpolator(1.-_y)*_v10)
+                        +(radianInterpolator(1.-_x)*radianInterpolator(_y)*_v01)
+                        +(radianInterpolator(_x)*radianInterpolator(_y)*_v11);
             case QUINTIC:
                 return (quinticInterpolator(1.-_x)*quinticInterpolator(1.-_y)*_v00)
                         +(quinticInterpolator(_x)*quinticInterpolator(1.-_y)*_v10)
@@ -337,6 +371,7 @@ public abstract class NoiseUtil extends AbstractNoise
      */
     public static final int QUINTIC = 2;
     public static final int COSINE = 3;
+    public static final int RADIAN = 4;
 
 
     // ----------------------------------------------------------------------------
@@ -449,13 +484,39 @@ public abstract class NoiseUtil extends AbstractNoise
         return a + (t * t * t * (t * (t * 6. - 15.) + 10.)) * (b - a);
     }
 
+    public static double quintic2Lerp(double a, double b, double t) {
+        return a + (t * t * t * (t * (t * 6. - 15.) + 9.999998)) * (b - a);
+    }
+
     public static double quinticInterpolator(double t) {
         return quinticLerp(0., 1., t);
+    }
+
+    public static double quintic2Interpolator(double t) {
+        return quintic2Lerp(0., 1., t);
+    }
+
+    public static double radianInterpolator(double t) {
+        return radianLerp(0., 1., t);
     }
 
     protected static double cubicLerp(double a, double b, double c, double d, double t) {
         double p = (d - c) - (a - b);
         return t * (t * t * p + t * ((a - b) - p) + (c - a)) + b;
+    }
+
+    public static double radianLerp(double a, double b, double t)
+    {
+        t = (clamp(t,-1.,1.)-.5)* Math.PI;
+        t = (Math.sin(t)/2.)+.5;
+        return lerp(a,b,t);
+    }
+
+    public static int radianLerp(int a, int b, double t)
+    {
+        t = (clamp(t,-1.,1.)-.5)* Math.PI;
+        t = (Math.sin(t)/2.)+.5;
+        return lerp(a,b,t);
     }
 
     public static double lerp3D(double _v000, double _v001, double _v010, double _v011, double _v100, double _v101, double _v110, double _v111, double _xs, double _ys, double _zs)
@@ -689,6 +750,110 @@ public abstract class NoiseUtil extends AbstractNoise
         return (s = (s ^ (s << 19 | s >>> 13) ^ (s << 5 | s >>> 27) ^ 0xD1B54A35) * 0x125493) ^ s >>> 11;
     }
 
+    /**
+     * A 32-bit point hash that needs 2 dimensions pre-multiplied by constants {@link #X_2} and {@link #Y_2}, as
+     * well as an int seed.
+     * @param x x position, as an int pre-multiplied by {@link #X_2}
+     * @param y y position, as an int pre-multiplied by {@link #Y_2}
+     * @param s any int, a seed to be able to produce many hashes for a given point
+     * @return 8-bit hash of the x,y point with the given state s, shifted for {@link GradientVectors#GRADIENTS_2D}
+     */
+    public static int hash2All(int x, int y, int s) {
+        final int h = (s ^ x ^ y) * 0x125493;
+        return (h ^ (h << 11 | h >>> 21) ^ (h << 23 | h >>> 9));
+    }
+    /**
+     * A 32-bit point hash that needs 3 dimensions pre-multiplied by constants {@link #X_3} through {@link #Z_3}, as
+     * well as an int seed.
+     * @param x x position, as an int pre-multiplied by {@link #X_3}
+     * @param y y position, as an int pre-multiplied by {@link #Y_3}
+     * @param z z position, as an int pre-multiplied by {@link #Z_3}
+     * @param s any int, a seed to be able to produce many hashes for a given point
+     * @return 8-bit hash of the x,y,z point with the given state s, shifted for {@link GradientVectors#GRADIENTS_3D}
+     */
+    public static int hash2All(int x, int y, int z, int s) {
+        final int h = (s ^ x ^ y ^ z) * 0x125493;
+        return (h ^ (h << 11 | h >>> 21) ^ (h << 23 | h >>> 9));
+    }
+
+    /**
+     * A 32-bit point hash that needs 4 dimensions pre-multiplied by constants {@link #X_4} through {@link #W_4}, as
+     * well as an int seed.
+     * @param x x position, as an int pre-multiplied by {@link #X_4}
+     * @param y y position, as an int pre-multiplied by {@link #Y_4}
+     * @param z z position, as an int pre-multiplied by {@link #Z_4}
+     * @param w w position, as an int pre-multiplied by {@link #W_4}
+     * @param s any int, a seed to be able to produce many hashes for a given point
+     * @return 8-bit hash of the x,y,z,w point with the given state s, shifted for {@link GradientVectors#GRADIENTS_4D}
+     */
+    public static int hash2All(int x, int y, int z, int w, int s) {
+        final int h = (s ^ x ^ y ^ z ^ w) * 0x125493;
+        return (h ^ (h << 11 | h >>> 21) ^ (h << 23 | h >>> 9));
+    }
+    /**
+     * A 32-bit point hash that needs 5 dimensions pre-multiplied by constants {@link #X_5} through {@link #U_5}, as
+     * well as an int seed.
+     * @param x x position, as an int pre-multiplied by {@link #X_5}
+     * @param y y position, as an int pre-multiplied by {@link #Y_5}
+     * @param z z position, as an int pre-multiplied by {@link #Z_5}
+     * @param w w position, as an int pre-multiplied by {@link #W_5}
+     * @param u u position, as an int pre-multiplied by {@link #U_5}
+     * @param s any int, a seed to be able to produce many hashes for a given point
+     * @return 8-bit hash of the x,y,z,w,u point with the given state s, shifted for {@link GradientVectors#GRADIENTS_5D}
+     */
+    public static int hash2All(int x, int y, int z, int w, int u, int s) {
+        final int h = (s ^ x ^ y ^ z ^ w ^ u) * 0x125493;
+        return (h ^ (h << 11 | h >>> 21) ^ (h << 23 | h >>> 9));
+    }
+
+    /**
+     * A 32-bit point hash that needs 6 dimensions pre-multiplied by constants {@link #X_6} through {@link #V_6}, as
+     * well as an int seed.
+     * @param x x position, as an int pre-multiplied by {@link #X_6}
+     * @param y y position, as an int pre-multiplied by {@link #Y_6}
+     * @param z z position, as an int pre-multiplied by {@link #Z_6}
+     * @param w w position, as an int pre-multiplied by {@link #W_6}
+     * @param u u position, as an int pre-multiplied by {@link #U_6}
+     * @param v v position, as an int pre-multiplied by {@link #V_6}
+     * @param s any int, a seed to be able to produce many hashes for a given point
+     * @return 8-bit hash of the x,y,z,w,u,v point with the given state s
+     */
+    public static int hash2All(int x, int y, int z, int w, int u, int v, int s) {
+        final int h = (s ^ x ^ y ^ z ^ w ^ u ^ v) * 0x125493;
+        return (h ^ (h << 11 | h >>> 21) ^ (h << 23 | h >>> 9));
+    }
+
+    protected static double grad2Coord2D(int seed, int x, int y,
+                                       double xd, double yd) {
+        final int h = hash2All(x, y, seed);
+        final int hash = h & (255 << 1);
+        return (h * 0x1p-32f) + xd * GRADIENTS_2D[hash] + yd * GRADIENTS_2D[hash + 1];
+    }
+    protected static double grad2Coord3D(int seed, int x, int y, int z, double xd, double yd, double zd) {
+        final int h = hash2All(x, y, z, seed);
+        final int hash = h & (255 << 2);
+        return (h * 0x1p-32f) + xd * GRADIENTS_3D[hash] + yd * GRADIENTS_3D[hash + 1] + zd * GRADIENTS_3D[hash + 2];
+    }
+    protected static double grad2Coord4D(int seed, int x, int y, int z, int w,
+                                       double xd, double yd, double zd, double wd) {
+        final int h = hash2All(x, y, z, w, seed);
+        final int hash = h & (255 << 2);
+        return (h * 0x1p-32f) + xd * GRADIENTS_4D[hash] + yd * GRADIENTS_4D[hash + 1] + zd * GRADIENTS_4D[hash + 2] + wd * GRADIENTS_4D[hash + 3];
+    }
+    protected static double grad2Coord5D(int seed, int x, int y, int z, int w, int u,
+                                       double xd, double yd, double zd, double wd, double ud) {
+        final int h = hash2All(x, y, z, w, u, seed);
+        final int hash = h & (255 << 3);
+        return (h * 0x1p-32) + xd * GRADIENTS_5D[hash] + yd * GRADIENTS_5D[hash + 1] + zd * GRADIENTS_5D[hash + 2]
+                + wd * GRADIENTS_5D[hash + 3] + ud * GRADIENTS_5D[hash + 4];
+    }
+    protected static double grad2Coord6D(int seed, int x, int y, int z, int w, int u, int v,
+                                       double xd, double yd, double zd, double wd, double ud, double vd) {
+        final int h = hash2All(x, y, z, w, u, v, seed);
+        final int hash = h & (255 << 3);
+        return (h * 0x1p-32) + xd * GRADIENTS_6D[hash] + yd * GRADIENTS_6D[hash + 1] + zd * GRADIENTS_6D[hash + 2]
+                + wd * GRADIENTS_6D[hash + 3] + ud * GRADIENTS_6D[hash + 4] + vd * GRADIENTS_6D[hash + 5];
+    }
     /**
      * A 8-bit point hash that smashes x and y into s using XOR and multiplications by harmonious numbers,
      * then runs a simple unary hash on s and returns it. Has better performance than HastyPointHash, especially for
@@ -1554,8 +1719,8 @@ public abstract class NoiseUtil extends AbstractNoise
     }
 
     protected static double gradCoord3D(int seed, int x, int y, int z, double xd, double yd, double zd) {
-        final int hash = hash32(x, y, z, seed) << 2;
-        return xd * GRAD_3D[hash] + yd * GRAD_3D[hash+1] + zd * GRAD_3D[hash+2];
+        final int hash = hash256(x, y, z, seed) << 2;
+        return xd * GradientVectors.GRADIENTS_3D[hash] + yd * GradientVectors.GRADIENTS_3D[hash+1] + zd * GradientVectors.GRADIENTS_3D[hash+2];
     }
 
     protected static double gradCoord4D(int seed, int x, int y, int z, int w, double xd, double yd, double zd, double wd) {

@@ -53,6 +53,16 @@ import java.util.concurrent.Future;
 public class PlanetJ implements IPlanet
 {
 
+	boolean imported = false;
+
+	public boolean isImported() {
+		return imported;
+	}
+
+	public void setImported(boolean imported) {
+		this.imported = imported;
+	}
+
 	LogSink logSink;
 
 	public LogSink getLogSink() {
@@ -1158,6 +1168,8 @@ public class PlanetJ implements IPlanet
 	
 	public void init(Properties prop)
 	{
+		if(imported) return;
+
 		{/* initialize vertices to slightly irregular tetrahedron */
 			tetra[0] = new vertex();
 			tetra[0].h = this.initialAltitude;
@@ -1275,7 +1287,10 @@ public class PlanetJ implements IPlanet
 		slo = Math.sin(baseLongitude); 
 		clo = Math.cos(baseLongitude);
 
-		heights = new double[Width][Height];
+		if(!imported)
+		{
+			heights = new double[Width][Height];
+		}
 		temperature = new double[Width][Height];
 		tempAdjust = new double[Width][Height];
 		rainfall = new double[Width][Height];
@@ -1340,6 +1355,12 @@ public class PlanetJ implements IPlanet
 			process(new LogSink() {
 				@Override
 				public void log(String message) {
+					System.err.println(message);
+				}
+				public void logProgress(int _pct, String message) {
+					System.err.println(String.format("%d%% %s", _pct,message));
+				}
+				public void logConsole(String message) {
 					System.err.println(message);
 				}
 			});
@@ -1414,7 +1435,7 @@ public class PlanetJ implements IPlanet
 		}
 
 		long s2 = System.currentTimeMillis();
-		_log.log("took = "+(s2-start));
+		_log.logConsole("took = "+(s2-start));
 		if(this.threaded)
 		{
 			exec.shutdownNow();
@@ -1450,7 +1471,7 @@ public class PlanetJ implements IPlanet
 		}
 		int _hc = (int) (100*(_cw/(Width*Height)));
 
-		_log.log(String.format("sea/land => %f / %f = %d%%",_nh,_mh,_hc));
+		_log.logConsole(String.format("sea/land => %f / %f = %d%%",_nh,_mh,_hc));
 	}
 	
 	void makeoutline(boolean doBw)
@@ -1735,7 +1756,7 @@ public class PlanetJ implements IPlanet
 		
 		if((j % (Height/10))==0)
 		{
-			_log.log("- "+(j*100/Height)+"% ETA:"+new Date(System.currentTimeMillis()+((curr-start)*(Height-j+1)/(j+1))));
+			_log.logProgress((j*100/Height), "ETA:"+new Date(System.currentTimeMillis()+((curr-start)*(Height-j+1)/(j+1))));
 		}
 	}
 	
@@ -1744,7 +1765,7 @@ public class PlanetJ implements IPlanet
 
 		if((j % (Width/10))==0)
 		{
-			_log.log("- "+(j*100/Width)+"% ETA:"+new Date(System.currentTimeMillis()+((curr-start)*(Width-j+1)/(j+1))));
+			_log.logProgress((j*100/Width), "ETA:"+new Date(System.currentTimeMillis()+((curr-start)*(Width-j+1)/(j+1))));
 		}
 	}
 
@@ -3132,17 +3153,20 @@ public class PlanetJ implements IPlanet
 
 	public void planet0_altitude(int i, int j, double x, double y, double z, int lvl)
 	{
-		double alt = planet1(x, y, z, lvl) + this.altitudeAdjustment;
-
-		if(this.nonLinear)
+		if(!imported)
 		{
-			if(alt > 0.0)
-			{
-				alt = alt * alt * alt * 300.0;
-			}
-		}
+			double alt = planet1(x, y, z, lvl) + this.altitudeAdjustment;
 
-		this.heights[i][j] = alt;
+			if(this.nonLinear)
+			{
+				if(alt > 0.0)
+				{
+					alt = alt * alt * alt * 300.0;
+				}
+			}
+
+			this.heights[i][j] = alt;
+		}
 		this.col[i][j] = 0;
 	}
 

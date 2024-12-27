@@ -17,6 +17,8 @@ public class SolidNoise extends NoiseUtil implements INoise
                 return super.name()+"Quintic";
             case HERMITE:
                 return super.name()+"Hermite";
+            case RADIAN:
+                return super.name()+"Radian";
             case LINEAR:
             default:
                 return super.name()+"Linear";
@@ -106,6 +108,9 @@ public class SolidNoise extends NoiseUtil implements INoise
             case QUINTIC:
                 xs = quinticInterpolator(x - x0);
                 break;
+            case RADIAN:
+                xs = radianInterpolator(x - x0);
+                break;
             case COSINE:
                 xs = cosineInterpolator(x - x0);
                 break;
@@ -171,6 +176,10 @@ public class SolidNoise extends NoiseUtil implements INoise
                 xs = quinticInterpolator(x - x0);
                 ys = quinticInterpolator(y - y0);
                 break;
+            case RADIAN:
+                xs = radianInterpolator(x - x0);
+                ys = radianInterpolator(y - y0);
+                break;
             case COSINE:
                 xs = cosineInterpolator(x - x0);
                 ys = cosineInterpolator(y - y0);
@@ -230,6 +239,11 @@ public class SolidNoise extends NoiseUtil implements INoise
                 ys = quinticInterpolator(y - y0);
                 zs = quinticInterpolator(z - z0);
                 break;
+            case RADIAN:
+                xs = radianInterpolator(x - x0);
+                ys = radianInterpolator(y - y0);
+                zs = radianInterpolator(z - z0);
+                break;
             case COSINE:
                 xs = cosineInterpolator(x - x0);
                 ys = cosineInterpolator(y - y0);
@@ -284,6 +298,9 @@ public class SolidNoise extends NoiseUtil implements INoise
             case QUINTIC:
                 us = quinticInterpolator(us);
                 break;
+            case RADIAN:
+                us = radianInterpolator(us);
+                break;
             case COSINE:
                 us = cosineInterpolator(us);
                 break;
@@ -310,6 +327,9 @@ public class SolidNoise extends NoiseUtil implements INoise
             case QUINTIC:
                 vs = quinticInterpolator(vs);
                 break;
+            case RADIAN:
+                vs = radianInterpolator(vs);
+                break;
             case COSINE:
                 vs = cosineInterpolator(vs);
                 break;
@@ -335,6 +355,9 @@ public class SolidNoise extends NoiseUtil implements INoise
                 break;
             case QUINTIC:
                 ws = quinticInterpolator(ws);
+                break;
+            case RADIAN:
+                ws = radianInterpolator(ws);
                 break;
             case COSINE:
                 ws = cosineInterpolator(ws);

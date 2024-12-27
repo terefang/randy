@@ -15,6 +15,8 @@ public class BicubicWobbleNoise extends NoiseUtil implements INoise
                 return super.name()+"Quintic";
             case HERMITE:
                 return super.name()+"Hermite";
+            case RADIAN:
+                return super.name()+"Radian";
             case LINEAR:
             default:
                 return super.name()+"Linear";
@@ -99,6 +101,9 @@ public class BicubicWobbleNoise extends NoiseUtil implements INoise
             case HERMITE:
                 xs = hermiteInterpolator(x - x0);
                 break;
+            case RADIAN:
+                xs = radianInterpolator(x - x0);
+                break;
             case QUINTIC:
                 xs = quinticInterpolator(x - x0);
                 break;
@@ -126,6 +131,10 @@ public class BicubicWobbleNoise extends NoiseUtil implements INoise
             case QUINTIC:
                 xs = quinticInterpolator(x - x0);
                 ys = quinticInterpolator(y - y0);
+                break;
+            case RADIAN:
+                xs = radianInterpolator(x - x0);
+                ys = radianInterpolator(y - y0);
                 break;
         }
 
@@ -165,6 +174,11 @@ public class BicubicWobbleNoise extends NoiseUtil implements INoise
                 xs = quinticInterpolator(x - x0);
                 ys = quinticInterpolator(y - y0);
                 zs = quinticInterpolator(z - z0);
+                break;
+            case RADIAN:
+                xs = radianInterpolator(x - x0);
+                ys = radianInterpolator(y - y0);
+                zs = radianInterpolator(z - z0);
                 break;
         }
 

@@ -16,6 +16,8 @@ public class HoneyNoise   extends NoiseUtil implements INoise
                 return super.name()+"Quintic";
             case HERMITE:
                 return super.name()+"Hermite";
+            case RADIAN:
+                return super.name()+"Radian";
             case LINEAR:
             default:
                 return super.name()+"Linear";

@@ -7,22 +7,27 @@ import lombok.SneakyThrows;
 
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Vector;
 
 @Data
 public class SolarContext
 {
-    int seed;
-    int size;
-    String rsize;
-    String spectra;
-    float num;
+    private boolean multi;
+    private List<SolarContext> components;
+    private List<Double> componentOffsets;
 
-    double surfaceDistance;
-    double outerPlanetaryLimit;
-    double mass;
-    double luminosity;
-    double surfaceTemperature;
-    double safeJumpDistance;
+    private int seed;
+    private int size;
+    private String rsize;
+    private String spectra;
+    private float num;
+
+    private double surfaceDistance;
+    private double outerPlanetaryLimit;
+    private double mass;
+    private double luminosity;
+    private double surfaceTemperature;
+    private double safeJumpDistance;
 
     public static SolarContext randomType(int _seed, double _bias)
     {
@@ -240,13 +245,31 @@ public class SolarContext
     {
         _fh.append("======================================================\n");
         _fh.append(String.format("         Seed Value: 0x%X\n", this.getSeed()));
-        _fh.append(String.format("      Stellar Class: %s%03.1f%s\n", this.getSpectra(), this.getNum(), this.getRsize()));
-        _fh.append(String.format("               Mass: %.3f Sol, %.3f kg(1e+27)\n", this.getMass(), this.getMass()*StarSysUtil.SOL_TO_KG27));
-        _fh.append(String.format("         Luminosity: %.3f Sol, %.3f J/s(1e+24)\n", this.getLuminosity(), this.getLuminosity()*StarSysUtil.SOL_TO_JS));
-        _fh.append(String.format("Surface Temperature: %.3f K, %.3f C\n", this.getSurfaceTemperature(), this.getSurfaceTemperature()-273.15f));
-        _fh.append(String.format("     Stellar Radius: %.3f sol, %.5f AU\n", this.getSurfaceDistance(), this.getSurfaceDistance()*StarSysUtil.SOL_TO_AU));
-        _fh.append(String.format(" max. Orbital Limit: %.3f AU\n", this.getOuterPlanetaryLimit()));
-        _fh.append(String.format("    Safe Jump Limit: %.3f AU\n", this.getSafeJumpDistance()));
+        if(this.multi)
+        {
+            _fh.append(String.format("               Mass: %.3f Sol, %.3f kg(1e+27)\n", this.getMass(), this.getMass()*StarSysUtil.SOL_TO_KG27));
+            _fh.append(String.format("         Luminosity: %.3f Sol, %.3f J/s(1e+24)\n", this.getLuminosity(), this.getLuminosity()*StarSysUtil.SOL_TO_JS));
+            _fh.append(String.format(" max. Orbital Limit: %.3f AU\n", this.getOuterPlanetaryLimit()));
+            _fh.append(String.format("    Safe Jump Limit: %.3f AU\n", this.getSafeJumpDistance()));
+            _fh.append("- - - - - - - - - - - - - - - - - - - - - - - - - -\n");
+            _fh.append("\nPrimary Component:\n");
+            this.components.get(0).outputStarInformation(_fh);
+            for(int _i=1; _i<this.components.size(); _i++)
+            {
+                _fh.append(String.format("\nComponent #%d: %.3f AU\n", _i, this.componentOffsets.get(_i)));
+                this.components.get(_i).outputStarInformation(_fh);
+            }
+        }
+        else
+        {
+            _fh.append(String.format("      Stellar Class: %s%03.1f%s\n", this.getSpectra(), this.getNum(), this.getRsize()));
+            _fh.append(String.format("               Mass: %.3f Sol, %.3f kg(1e+27)\n", this.getMass(), this.getMass()*StarSysUtil.SOL_TO_KG27));
+            _fh.append(String.format("         Luminosity: %.3f Sol, %.3f J/s(1e+24)\n", this.getLuminosity(), this.getLuminosity()*StarSysUtil.SOL_TO_JS));
+            _fh.append(String.format("Surface Temperature: %.3f K, %.3f C\n", this.getSurfaceTemperature(), this.getSurfaceTemperature()-273.15f));
+            _fh.append(String.format("     Stellar Radius: %.3f sol, %.5f AU\n", this.getSurfaceDistance(), this.getSurfaceDistance()*StarSysUtil.SOL_TO_AU));
+            _fh.append(String.format(" max. Orbital Limit: %.3f AU\n", this.getOuterPlanetaryLimit()));
+            _fh.append(String.format("    Safe Jump Limit: %.3f AU\n", this.getSafeJumpDistance()));
+        }
     }
 
     public void randomizeFromMk(int _rand)
@@ -315,11 +338,199 @@ public class SolarContext
         this.safeJumpDistance = StarSysUtil.calcSafeJumpDistanceAU(this.surfaceDistance*StarSysUtil.SOL_TO_AU, this.mass);
     }
 
+    public boolean isMulti() {
+        return multi;
+    }
+
+    public void setMulti(boolean multi) {
+        this.multi = multi;
+    }
+
+    public int getSeed() {
+        return seed;
+    }
+
+    public void setSeed(int seed) {
+        this.seed = seed;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    public String getRsize() {
+        return rsize;
+    }
+
+    public void setRsize(String rsize) {
+        this.rsize = rsize;
+    }
+
+    public String getSpectra() {
+        return spectra;
+    }
+
+    public void setSpectra(String spectra) {
+        this.spectra = spectra;
+    }
+
+    public float getNum() {
+        return num;
+    }
+
+    public void setNum(float num) {
+        this.num = num;
+    }
+
+    public double getSurfaceDistance() {
+        return surfaceDistance;
+    }
+
+    public void setSurfaceDistance(double surfaceDistance) {
+        this.surfaceDistance = surfaceDistance;
+    }
+
+    public double getOuterPlanetaryLimit() {
+        return outerPlanetaryLimit;
+    }
+
+    public void setOuterPlanetaryLimit(double outerPlanetaryLimit) {
+        this.outerPlanetaryLimit = outerPlanetaryLimit;
+    }
+
+    public double getMass() {
+        return mass;
+    }
+
+    public void setMass(double mass) {
+        this.mass = mass;
+    }
+
+    public double getLuminosity() {
+        return luminosity;
+    }
+
+    public void setLuminosity(double luminosity) {
+        this.luminosity = luminosity;
+    }
+
+    public double getSurfaceTemperature() {
+        return surfaceTemperature;
+    }
+
+    public void setSurfaceTemperature(double surfaceTemperature) {
+        this.surfaceTemperature = surfaceTemperature;
+    }
+
+    public double getSafeJumpDistance() {
+        return safeJumpDistance;
+    }
+
+    public void setSafeJumpDistance(double safeJumpDistance) {
+        this.safeJumpDistance = safeJumpDistance;
+    }
+
+
+    public static SolarContext from(boolean _gaia, SolarContext _primary, double _off1, SolarContext _comp1)
+    {
+        SolarContext _sc = new SolarContext();
+        _sc.multi=true;
+        _sc.components = new Vector<>();
+        _sc.components.add(_primary);
+        _sc.components.add(_comp1);
+
+        _sc.componentOffsets = new Vector<>();
+        _sc.componentOffsets.add(0.);
+        _sc.componentOffsets.add(_off1);
+
+        _sc.calculateMultiSystem();
+        return _sc;
+    }
+
+    public static SolarContext from(boolean _gaia, SolarContext _primary, double _off1, SolarContext _comp1, double _off2, SolarContext _comp2)
+    {
+        SolarContext _sc = new SolarContext();
+        _sc.multi=true;
+        _sc.components = new Vector<>();
+        _sc.components.add(_primary);
+        _sc.components.add(_comp1);
+        _sc.components.add(_comp2);
+
+        _sc.componentOffsets = new Vector<>();
+        _sc.componentOffsets.add(0.);
+        _sc.componentOffsets.add(_off1);
+        _sc.componentOffsets.add(_off2);
+
+        _sc.calculateMultiSystem();
+        return _sc;
+    }
+
+    private void calculateMultiSystem()
+    {
+        this.seed = 0;
+        for(int _i=0; _i<this.components.size(); _i++)
+        {
+            SolarContext _s = this.components.get(_i);
+            this.seed ^= _s.getSeed();
+            if(this.size < _s.getSize())
+            {
+                this.size = _s.getSize();
+                this.rsize = _s.getRsize();
+            }
+            this.mass += _s.getMass();
+            this.luminosity += _s.getLuminosity();
+            if(_i==0)
+            {
+                this.spectra = _s.getSpectra();
+                this.num = _s.getNum();
+                this.surfaceDistance = _s.getSurfaceDistance();
+                this.surfaceTemperature = _s.getSurfaceTemperature();
+                this.outerPlanetaryLimit = _s.getOuterPlanetaryLimit();
+            }
+            else
+            {
+                this.outerPlanetaryLimit += _s.getOuterPlanetaryLimit()/2.;
+            }
+
+            this.safeJumpDistance += _s.safeJumpDistance+this.getComponentOffsets().get(_i);
+        }
+    }
+
     public static void main(String[] args) {
+        // multi-system
+        SystemContext _sys = SystemContext.from(0, 0xdeadb33f,
+                SolarContext.from(true,
+                        SolarContext.from(0xbeef, 1.0, true),
+                        .25,
+                        SolarContext.from(0x1007, .5, true),
+                        .75,
+                        SolarContext.from(0x4444, .25, true)
+                ), true);
+        _sys.outputInformation(System.err);
+    }
+
+    public static void main_1(String[] args) {
+        // multi-system
+        SystemContext _sys = SystemContext.from(0, 0xdeadb33f,
+                SolarContext.from(true,
+                        SolarContext.from(0xbeef, 1.0, true),
+                        .25,
+                        SolarContext.from(0x1007, .5, true)
+                ), true);
+        _sys.outputInformation(System.err);
+    }
+
+
+    public static void main_0(String[] args) {
         for(double _i=10. ; _i>.1; _i-=.25)
         {
             SystemContext.from(0,0,
-            SolarContext.from(0xbeef, _i, true), true).outputInformation(System.err);
+                    SolarContext.from(0xbeef, _i, true), true).outputInformation(System.err);
         }
     }
+
 }

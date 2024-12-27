@@ -4,6 +4,7 @@ import com.github.terefang.randy.fractal.IFractal;
 import com.github.terefang.randy.kernel.IKernel;
 import com.github.terefang.randy.noise.INoise;
 import com.github.terefang.randy.noise.NoiseUtil;
+import com.github.terefang.randy.rng.impl.ArcRand;
 import com.github.terefang.randy.transf.ITransform;
 
 import java.util.Vector;
@@ -70,7 +71,339 @@ public class NoiseField
         fHoff=0;
         fWoff=0;
     }
+    
+    public static class er_vec2
+    {
+        public double x;
+        public double y;
+        
+        public static er_vec2 from(double _1, double _2)
+        {
+            er_vec2 _v = new er_vec2();
+            _v.x=_1;
+            _v.y=_2;
+            return _v;
+        }
+        
+        public er_vec2 add(er_vec2 _v)
+        {
+            return from(this.x+_v.x,this.y+_v.y);
+        }
+        
+        public er_vec2 sub(er_vec2 _v)
+        {
+            return from(this.x-_v.x,this.y-_v.y);
+        }
+        
+        public er_vec2 mul(double _v)
+        {
+            return from(this.x*_v,this.y*_v);
+        }
+        
+        public er_vec2 clone()
+        {
+            return from(this.x,this.y);
+        }
+        
+        public er_vec2 normalize()
+        {
+            double _l = Math.sqrt(this.x*this.x+this.y*this.y);
+            if(_l<=0.) return from(this.x,this.y);
+            return from(this.x/_l,this.y/_l);
+        }
+        
+        @Override
+        public String toString()
+        {
+            return String.format("[ %f, %f ]", this.x, this.y);
+        }
+    }
+    
+    public static class er_particle
+    {
+        public er_vec2 pos;
+        public er_vec2 dir;
+        public double vel;
+        public double sediment;
+        public double water;
+    }
+    
+    /*
+     * gradient & height tuple.
+     */
+    public static class er_hg_tuple
+    {
+        public er_vec2 gradient;
+        public double height;
+        
+        public static er_hg_tuple from(er_vec2 gradient,double height)
+        {
+            er_hg_tuple _v = new er_hg_tuple();
+            _v.gradient = gradient;
+            _v.height = height;
+            return _v;
+        }
+    }
+    public static class er_sim_params
+    {
+        public int _n;
+        public int _ttl;
+        public int _radius;
+        public double _enertia;
+        public double _capacity;
+        public double _gravity;
+        public double _evaporation;
+        public double _erosion;
+        public double _deposition;
+        public double _min_slope;
+        
+        public static er_sim_params from(int _n,
+                                         int _ttl,
+                                         int _radius,
+                                         double _enertia,
+                                         double _capacity,
+                                         double _gravity,
+                                         double _evaporation,
+                                         double _erosion,
+                                         double _deposition,
+                                         double _min_slope)
+        {
+            er_sim_params _param = new er_sim_params();
+            _param._n = _n;
+            _param._ttl = _ttl;
+            _param._radius = _radius;
+            _param._enertia = _enertia;
+            _param._capacity = _capacity;
+            _param._gravity = _gravity;
+            _param._evaporation = _evaporation;
+            _param._erosion =_erosion;
+            _param._deposition = _deposition;
+            _param._min_slope = _min_slope;
+            return  _param;
+        }
+        
+        public static er_sim_params predef()
+        {
+            return from(70000, 30, 2, 0.1, 10, 4, 0.1, 0.1, 1, 0.0001);
+        }
+    }
+    
+    public static void erode(NoiseField _nf, er_vec2 _pos, double amount, int radius)
+    {
+        erode(_nf,_pos.x,_pos.y,amount,radius);
+    }
+    
+    public static void erode(NoiseField _nf, double _px, double _py, double amount, int radius)
+    {
+        if(radius < 1){
+            deposit(_nf,_px,_py, -amount);
+            return;
+        }
+        
+        int x0 = (int)_px - radius;
+        int y0 = (int)_py - radius;
+        int x_start = Math.max(0, x0);
+        int y_start = Math.max(0, y0);
+        int x_end = Math.min(_nf.getWidth(), x0+2*radius+1);
+        int y_end = Math.min(_nf.getHeight(), y0+2*radius+1);
+        
+        // construct erosion/deposition kernel.
+        double[][] _kernel = new double[2*radius + 1][2*radius + 1];
+        double kernel_sum = 0;
+        for(int y = y_start; y < y_end; y++) {
+            for(int x = x_start; x < x_end; x++) {
+                double d_x = x - _px;
+                double d_y = y - _py;
+                double distance = Math.sqrt(d_x*d_x + d_y*d_y);
+                double w = Math.max(0, radius - distance);
+                kernel_sum += w;
+                _kernel[y-y0][x-x0] = w;
+            }
+        }
+        
+        // normalize weights and apply changes on heighmap.
+        for(int y = y_start; y < y_end; y++) {
+            for(int x = x_start; x < x_end; x++) {
+                _kernel[y-y0][x-x0] /= kernel_sum;
+                _nf.setPoint(x,y,_nf.getPoint(x,y)-(amount * _kernel[y-y0][x-x0]));
+            }
+        }
+    }
+    
+    public static er_vec2 gradient_at(NoiseField _nf,  int x, int y) {
+        return er_vec2.from(
+                _nf.getPoint(x+1,y) - _nf.getPoint(x,y),
+                _nf.getPoint(x,y+1) - _nf.getPoint(x,y)
+        );
+    }
+    public static er_hg_tuple height_gradient_at(NoiseField _nf, er_vec2 _pos)
+    {
+        return height_gradient_at(_nf,_pos.x,_pos.y);
+    }
+    
+    public static er_hg_tuple height_gradient_at(NoiseField _nf, double _px, double _py)
+    {
+        er_vec2 ul, ur, ll, lr, ipl_l, ipl_r;
 
+        int x_i = (int)_px;
+        int y_i = (int)_py;
+        double u = _px - x_i;
+        double v = _py - y_i;
+
+        ul = gradient_at(_nf, x_i, y_i);
+        ur = gradient_at(_nf, x_i + 1, y_i);
+        ll = gradient_at(_nf, x_i, y_i + 1);
+        lr = gradient_at(_nf, x_i + 1, y_i + 1);
+
+        ipl_l = ul.mul(1 - v).add(ll.mul(v));
+        ipl_r = ur.mul(1 - v).add(lr.mul(v));
+
+        return er_hg_tuple.from(
+                ipl_l.mul(1 - u).add(ipl_r.mul(u)),
+                bil_interpolate_map_double(_nf, _px,_py)
+        );
+    }
+    
+    public static void simulate_particles(NoiseField _nf, ArcRand _rng, er_sim_params _params)
+    {
+        boolean[][] _poisson = new boolean[_nf.getWidth()][_nf.getHeight()];
+        for(int i = 0; i < _params._n; i++) {
+            if(((i+1) % 100)==0)
+                System.err.printf("Particles simulated: %d\n", i+1);
+            
+            // spawn particle.
+            er_particle p = new er_particle();
+            
+            p.pos = er_vec2.from(_rng.nextDouble()*(double)_nf.getWidth(), _rng.nextDouble()*(double)_nf.getHeight());
+            if(_poisson[(int)p.pos.x][(int)p.pos.y])
+            {
+                i--;
+                continue;
+            }
+            _poisson[(int)p.pos.x][(int)p.pos.y] = true;
+            p.dir = er_vec2.from(0, 0);
+            p.vel = 0;
+            p.sediment = 0;
+            p.water = 1;
+            
+            for(int j = 0; j < _params._ttl; j++) {
+                // interpolate gradient g and height h_old at p's position.
+                er_vec2 pos_old = p.pos.clone();
+                er_hg_tuple hg = height_gradient_at(_nf, pos_old);
+                er_vec2 g = hg.gradient.clone();
+                double h_old = hg.height;
+                
+                // calculate new dir vector
+                p.dir = p.dir.mul(_params._enertia).sub(g.mul(1 - _params._enertia ));
+                
+                p.dir = p.dir.normalize();
+                
+                // calculate new pos
+                p.pos = p.pos.add(p.dir);
+                
+                // check bounds
+                er_vec2 pos_new = p.pos.clone();
+                if(pos_new.x > (_nf.getWidth()-1) || pos_new.x < 0 ||
+                        pos_new.y > (_nf.getHeight()-1) || pos_new.y < 0)
+                    break;
+                
+                // new height
+                double h_new = bil_interpolate_map_double(_nf, pos_new);
+                double h_diff = h_new - h_old;
+                
+                // sediment capacity
+                double c = Math.max(-h_diff, _params._min_slope) * p.vel * p.water * _params._capacity;
+                
+                // decide whether to erode or deposit depending on particle properties
+                if(h_diff > 0 || p.sediment > c)
+                {
+                    double to_deposit = (h_diff > 0) ?
+                            Math.min(p.sediment, h_diff) :
+                            (p.sediment - c) * _params._deposition;
+                    p.sediment -= to_deposit;
+                    deposit(_nf, pos_old, to_deposit);
+                }
+                else
+                {
+                    double to_erode = Math.min((c - p.sediment) * _params._erosion, -h_diff);
+                    p.sediment += to_erode;
+                    erode(_nf, pos_old, to_erode, _params._radius);
+                }
+                
+                // update `vel` and `water`
+                p.vel = Math.sqrt(Math.max(p.vel*p.vel + (-h_diff)*_params._gravity,0));
+                p.water *= (1 - _params._evaporation);
+            }
+        }
+    }
+    
+    public static void deposit(NoiseField _nf, er_vec2 _pos, double amount)
+    {
+        deposit(_nf, _pos.x, _pos.y,amount);
+    }
+
+    public static void deposit(NoiseField _nf, double _px, double _py, double amount)
+    {
+        int x_i = (int)_px;
+        int y_i = (int)_py;
+        double u = _px - x_i;
+        double v = _py - y_i;
+        
+        _nf.setPoint(x_i,y_i,_nf.getPoint(x_i,y_i)+(amount * (1 - u) * (1 - v)));
+        _nf.setPoint(x_i+1,y_i,_nf.getPoint(x_i+1,y_i)+(amount * u * (1 - v)));
+        _nf.setPoint(x_i,y_i+1,_nf.getPoint(x_i,y_i+1)+(amount * (1 - u) * v));
+        _nf.setPoint(x_i+1,y_i+1,_nf.getPoint(x_i+1,y_i+1)+(amount * u * v));
+    }
+
+    public static double bil_interpolate_map_double(NoiseField _nf, er_vec2 _pos)
+    {
+        return bil_interpolate_map_double(_nf, _pos.x, _pos.y);
+    }
+    
+    public static double bil_interpolate_map_double(NoiseField _nf, double _px, double _py)
+    {
+        double u, v, ul, ur, ll, lr, ipl_l, ipl_r;
+        int x_i = (int)_px;
+        int y_i = (int)_py;
+        u = _px - x_i;
+        v = _py - y_i;
+        
+        ul = _nf.getPoint(x_i,y_i);
+        ur = _nf.getPoint(x_i+1,y_i);
+        ll = _nf.getPoint(x_i,y_i+1);
+        lr = _nf.getPoint(x_i+1,y_i+1);
+        
+        ipl_l = (1 - v) * ul + v * ll;
+        ipl_r = (1 - v) * ur + v * lr;
+        
+        return (1 - u) * ipl_l + u * ipl_r;
+    }
+    
+    public static void eroder(NoiseField _nf, ArcRand _rng, int _n, int _ttl, int _radius, double _enertia, double _capacity, double _gravity, double _evaporation, double _erosion, double _deposition, double _min_slope)
+    {
+        er_sim_params _param = er_sim_params.from(_n, _ttl, _radius, _enertia, _capacity, _gravity, _evaporation, _erosion, _deposition, _min_slope);
+        eroder(_nf, _rng, _param);
+    }
+    
+    public static void eroder(NoiseField _nf, ArcRand _rng, er_sim_params _param)
+    {
+        if(_param == null) _param = er_sim_params.predef();
+        
+        simulate_particles(_nf, _rng,_param);
+    }
+    
+    public void eroder(ArcRand _rng, int _n, int _ttl, int _radius, double _enertia, double _capacity, double _gravity, double _evaporation, double _erosion, double _deposition, double _min_slope)
+    {
+        eroder(this, _rng,_n, _ttl, _radius, _enertia, _capacity, _gravity, _evaporation, _erosion, _deposition, _min_slope);
+    }
+    
+    public void eroder(ArcRand _rng, er_sim_params _param)
+    {
+        if(_param == null) _param = er_sim_params.predef();
+        
+        simulate_particles(this, _rng,_param);
+    }
+    
     public void add(NoiseField noisefield)
     {
         this.add(noisefield, false);
@@ -809,6 +1142,13 @@ public class NoiseField
         double v[] = null;
         switch(currProjection)
         {
+            case -1:
+            {
+                v=new double[3];
+                v[0]=projLeft+((nx%fW)/(double)fW)*(projRight-projLeft);
+                v[1]=projTop+((ny%fH)/(double)fH)*(projBottom-projTop);
+                break;
+            }
             case FP_SINCOS:
             {
                 double mX=projLeft+((nx%fW)/(double)fW)*(projRight-projLeft);
@@ -874,6 +1214,36 @@ public class NoiseField
             tV[i]=gain*((tV[i]-p_n)/p_D);
 
             this.vF[i]=op.transform(this.vF[i],tV[i]);
+        }
+    }
+
+    public void applyNoise(INoise _noise)
+    {
+        for(int y = 0; y < fH; ++y) {
+            for (int x = 0; x < fW; ++x) {
+                double[] p = this.getProjectedCoords(x + fWoff, y + fHoff);
+                if(p.length==3)
+                {
+                    this.vF[y * fW + x] = _noise.noise3(p[0], p[1], p[2]);
+                }
+                else
+                {
+                    this.vF[y * fW + x] = _noise.noise2(p[0], p[1]);
+                }
+            }
+        }
+    }
+
+    public interface IFunction{
+        double function(NoiseField _nf, int _x,int _y,double _v);
+    }
+    public void applyFunction(IFunction _func)
+    {
+        for(int y = 0; y < fH; ++y) {
+            for (int x = 0; x < fW; ++x)
+            {
+                this.vF[y * fW + x] = _func.function(this,x,y,this.vF[y * fW + x]);
+            }
         }
     }
 

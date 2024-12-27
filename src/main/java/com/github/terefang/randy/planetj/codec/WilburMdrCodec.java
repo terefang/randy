@@ -1,12 +1,52 @@
 package com.github.terefang.randy.planetj.codec;
 
 
+import com.github.terefang.randy.planetj.PlanetJ;
 import com.github.terefang.randy.utils.LEDataInputStream;
 import com.github.terefang.randy.utils.LEDataOutputStream;
+import lombok.SneakyThrows;
 
 import java.io.*;
 
 public class WilburMdrCodec {
+
+    @SneakyThrows
+    public static final PlanetJ importMDR(PlanetJ _j, File _f)
+    {
+        double[] _attr = peekMDR_Attr(_f);
+        int[] _wh = peekMDR_HW(_f);
+        int[] _info = peekMDR_Info(_f);
+        double _scale;
+        switch (_info[1])
+        {
+            case 1: // 16 bit int
+                _scale = 1./32767.;
+                break;
+            case 2: // 8 bit int
+                _scale = 1./127.;
+                break;
+            case 0: // 32 bit float
+            case 4: // 64 bit double
+            default:
+                _scale = 1./65535.;
+                break;
+        }
+        _j.setImported(true);
+        _j.setWidth(_wh[0]);
+        _j.setHeight(_wh[1]);
+        double[] _z = readMDR(_f,_wh[0],_wh[1],_scale);
+        _j.heights = new double[_wh[0]][_wh[1]];
+        int _i = 0;
+        for(int _h=_wh[1]-1; _h>=0; _h--)
+        {
+            for(int _w=0; _w<_wh[0]; _w++)
+            {
+                _j.heights[_w][_h] = _z[_i];
+                _i++;
+            }
+        }
+        return _j;
+    }
 
     public static final double[] peekMDR_Attr(File _f) throws IOException
     {
@@ -80,8 +120,11 @@ public class WilburMdrCodec {
                 _in.skipBytes(0x148);
                 int _type = _in.readInt();
                 _in.skipBytes(0x18);
-                if(_w == _in.readInt() && _h == _in.readInt())
+                int _wx = _in.readInt();
+                int _hx = _in.readInt();
+                if((_w == _wx) && (_h == _hx))
                 {
+                    _in.skipBytes(0x400-0x170);
                     for(int _i = 0; _i<_ret.length;_i++)
                     {
                         switch (_type)
